@@ -1,0 +1,3427 @@
+Terminals unused in grammar
+
+   ERROR
+
+
+狀態 252 衝突：1 項偏移/縮減
+
+
+文法
+
+    0 $accept: program $end
+
+    1 program: global_decl_list
+
+    2 global_decl_list: global_decl_list global_decl
+    3                 | /* 空白 */
+
+    4 global_decl: decl_list function_decl
+    5            | function_decl
+
+    6 function_decl: type ID MK_LPAREN param_list MK_RPAREN MK_LBRACE block MK_RBRACE
+    7              | struct_type ID MK_LPAREN param_list MK_RPAREN MK_LBRACE block MK_RBRACE
+    8              | VOID ID MK_LPAREN param_list MK_RPAREN MK_LBRACE block MK_RBRACE
+    9              | type ID MK_LPAREN MK_RPAREN MK_LBRACE block MK_RBRACE
+   10              | struct_type ID MK_LPAREN MK_RPAREN MK_LBRACE block MK_RBRACE
+   11              | VOID ID MK_LPAREN MK_RPAREN MK_LBRACE block MK_RBRACE
+
+   12 param_list: param_list MK_COMMA param
+   13           | param
+
+   14 param: type ID
+   15      | struct_type ID
+   16      | type ID dim_fn
+   17      | struct_type ID dim_fn
+
+   18 dim_fn: MK_LB expr_null MK_RB dimfn1
+
+   19 dimfn1: MK_LB expr MK_RB dimfn1
+   20       | /* 空白 */
+
+   21 expr_null: expr
+   22          | /* 空白 */
+
+   23 block: decl_list stmt_list
+   24      | stmt_list
+   25      | decl_list
+   26      | /* 空白 */
+
+   27 decl_list: decl_list decl
+   28          | decl
+
+   29 decl: type_decl
+   30     | var_decl
+
+   31 type_decl: TYPEDEF type id_list MK_SEMICOLON
+   32          | TYPEDEF VOID id_list MK_SEMICOLON
+   33          | TYPEDEF struct_type id_list MK_SEMICOLON
+   34          | struct_decl MK_SEMICOLON
+   35          | TYPEDEF anonymous_struct id_list MK_SEMICOLON
+
+   36 var_decl: type init_id_list MK_SEMICOLON
+   37         | struct_type id_list MK_SEMICOLON
+   38         | struct_decl id_list MK_SEMICOLON
+   39         | anonymous_struct id_list MK_SEMICOLON
+   40         | ID id_list MK_SEMICOLON
+
+   41 type: INT
+   42     | FLOAT
+
+   43 struct_type: STRUCT ID
+
+   44 struct_decl: STRUCT ID MK_LBRACE decl_list MK_RBRACE
+
+   45 anonymous_struct: STRUCT MK_LBRACE decl_list MK_RBRACE
+
+   46 id_list: ID
+   47        | id_list MK_COMMA ID
+   48        | id_list MK_COMMA ID dim_decl
+   49        | ID dim_decl
+
+   50 dim_decl: MK_LB cexpr MK_RB
+   51         | dim_decl MK_LB cexpr MK_RB
+
+   52 cexpr: cexpr add_op mcexpr
+   53      | mcexpr
+
+   54 mcexpr: mcexpr mul_op cfactor
+   55       | cfactor
+
+   56 cfactor: CONST
+   57        | MK_LPAREN cexpr MK_RPAREN
+
+   58 init_id_list: init_id
+   59             | init_id_list MK_COMMA init_id
+
+   60 init_id: ID
+   61        | ID dim_decl
+   62        | ID OP_ASSIGN relop_expr
+
+   63 stmt_list: stmt_list stmt
+   64          | stmt
+
+   65 stmt: MK_LBRACE block MK_RBRACE
+   66     | WHILE MK_LPAREN relop_expr_list MK_RPAREN stmt
+   67     | FOR MK_LPAREN assign_expr_list MK_SEMICOLON relop_expr_list MK_SEMICOLON assign_expr_list MK_RPAREN stmt
+   68     | var_ref OP_ASSIGN relop_expr MK_SEMICOLON
+   69     | IF MK_LPAREN relop_expr_list MK_RPAREN stmt
+   70     | IF MK_LPAREN relop_expr_list MK_RPAREN stmt ELSE stmt
+   71     | lib_call MK_SEMICOLON
+   72     | MK_SEMICOLON
+   73     | RETURN MK_SEMICOLON
+   74     | RETURN relop_expr MK_SEMICOLON
+
+   75 lib_call: FNCALL_READ MK_LPAREN MK_RPAREN
+   76         | FNCALL_FREAD MK_LPAREN MK_RPAREN
+   77         | FNCALL_WRITE MK_LPAREN CONST MK_RPAREN
+   78         | FNCALL_WRITE MK_LPAREN var_ref MK_RPAREN
+
+   79 assign_expr_list: nonempty_assign_expr_list
+   80                 | /* 空白 */
+
+   81 nonempty_assign_expr_list: nonempty_assign_expr_list MK_COMMA assign_expr
+   82                          | assign_expr
+
+   83 assign_expr: ID OP_ASSIGN relop_expr
+   84            | relop_expr
+
+   85 relop_expr: relop_term
+   86           | relop_expr OP_OR relop_term
+
+   87 relop_term: relop_factor
+   88           | relop_term OP_AND relop_factor
+
+   89 relop_factor: expr
+   90             | expr rel_op expr
+
+   91 rel_op: OP_EQ
+   92       | OP_GE
+   93       | OP_LE
+   94       | OP_NE
+   95       | OP_GT
+   96       | OP_LT
+
+   97 relop_expr_list: nonempty_relop_expr_list
+   98                | /* 空白 */
+
+   99 nonempty_relop_expr_list: nonempty_relop_expr_list MK_COMMA relop_expr
+  100                         | relop_expr
+
+  101 expr: expr add_op term
+  102     | term
+
+  103 add_op: OP_PLUS
+  104       | OP_MINUS
+
+  105 term: term mul_op factor
+  106     | factor
+
+  107 mul_op: OP_TIMES
+  108       | OP_DIVIDE
+
+  109 factor: MK_LPAREN relop_expr MK_RPAREN
+  110       | OP_MINUS MK_LPAREN relop_expr MK_RPAREN
+  111       | OP_NOT MK_LPAREN relop_expr MK_RPAREN
+  112       | CONST
+  113       | OP_MINUS CONST
+  114       | OP_NOT CONST
+  115       | ID MK_LPAREN relop_expr_list MK_RPAREN
+  116       | OP_MINUS ID MK_LPAREN relop_expr_list MK_RPAREN
+  117       | OP_NOT ID MK_LPAREN relop_expr_list MK_RPAREN
+  118       | var_ref
+  119       | OP_MINUS var_ref
+  120       | OP_NOT var_ref
+  121       | lib_call
+  122       | OP_MINUS lib_call
+  123       | OP_NOT lib_call
+
+  124 var_ref: ID
+  125        | var_ref dim
+  126        | var_ref struct_tail
+
+  127 dim: MK_LB expr MK_RB
+
+  128 struct_tail: MK_DOT ID
+
+
+終結語詞，附有它們出現處的規則
+
+$end (0) 0
+error (256)
+ID (258) 6 7 8 9 10 11 14 15 16 17 40 43 44 46 47 48 49 60 61 62 83
+    115 116 117 124 128
+CONST (259) 56 77 112 113 114
+VOID (260) 8 11 32
+INT (261) 41
+FLOAT (262) 42
+IF (263) 69 70
+ELSE (264) 70
+WHILE (265) 66
+FOR (266) 67
+STRUCT (267) 43 44 45
+TYPEDEF (268) 31 32 33 35
+OP_ASSIGN (269) 62 68 83
+OP_OR (270) 86
+OP_AND (271) 88
+OP_NOT (272) 111 114 117 120 123
+OP_EQ (273) 91
+OP_NE (274) 94
+OP_GT (275) 95
+OP_LT (276) 96
+OP_GE (277) 92
+OP_LE (278) 93
+OP_PLUS (279) 103
+OP_MINUS (280) 104 110 113 116 119 122
+OP_TIMES (281) 107
+OP_DIVIDE (282) 108
+MK_LB (283) 18 19 50 51 127
+MK_RB (284) 18 19 50 51 127
+MK_LPAREN (285) 6 7 8 9 10 11 57 66 67 69 70 75 76 77 78 109 110 111
+    115 116 117
+MK_RPAREN (286) 6 7 8 9 10 11 57 66 67 69 70 75 76 77 78 109 110 111
+    115 116 117
+MK_LBRACE (287) 6 7 8 9 10 11 44 45 65
+MK_RBRACE (288) 6 7 8 9 10 11 44 45 65
+MK_COMMA (289) 12 47 48 59 81 99
+MK_SEMICOLON (290) 31 32 33 34 35 36 37 38 39 40 67 68 71 72 73 74
+MK_DOT (291) 128
+ERROR (292)
+RETURN (293) 73 74
+FNCALL_READ (294) 75
+FNCALL_FREAD (295) 76
+FNCALL_WRITE (296) 77 78
+
+
+非終結語詞，附有它們出現處的規則
+
+$accept (42)
+   於左側： 0
+program (43)
+   於左側： 1,於右側： 0
+global_decl_list (44)
+   於左側： 2 3,於右側： 1 2
+global_decl (45)
+   於左側： 4 5,於右側： 2
+function_decl (46)
+   於左側： 6 7 8 9 10 11,於右側： 4 5
+param_list (47)
+   於左側： 12 13,於右側： 6 7 8 12
+param (48)
+   於左側： 14 15 16 17,於右側： 12 13
+dim_fn (49)
+   於左側： 18,於右側： 16 17
+dimfn1 (50)
+   於左側： 19 20,於右側： 18 19
+expr_null (51)
+   於左側： 21 22,於右側： 18
+block (52)
+   於左側： 23 24 25 26,於右側： 6 7 8 9 10 11 65
+decl_list (53)
+   於左側： 27 28,於右側： 4 23 25 27 44 45
+decl (54)
+   於左側： 29 30,於右側： 27 28
+type_decl (55)
+   於左側： 31 32 33 34 35,於右側： 29
+var_decl (56)
+   於左側： 36 37 38 39 40,於右側： 30
+type (57)
+   於左側： 41 42,於右側： 6 9 14 16 31 36
+struct_type (58)
+   於左側： 43,於右側： 7 10 15 17 33 37
+struct_decl (59)
+   於左側： 44,於右側： 34 38
+anonymous_struct (60)
+   於左側： 45,於右側： 35 39
+id_list (61)
+   於左側： 46 47 48 49,於右側： 31 32 33 35 37 38 39 40 47
+    48
+dim_decl (62)
+   於左側： 50 51,於右側： 48 49 51 61
+cexpr (63)
+   於左側： 52 53,於右側： 50 51 52 57
+mcexpr (64)
+   於左側： 54 55,於右側： 52 53 54
+cfactor (65)
+   於左側： 56 57,於右側： 54 55
+init_id_list (66)
+   於左側： 58 59,於右側： 36 59
+init_id (67)
+   於左側： 60 61 62,於右側： 58 59
+stmt_list (68)
+   於左側： 63 64,於右側： 23 24 63
+stmt (69)
+   於左側： 65 66 67 68 69 70 71 72 73 74,於右側： 63 64 66
+    67 69 70
+lib_call (70)
+   於左側： 75 76 77 78,於右側： 71 121 122 123
+assign_expr_list (71)
+   於左側： 79 80,於右側： 67
+nonempty_assign_expr_list (72)
+   於左側： 81 82,於右側： 79 81
+assign_expr (73)
+   於左側： 83 84,於右側： 81 82
+relop_expr (74)
+   於左側： 85 86,於右側： 62 68 74 83 84 86 99 100 109 110
+    111
+relop_term (75)
+   於左側： 87 88,於右側： 85 86 88
+relop_factor (76)
+   於左側： 89 90,於右側： 87 88
+rel_op (77)
+   於左側： 91 92 93 94 95 96,於右側： 90
+relop_expr_list (78)
+   於左側： 97 98,於右側： 66 67 69 70 115 116 117
+nonempty_relop_expr_list (79)
+   於左側： 99 100,於右側： 97 99
+expr (80)
+   於左側： 101 102,於右側： 19 21 89 90 101 127
+add_op (81)
+   於左側： 103 104,於右側： 52 101
+term (82)
+   於左側： 105 106,於右側： 101 102 105
+mul_op (83)
+   於左側： 107 108,於右側： 54 105
+factor (84)
+   於左側： 109 110 111 112 113 114 115 116 117 118 119 120 121
+    122 123,於右側： 105 106
+var_ref (85)
+   於左側： 124 125 126,於右側： 68 78 118 119 120 125 126
+dim (86)
+   於左側： 127,於右側： 125
+struct_tail (87)
+   於左側： 128,於右側： 126
+
+
+狀態 0
+
+    0 $accept: . program $end
+
+    $預設  使用規則 3 以縮減 (global_decl_list)
+
+    program           進入狀態 1
+    global_decl_list  進入狀態 2
+
+
+狀態 1
+
+    0 $accept: program . $end
+
+    $end  偏移，並進入狀態 3
+
+
+狀態 2
+
+    1 program: global_decl_list .
+    2 global_decl_list: global_decl_list . global_decl
+
+    ID       偏移，並進入狀態 4
+    VOID     偏移，並進入狀態 5
+    INT      偏移，並進入狀態 6
+    FLOAT    偏移，並進入狀態 7
+    STRUCT   偏移，並進入狀態 8
+    TYPEDEF  偏移，並進入狀態 9
+
+    $預設  使用規則 1 以縮減 (program)
+
+    global_decl       進入狀態 10
+    function_decl     進入狀態 11
+    decl_list         進入狀態 12
+    decl              進入狀態 13
+    type_decl         進入狀態 14
+    var_decl          進入狀態 15
+    type              進入狀態 16
+    struct_type       進入狀態 17
+    struct_decl       進入狀態 18
+    anonymous_struct  進入狀態 19
+
+
+狀態 3
+
+    0 $accept: program $end .
+
+    $預設  接受
+
+
+狀態 4
+
+   40 var_decl: ID . id_list MK_SEMICOLON
+
+    ID  偏移，並進入狀態 20
+
+    id_list  進入狀態 21
+
+
+狀態 5
+
+    8 function_decl: VOID . ID MK_LPAREN param_list MK_RPAREN MK_LBRACE block MK_RBRACE
+   11              | VOID . ID MK_LPAREN MK_RPAREN MK_LBRACE block MK_RBRACE
+
+    ID  偏移，並進入狀態 22
+
+
+狀態 6
+
+   41 type: INT .
+
+    $預設  使用規則 41 以縮減 (type)
+
+
+狀態 7
+
+   42 type: FLOAT .
+
+    $預設  使用規則 42 以縮減 (type)
+
+
+狀態 8
+
+   43 struct_type: STRUCT . ID
+   44 struct_decl: STRUCT . ID MK_LBRACE decl_list MK_RBRACE
+   45 anonymous_struct: STRUCT . MK_LBRACE decl_list MK_RBRACE
+
+    ID         偏移，並進入狀態 23
+    MK_LBRACE  偏移，並進入狀態 24
+
+
+狀態 9
+
+   31 type_decl: TYPEDEF . type id_list MK_SEMICOLON
+   32          | TYPEDEF . VOID id_list MK_SEMICOLON
+   33          | TYPEDEF . struct_type id_list MK_SEMICOLON
+   35          | TYPEDEF . anonymous_struct id_list MK_SEMICOLON
+
+    VOID    偏移，並進入狀態 25
+    INT     偏移，並進入狀態 6
+    FLOAT   偏移，並進入狀態 7
+    STRUCT  偏移，並進入狀態 26
+
+    type              進入狀態 27
+    struct_type       進入狀態 28
+    anonymous_struct  進入狀態 29
+
+
+狀態 10
+
+    2 global_decl_list: global_decl_list global_decl .
+
+    $預設  使用規則 2 以縮減 (global_decl_list)
+
+
+狀態 11
+
+    5 global_decl: function_decl .
+
+    $預設  使用規則 5 以縮減 (global_decl)
+
+
+狀態 12
+
+    4 global_decl: decl_list . function_decl
+   27 decl_list: decl_list . decl
+
+    ID       偏移，並進入狀態 4
+    VOID     偏移，並進入狀態 5
+    INT      偏移，並進入狀態 6
+    FLOAT    偏移，並進入狀態 7
+    STRUCT   偏移，並進入狀態 8
+    TYPEDEF  偏移，並進入狀態 9
+
+    function_decl     進入狀態 30
+    decl              進入狀態 31
+    type_decl         進入狀態 14
+    var_decl          進入狀態 15
+    type              進入狀態 16
+    struct_type       進入狀態 17
+    struct_decl       進入狀態 18
+    anonymous_struct  進入狀態 19
+
+
+狀態 13
+
+   28 decl_list: decl .
+
+    $預設  使用規則 28 以縮減 (decl_list)
+
+
+狀態 14
+
+   29 decl: type_decl .
+
+    $預設  使用規則 29 以縮減 (decl)
+
+
+狀態 15
+
+   30 decl: var_decl .
+
+    $預設  使用規則 30 以縮減 (decl)
+
+
+狀態 16
+
+    6 function_decl: type . ID MK_LPAREN param_list MK_RPAREN MK_LBRACE block MK_RBRACE
+    9              | type . ID MK_LPAREN MK_RPAREN MK_LBRACE block MK_RBRACE
+   36 var_decl: type . init_id_list MK_SEMICOLON
+
+    ID  偏移，並進入狀態 32
+
+    init_id_list  進入狀態 33
+    init_id       進入狀態 34
+
+
+狀態 17
+
+    7 function_decl: struct_type . ID MK_LPAREN param_list MK_RPAREN MK_LBRACE block MK_RBRACE
+   10              | struct_type . ID MK_LPAREN MK_RPAREN MK_LBRACE block MK_RBRACE
+   37 var_decl: struct_type . id_list MK_SEMICOLON
+
+    ID  偏移，並進入狀態 35
+
+    id_list  進入狀態 36
+
+
+狀態 18
+
+   34 type_decl: struct_decl . MK_SEMICOLON
+   38 var_decl: struct_decl . id_list MK_SEMICOLON
+
+    ID            偏移，並進入狀態 20
+    MK_SEMICOLON  偏移，並進入狀態 37
+
+    id_list  進入狀態 38
+
+
+狀態 19
+
+   39 var_decl: anonymous_struct . id_list MK_SEMICOLON
+
+    ID  偏移，並進入狀態 20
+
+    id_list  進入狀態 39
+
+
+狀態 20
+
+   46 id_list: ID .
+   49        | ID . dim_decl
+
+    MK_LB  偏移，並進入狀態 40
+
+    $預設  使用規則 46 以縮減 (id_list)
+
+    dim_decl  進入狀態 41
+
+
+狀態 21
+
+   40 var_decl: ID id_list . MK_SEMICOLON
+   47 id_list: id_list . MK_COMMA ID
+   48        | id_list . MK_COMMA ID dim_decl
+
+    MK_COMMA      偏移，並進入狀態 42
+    MK_SEMICOLON  偏移，並進入狀態 43
+
+
+狀態 22
+
+    8 function_decl: VOID ID . MK_LPAREN param_list MK_RPAREN MK_LBRACE block MK_RBRACE
+   11              | VOID ID . MK_LPAREN MK_RPAREN MK_LBRACE block MK_RBRACE
+
+    MK_LPAREN  偏移，並進入狀態 44
+
+
+狀態 23
+
+   43 struct_type: STRUCT ID .
+   44 struct_decl: STRUCT ID . MK_LBRACE decl_list MK_RBRACE
+
+    MK_LBRACE  偏移，並進入狀態 45
+
+    $預設  使用規則 43 以縮減 (struct_type)
+
+
+狀態 24
+
+   45 anonymous_struct: STRUCT MK_LBRACE . decl_list MK_RBRACE
+
+    ID       偏移，並進入狀態 4
+    INT      偏移，並進入狀態 6
+    FLOAT    偏移，並進入狀態 7
+    STRUCT   偏移，並進入狀態 8
+    TYPEDEF  偏移，並進入狀態 9
+
+    decl_list         進入狀態 46
+    decl              進入狀態 13
+    type_decl         進入狀態 14
+    var_decl          進入狀態 15
+    type              進入狀態 47
+    struct_type       進入狀態 48
+    struct_decl       進入狀態 18
+    anonymous_struct  進入狀態 19
+
+
+狀態 25
+
+   32 type_decl: TYPEDEF VOID . id_list MK_SEMICOLON
+
+    ID  偏移，並進入狀態 20
+
+    id_list  進入狀態 49
+
+
+狀態 26
+
+   43 struct_type: STRUCT . ID
+   45 anonymous_struct: STRUCT . MK_LBRACE decl_list MK_RBRACE
+
+    ID         偏移，並進入狀態 50
+    MK_LBRACE  偏移，並進入狀態 24
+
+
+狀態 27
+
+   31 type_decl: TYPEDEF type . id_list MK_SEMICOLON
+
+    ID  偏移，並進入狀態 20
+
+    id_list  進入狀態 51
+
+
+狀態 28
+
+   33 type_decl: TYPEDEF struct_type . id_list MK_SEMICOLON
+
+    ID  偏移，並進入狀態 20
+
+    id_list  進入狀態 52
+
+
+狀態 29
+
+   35 type_decl: TYPEDEF anonymous_struct . id_list MK_SEMICOLON
+
+    ID  偏移，並進入狀態 20
+
+    id_list  進入狀態 53
+
+
+狀態 30
+
+    4 global_decl: decl_list function_decl .
+
+    $預設  使用規則 4 以縮減 (global_decl)
+
+
+狀態 31
+
+   27 decl_list: decl_list decl .
+
+    $預設  使用規則 27 以縮減 (decl_list)
+
+
+狀態 32
+
+    6 function_decl: type ID . MK_LPAREN param_list MK_RPAREN MK_LBRACE block MK_RBRACE
+    9              | type ID . MK_LPAREN MK_RPAREN MK_LBRACE block MK_RBRACE
+   60 init_id: ID .
+   61        | ID . dim_decl
+   62        | ID . OP_ASSIGN relop_expr
+
+    OP_ASSIGN  偏移，並進入狀態 54
+    MK_LB      偏移，並進入狀態 40
+    MK_LPAREN  偏移，並進入狀態 55
+
+    $預設  使用規則 60 以縮減 (init_id)
+
+    dim_decl  進入狀態 56
+
+
+狀態 33
+
+   36 var_decl: type init_id_list . MK_SEMICOLON
+   59 init_id_list: init_id_list . MK_COMMA init_id
+
+    MK_COMMA      偏移，並進入狀態 57
+    MK_SEMICOLON  偏移，並進入狀態 58
+
+
+狀態 34
+
+   58 init_id_list: init_id .
+
+    $預設  使用規則 58 以縮減 (init_id_list)
+
+
+狀態 35
+
+    7 function_decl: struct_type ID . MK_LPAREN param_list MK_RPAREN MK_LBRACE block MK_RBRACE
+   10              | struct_type ID . MK_LPAREN MK_RPAREN MK_LBRACE block MK_RBRACE
+   46 id_list: ID .
+   49        | ID . dim_decl
+
+    MK_LB      偏移，並進入狀態 40
+    MK_LPAREN  偏移，並進入狀態 59
+
+    $預設  使用規則 46 以縮減 (id_list)
+
+    dim_decl  進入狀態 41
+
+
+狀態 36
+
+   37 var_decl: struct_type id_list . MK_SEMICOLON
+   47 id_list: id_list . MK_COMMA ID
+   48        | id_list . MK_COMMA ID dim_decl
+
+    MK_COMMA      偏移，並進入狀態 42
+    MK_SEMICOLON  偏移，並進入狀態 60
+
+
+狀態 37
+
+   34 type_decl: struct_decl MK_SEMICOLON .
+
+    $預設  使用規則 34 以縮減 (type_decl)
+
+
+狀態 38
+
+   38 var_decl: struct_decl id_list . MK_SEMICOLON
+   47 id_list: id_list . MK_COMMA ID
+   48        | id_list . MK_COMMA ID dim_decl
+
+    MK_COMMA      偏移，並進入狀態 42
+    MK_SEMICOLON  偏移，並進入狀態 61
+
+
+狀態 39
+
+   39 var_decl: anonymous_struct id_list . MK_SEMICOLON
+   47 id_list: id_list . MK_COMMA ID
+   48        | id_list . MK_COMMA ID dim_decl
+
+    MK_COMMA      偏移，並進入狀態 42
+    MK_SEMICOLON  偏移，並進入狀態 62
+
+
+狀態 40
+
+   50 dim_decl: MK_LB . cexpr MK_RB
+
+    CONST      偏移，並進入狀態 63
+    MK_LPAREN  偏移，並進入狀態 64
+
+    cexpr    進入狀態 65
+    mcexpr   進入狀態 66
+    cfactor  進入狀態 67
+
+
+狀態 41
+
+   49 id_list: ID dim_decl .
+   51 dim_decl: dim_decl . MK_LB cexpr MK_RB
+
+    MK_LB  偏移，並進入狀態 68
+
+    $預設  使用規則 49 以縮減 (id_list)
+
+
+狀態 42
+
+   47 id_list: id_list MK_COMMA . ID
+   48        | id_list MK_COMMA . ID dim_decl
+
+    ID  偏移，並進入狀態 69
+
+
+狀態 43
+
+   40 var_decl: ID id_list MK_SEMICOLON .
+
+    $預設  使用規則 40 以縮減 (var_decl)
+
+
+狀態 44
+
+    8 function_decl: VOID ID MK_LPAREN . param_list MK_RPAREN MK_LBRACE block MK_RBRACE
+   11              | VOID ID MK_LPAREN . MK_RPAREN MK_LBRACE block MK_RBRACE
+
+    INT        偏移，並進入狀態 6
+    FLOAT      偏移，並進入狀態 7
+    STRUCT     偏移，並進入狀態 70
+    MK_RPAREN  偏移，並進入狀態 71
+
+    param_list   進入狀態 72
+    param        進入狀態 73
+    type         進入狀態 74
+    struct_type  進入狀態 75
+
+
+狀態 45
+
+   44 struct_decl: STRUCT ID MK_LBRACE . decl_list MK_RBRACE
+
+    ID       偏移，並進入狀態 4
+    INT      偏移，並進入狀態 6
+    FLOAT    偏移，並進入狀態 7
+    STRUCT   偏移，並進入狀態 8
+    TYPEDEF  偏移，並進入狀態 9
+
+    decl_list         進入狀態 76
+    decl              進入狀態 13
+    type_decl         進入狀態 14
+    var_decl          進入狀態 15
+    type              進入狀態 47
+    struct_type       進入狀態 48
+    struct_decl       進入狀態 18
+    anonymous_struct  進入狀態 19
+
+
+狀態 46
+
+   27 decl_list: decl_list . decl
+   45 anonymous_struct: STRUCT MK_LBRACE decl_list . MK_RBRACE
+
+    ID         偏移，並進入狀態 4
+    INT        偏移，並進入狀態 6
+    FLOAT      偏移，並進入狀態 7
+    STRUCT     偏移，並進入狀態 8
+    TYPEDEF    偏移，並進入狀態 9
+    MK_RBRACE  偏移，並進入狀態 77
+
+    decl              進入狀態 31
+    type_decl         進入狀態 14
+    var_decl          進入狀態 15
+    type              進入狀態 47
+    struct_type       進入狀態 48
+    struct_decl       進入狀態 18
+    anonymous_struct  進入狀態 19
+
+
+狀態 47
+
+   36 var_decl: type . init_id_list MK_SEMICOLON
+
+    ID  偏移，並進入狀態 78
+
+    init_id_list  進入狀態 33
+    init_id       進入狀態 34
+
+
+狀態 48
+
+   37 var_decl: struct_type . id_list MK_SEMICOLON
+
+    ID  偏移，並進入狀態 20
+
+    id_list  進入狀態 36
+
+
+狀態 49
+
+   32 type_decl: TYPEDEF VOID id_list . MK_SEMICOLON
+   47 id_list: id_list . MK_COMMA ID
+   48        | id_list . MK_COMMA ID dim_decl
+
+    MK_COMMA      偏移，並進入狀態 42
+    MK_SEMICOLON  偏移，並進入狀態 79
+
+
+狀態 50
+
+   43 struct_type: STRUCT ID .
+
+    $預設  使用規則 43 以縮減 (struct_type)
+
+
+狀態 51
+
+   31 type_decl: TYPEDEF type id_list . MK_SEMICOLON
+   47 id_list: id_list . MK_COMMA ID
+   48        | id_list . MK_COMMA ID dim_decl
+
+    MK_COMMA      偏移，並進入狀態 42
+    MK_SEMICOLON  偏移，並進入狀態 80
+
+
+狀態 52
+
+   33 type_decl: TYPEDEF struct_type id_list . MK_SEMICOLON
+   47 id_list: id_list . MK_COMMA ID
+   48        | id_list . MK_COMMA ID dim_decl
+
+    MK_COMMA      偏移，並進入狀態 42
+    MK_SEMICOLON  偏移，並進入狀態 81
+
+
+狀態 53
+
+   35 type_decl: TYPEDEF anonymous_struct id_list . MK_SEMICOLON
+   47 id_list: id_list . MK_COMMA ID
+   48        | id_list . MK_COMMA ID dim_decl
+
+    MK_COMMA      偏移，並進入狀態 42
+    MK_SEMICOLON  偏移，並進入狀態 82
+
+
+狀態 54
+
+   62 init_id: ID OP_ASSIGN . relop_expr
+
+    ID            偏移，並進入狀態 83
+    CONST         偏移，並進入狀態 84
+    OP_NOT        偏移，並進入狀態 85
+    OP_MINUS      偏移，並進入狀態 86
+    MK_LPAREN     偏移，並進入狀態 87
+    FNCALL_READ   偏移，並進入狀態 88
+    FNCALL_FREAD  偏移，並進入狀態 89
+    FNCALL_WRITE  偏移，並進入狀態 90
+
+    lib_call      進入狀態 91
+    relop_expr    進入狀態 92
+    relop_term    進入狀態 93
+    relop_factor  進入狀態 94
+    expr          進入狀態 95
+    term          進入狀態 96
+    factor        進入狀態 97
+    var_ref       進入狀態 98
+
+
+狀態 55
+
+    6 function_decl: type ID MK_LPAREN . param_list MK_RPAREN MK_LBRACE block MK_RBRACE
+    9              | type ID MK_LPAREN . MK_RPAREN MK_LBRACE block MK_RBRACE
+
+    INT        偏移，並進入狀態 6
+    FLOAT      偏移，並進入狀態 7
+    STRUCT     偏移，並進入狀態 70
+    MK_RPAREN  偏移，並進入狀態 99
+
+    param_list   進入狀態 100
+    param        進入狀態 73
+    type         進入狀態 74
+    struct_type  進入狀態 75
+
+
+狀態 56
+
+   51 dim_decl: dim_decl . MK_LB cexpr MK_RB
+   61 init_id: ID dim_decl .
+
+    MK_LB  偏移，並進入狀態 68
+
+    $預設  使用規則 61 以縮減 (init_id)
+
+
+狀態 57
+
+   59 init_id_list: init_id_list MK_COMMA . init_id
+
+    ID  偏移，並進入狀態 78
+
+    init_id  進入狀態 101
+
+
+狀態 58
+
+   36 var_decl: type init_id_list MK_SEMICOLON .
+
+    $預設  使用規則 36 以縮減 (var_decl)
+
+
+狀態 59
+
+    7 function_decl: struct_type ID MK_LPAREN . param_list MK_RPAREN MK_LBRACE block MK_RBRACE
+   10              | struct_type ID MK_LPAREN . MK_RPAREN MK_LBRACE block MK_RBRACE
+
+    INT        偏移，並進入狀態 6
+    FLOAT      偏移，並進入狀態 7
+    STRUCT     偏移，並進入狀態 70
+    MK_RPAREN  偏移，並進入狀態 102
+
+    param_list   進入狀態 103
+    param        進入狀態 73
+    type         進入狀態 74
+    struct_type  進入狀態 75
+
+
+狀態 60
+
+   37 var_decl: struct_type id_list MK_SEMICOLON .
+
+    $預設  使用規則 37 以縮減 (var_decl)
+
+
+狀態 61
+
+   38 var_decl: struct_decl id_list MK_SEMICOLON .
+
+    $預設  使用規則 38 以縮減 (var_decl)
+
+
+狀態 62
+
+   39 var_decl: anonymous_struct id_list MK_SEMICOLON .
+
+    $預設  使用規則 39 以縮減 (var_decl)
+
+
+狀態 63
+
+   56 cfactor: CONST .
+
+    $預設  使用規則 56 以縮減 (cfactor)
+
+
+狀態 64
+
+   57 cfactor: MK_LPAREN . cexpr MK_RPAREN
+
+    CONST      偏移，並進入狀態 63
+    MK_LPAREN  偏移，並進入狀態 64
+
+    cexpr    進入狀態 104
+    mcexpr   進入狀態 66
+    cfactor  進入狀態 67
+
+
+狀態 65
+
+   50 dim_decl: MK_LB cexpr . MK_RB
+   52 cexpr: cexpr . add_op mcexpr
+
+    OP_PLUS   偏移，並進入狀態 105
+    OP_MINUS  偏移，並進入狀態 106
+    MK_RB     偏移，並進入狀態 107
+
+    add_op  進入狀態 108
+
+
+狀態 66
+
+   53 cexpr: mcexpr .
+   54 mcexpr: mcexpr . mul_op cfactor
+
+    OP_TIMES   偏移，並進入狀態 109
+    OP_DIVIDE  偏移，並進入狀態 110
+
+    $預設  使用規則 53 以縮減 (cexpr)
+
+    mul_op  進入狀態 111
+
+
+狀態 67
+
+   55 mcexpr: cfactor .
+
+    $預設  使用規則 55 以縮減 (mcexpr)
+
+
+狀態 68
+
+   51 dim_decl: dim_decl MK_LB . cexpr MK_RB
+
+    CONST      偏移，並進入狀態 63
+    MK_LPAREN  偏移，並進入狀態 64
+
+    cexpr    進入狀態 112
+    mcexpr   進入狀態 66
+    cfactor  進入狀態 67
+
+
+狀態 69
+
+   47 id_list: id_list MK_COMMA ID .
+   48        | id_list MK_COMMA ID . dim_decl
+
+    MK_LB  偏移，並進入狀態 40
+
+    $預設  使用規則 47 以縮減 (id_list)
+
+    dim_decl  進入狀態 113
+
+
+狀態 70
+
+   43 struct_type: STRUCT . ID
+
+    ID  偏移，並進入狀態 50
+
+
+狀態 71
+
+   11 function_decl: VOID ID MK_LPAREN MK_RPAREN . MK_LBRACE block MK_RBRACE
+
+    MK_LBRACE  偏移，並進入狀態 114
+
+
+狀態 72
+
+    8 function_decl: VOID ID MK_LPAREN param_list . MK_RPAREN MK_LBRACE block MK_RBRACE
+   12 param_list: param_list . MK_COMMA param
+
+    MK_RPAREN  偏移，並進入狀態 115
+    MK_COMMA   偏移，並進入狀態 116
+
+
+狀態 73
+
+   13 param_list: param .
+
+    $預設  使用規則 13 以縮減 (param_list)
+
+
+狀態 74
+
+   14 param: type . ID
+   16      | type . ID dim_fn
+
+    ID  偏移，並進入狀態 117
+
+
+狀態 75
+
+   15 param: struct_type . ID
+   17      | struct_type . ID dim_fn
+
+    ID  偏移，並進入狀態 118
+
+
+狀態 76
+
+   27 decl_list: decl_list . decl
+   44 struct_decl: STRUCT ID MK_LBRACE decl_list . MK_RBRACE
+
+    ID         偏移，並進入狀態 4
+    INT        偏移，並進入狀態 6
+    FLOAT      偏移，並進入狀態 7
+    STRUCT     偏移，並進入狀態 8
+    TYPEDEF    偏移，並進入狀態 9
+    MK_RBRACE  偏移，並進入狀態 119
+
+    decl              進入狀態 31
+    type_decl         進入狀態 14
+    var_decl          進入狀態 15
+    type              進入狀態 47
+    struct_type       進入狀態 48
+    struct_decl       進入狀態 18
+    anonymous_struct  進入狀態 19
+
+
+狀態 77
+
+   45 anonymous_struct: STRUCT MK_LBRACE decl_list MK_RBRACE .
+
+    $預設  使用規則 45 以縮減 (anonymous_struct)
+
+
+狀態 78
+
+   60 init_id: ID .
+   61        | ID . dim_decl
+   62        | ID . OP_ASSIGN relop_expr
+
+    OP_ASSIGN  偏移，並進入狀態 54
+    MK_LB      偏移，並進入狀態 40
+
+    $預設  使用規則 60 以縮減 (init_id)
+
+    dim_decl  進入狀態 56
+
+
+狀態 79
+
+   32 type_decl: TYPEDEF VOID id_list MK_SEMICOLON .
+
+    $預設  使用規則 32 以縮減 (type_decl)
+
+
+狀態 80
+
+   31 type_decl: TYPEDEF type id_list MK_SEMICOLON .
+
+    $預設  使用規則 31 以縮減 (type_decl)
+
+
+狀態 81
+
+   33 type_decl: TYPEDEF struct_type id_list MK_SEMICOLON .
+
+    $預設  使用規則 33 以縮減 (type_decl)
+
+
+狀態 82
+
+   35 type_decl: TYPEDEF anonymous_struct id_list MK_SEMICOLON .
+
+    $預設  使用規則 35 以縮減 (type_decl)
+
+
+狀態 83
+
+  115 factor: ID . MK_LPAREN relop_expr_list MK_RPAREN
+  124 var_ref: ID .
+
+    MK_LPAREN  偏移，並進入狀態 120
+
+    $預設  使用規則 124 以縮減 (var_ref)
+
+
+狀態 84
+
+  112 factor: CONST .
+
+    $預設  使用規則 112 以縮減 (factor)
+
+
+狀態 85
+
+  111 factor: OP_NOT . MK_LPAREN relop_expr MK_RPAREN
+  114       | OP_NOT . CONST
+  117       | OP_NOT . ID MK_LPAREN relop_expr_list MK_RPAREN
+  120       | OP_NOT . var_ref
+  123       | OP_NOT . lib_call
+
+    ID            偏移，並進入狀態 121
+    CONST         偏移，並進入狀態 122
+    MK_LPAREN     偏移，並進入狀態 123
+    FNCALL_READ   偏移，並進入狀態 88
+    FNCALL_FREAD  偏移，並進入狀態 89
+    FNCALL_WRITE  偏移，並進入狀態 90
+
+    lib_call  進入狀態 124
+    var_ref   進入狀態 125
+
+
+狀態 86
+
+  110 factor: OP_MINUS . MK_LPAREN relop_expr MK_RPAREN
+  113       | OP_MINUS . CONST
+  116       | OP_MINUS . ID MK_LPAREN relop_expr_list MK_RPAREN
+  119       | OP_MINUS . var_ref
+  122       | OP_MINUS . lib_call
+
+    ID            偏移，並進入狀態 126
+    CONST         偏移，並進入狀態 127
+    MK_LPAREN     偏移，並進入狀態 128
+    FNCALL_READ   偏移，並進入狀態 88
+    FNCALL_FREAD  偏移，並進入狀態 89
+    FNCALL_WRITE  偏移，並進入狀態 90
+
+    lib_call  進入狀態 129
+    var_ref   進入狀態 130
+
+
+狀態 87
+
+  109 factor: MK_LPAREN . relop_expr MK_RPAREN
+
+    ID            偏移，並進入狀態 83
+    CONST         偏移，並進入狀態 84
+    OP_NOT        偏移，並進入狀態 85
+    OP_MINUS      偏移，並進入狀態 86
+    MK_LPAREN     偏移，並進入狀態 87
+    FNCALL_READ   偏移，並進入狀態 88
+    FNCALL_FREAD  偏移，並進入狀態 89
+    FNCALL_WRITE  偏移，並進入狀態 90
+
+    lib_call      進入狀態 91
+    relop_expr    進入狀態 131
+    relop_term    進入狀態 93
+    relop_factor  進入狀態 94
+    expr          進入狀態 95
+    term          進入狀態 96
+    factor        進入狀態 97
+    var_ref       進入狀態 98
+
+
+狀態 88
+
+   75 lib_call: FNCALL_READ . MK_LPAREN MK_RPAREN
+
+    MK_LPAREN  偏移，並進入狀態 132
+
+
+狀態 89
+
+   76 lib_call: FNCALL_FREAD . MK_LPAREN MK_RPAREN
+
+    MK_LPAREN  偏移，並進入狀態 133
+
+
+狀態 90
+
+   77 lib_call: FNCALL_WRITE . MK_LPAREN CONST MK_RPAREN
+   78         | FNCALL_WRITE . MK_LPAREN var_ref MK_RPAREN
+
+    MK_LPAREN  偏移，並進入狀態 134
+
+
+狀態 91
+
+  121 factor: lib_call .
+
+    $預設  使用規則 121 以縮減 (factor)
+
+
+狀態 92
+
+   62 init_id: ID OP_ASSIGN relop_expr .
+   86 relop_expr: relop_expr . OP_OR relop_term
+
+    OP_OR  偏移，並進入狀態 135
+
+    $預設  使用規則 62 以縮減 (init_id)
+
+
+狀態 93
+
+   85 relop_expr: relop_term .
+   88 relop_term: relop_term . OP_AND relop_factor
+
+    OP_AND  偏移，並進入狀態 136
+
+    $預設  使用規則 85 以縮減 (relop_expr)
+
+
+狀態 94
+
+   87 relop_term: relop_factor .
+
+    $預設  使用規則 87 以縮減 (relop_term)
+
+
+狀態 95
+
+   89 relop_factor: expr .
+   90             | expr . rel_op expr
+  101 expr: expr . add_op term
+
+    OP_EQ     偏移，並進入狀態 137
+    OP_NE     偏移，並進入狀態 138
+    OP_GT     偏移，並進入狀態 139
+    OP_LT     偏移，並進入狀態 140
+    OP_GE     偏移，並進入狀態 141
+    OP_LE     偏移，並進入狀態 142
+    OP_PLUS   偏移，並進入狀態 105
+    OP_MINUS  偏移，並進入狀態 106
+
+    $預設  使用規則 89 以縮減 (relop_factor)
+
+    rel_op  進入狀態 143
+    add_op  進入狀態 144
+
+
+狀態 96
+
+  102 expr: term .
+  105 term: term . mul_op factor
+
+    OP_TIMES   偏移，並進入狀態 109
+    OP_DIVIDE  偏移，並進入狀態 110
+
+    $預設  使用規則 102 以縮減 (expr)
+
+    mul_op  進入狀態 145
+
+
+狀態 97
+
+  106 term: factor .
+
+    $預設  使用規則 106 以縮減 (term)
+
+
+狀態 98
+
+  118 factor: var_ref .
+  125 var_ref: var_ref . dim
+  126        | var_ref . struct_tail
+
+    MK_LB   偏移，並進入狀態 146
+    MK_DOT  偏移，並進入狀態 147
+
+    $預設  使用規則 118 以縮減 (factor)
+
+    dim          進入狀態 148
+    struct_tail  進入狀態 149
+
+
+狀態 99
+
+    9 function_decl: type ID MK_LPAREN MK_RPAREN . MK_LBRACE block MK_RBRACE
+
+    MK_LBRACE  偏移，並進入狀態 150
+
+
+狀態 100
+
+    6 function_decl: type ID MK_LPAREN param_list . MK_RPAREN MK_LBRACE block MK_RBRACE
+   12 param_list: param_list . MK_COMMA param
+
+    MK_RPAREN  偏移，並進入狀態 151
+    MK_COMMA   偏移，並進入狀態 116
+
+
+狀態 101
+
+   59 init_id_list: init_id_list MK_COMMA init_id .
+
+    $預設  使用規則 59 以縮減 (init_id_list)
+
+
+狀態 102
+
+   10 function_decl: struct_type ID MK_LPAREN MK_RPAREN . MK_LBRACE block MK_RBRACE
+
+    MK_LBRACE  偏移，並進入狀態 152
+
+
+狀態 103
+
+    7 function_decl: struct_type ID MK_LPAREN param_list . MK_RPAREN MK_LBRACE block MK_RBRACE
+   12 param_list: param_list . MK_COMMA param
+
+    MK_RPAREN  偏移，並進入狀態 153
+    MK_COMMA   偏移，並進入狀態 116
+
+
+狀態 104
+
+   52 cexpr: cexpr . add_op mcexpr
+   57 cfactor: MK_LPAREN cexpr . MK_RPAREN
+
+    OP_PLUS    偏移，並進入狀態 105
+    OP_MINUS   偏移，並進入狀態 106
+    MK_RPAREN  偏移，並進入狀態 154
+
+    add_op  進入狀態 108
+
+
+狀態 105
+
+  103 add_op: OP_PLUS .
+
+    $預設  使用規則 103 以縮減 (add_op)
+
+
+狀態 106
+
+  104 add_op: OP_MINUS .
+
+    $預設  使用規則 104 以縮減 (add_op)
+
+
+狀態 107
+
+   50 dim_decl: MK_LB cexpr MK_RB .
+
+    $預設  使用規則 50 以縮減 (dim_decl)
+
+
+狀態 108
+
+   52 cexpr: cexpr add_op . mcexpr
+
+    CONST      偏移，並進入狀態 63
+    MK_LPAREN  偏移，並進入狀態 64
+
+    mcexpr   進入狀態 155
+    cfactor  進入狀態 67
+
+
+狀態 109
+
+  107 mul_op: OP_TIMES .
+
+    $預設  使用規則 107 以縮減 (mul_op)
+
+
+狀態 110
+
+  108 mul_op: OP_DIVIDE .
+
+    $預設  使用規則 108 以縮減 (mul_op)
+
+
+狀態 111
+
+   54 mcexpr: mcexpr mul_op . cfactor
+
+    CONST      偏移，並進入狀態 63
+    MK_LPAREN  偏移，並進入狀態 64
+
+    cfactor  進入狀態 156
+
+
+狀態 112
+
+   51 dim_decl: dim_decl MK_LB cexpr . MK_RB
+   52 cexpr: cexpr . add_op mcexpr
+
+    OP_PLUS   偏移，並進入狀態 105
+    OP_MINUS  偏移，並進入狀態 106
+    MK_RB     偏移，並進入狀態 157
+
+    add_op  進入狀態 108
+
+
+狀態 113
+
+   48 id_list: id_list MK_COMMA ID dim_decl .
+   51 dim_decl: dim_decl . MK_LB cexpr MK_RB
+
+    MK_LB  偏移，並進入狀態 68
+
+    $預設  使用規則 48 以縮減 (id_list)
+
+
+狀態 114
+
+   11 function_decl: VOID ID MK_LPAREN MK_RPAREN MK_LBRACE . block MK_RBRACE
+
+    ID            偏移，並進入狀態 158
+    INT           偏移，並進入狀態 6
+    FLOAT         偏移，並進入狀態 7
+    IF            偏移，並進入狀態 159
+    WHILE         偏移，並進入狀態 160
+    FOR           偏移，並進入狀態 161
+    STRUCT        偏移，並進入狀態 8
+    TYPEDEF       偏移，並進入狀態 9
+    MK_LBRACE     偏移，並進入狀態 162
+    MK_SEMICOLON  偏移，並進入狀態 163
+    RETURN        偏移，並進入狀態 164
+    FNCALL_READ   偏移，並進入狀態 88
+    FNCALL_FREAD  偏移，並進入狀態 89
+    FNCALL_WRITE  偏移，並進入狀態 90
+
+    $預設  使用規則 26 以縮減 (block)
+
+    block             進入狀態 165
+    decl_list         進入狀態 166
+    decl              進入狀態 13
+    type_decl         進入狀態 14
+    var_decl          進入狀態 15
+    type              進入狀態 47
+    struct_type       進入狀態 48
+    struct_decl       進入狀態 18
+    anonymous_struct  進入狀態 19
+    stmt_list         進入狀態 167
+    stmt              進入狀態 168
+    lib_call          進入狀態 169
+    var_ref           進入狀態 170
+
+
+狀態 115
+
+    8 function_decl: VOID ID MK_LPAREN param_list MK_RPAREN . MK_LBRACE block MK_RBRACE
+
+    MK_LBRACE  偏移，並進入狀態 171
+
+
+狀態 116
+
+   12 param_list: param_list MK_COMMA . param
+
+    INT     偏移，並進入狀態 6
+    FLOAT   偏移，並進入狀態 7
+    STRUCT  偏移，並進入狀態 70
+
+    param        進入狀態 172
+    type         進入狀態 74
+    struct_type  進入狀態 75
+
+
+狀態 117
+
+   14 param: type ID .
+   16      | type ID . dim_fn
+
+    MK_LB  偏移，並進入狀態 173
+
+    $預設  使用規則 14 以縮減 (param)
+
+    dim_fn  進入狀態 174
+
+
+狀態 118
+
+   15 param: struct_type ID .
+   17      | struct_type ID . dim_fn
+
+    MK_LB  偏移，並進入狀態 173
+
+    $預設  使用規則 15 以縮減 (param)
+
+    dim_fn  進入狀態 175
+
+
+狀態 119
+
+   44 struct_decl: STRUCT ID MK_LBRACE decl_list MK_RBRACE .
+
+    $預設  使用規則 44 以縮減 (struct_decl)
+
+
+狀態 120
+
+  115 factor: ID MK_LPAREN . relop_expr_list MK_RPAREN
+
+    ID            偏移，並進入狀態 83
+    CONST         偏移，並進入狀態 84
+    OP_NOT        偏移，並進入狀態 85
+    OP_MINUS      偏移，並進入狀態 86
+    MK_LPAREN     偏移，並進入狀態 87
+    FNCALL_READ   偏移，並進入狀態 88
+    FNCALL_FREAD  偏移，並進入狀態 89
+    FNCALL_WRITE  偏移，並進入狀態 90
+
+    $預設  使用規則 98 以縮減 (relop_expr_list)
+
+    lib_call                  進入狀態 91
+    relop_expr                進入狀態 176
+    relop_term                進入狀態 93
+    relop_factor              進入狀態 94
+    relop_expr_list           進入狀態 177
+    nonempty_relop_expr_list  進入狀態 178
+    expr                      進入狀態 95
+    term                      進入狀態 96
+    factor                    進入狀態 97
+    var_ref                   進入狀態 98
+
+
+狀態 121
+
+  117 factor: OP_NOT ID . MK_LPAREN relop_expr_list MK_RPAREN
+  124 var_ref: ID .
+
+    MK_LPAREN  偏移，並進入狀態 179
+
+    $預設  使用規則 124 以縮減 (var_ref)
+
+
+狀態 122
+
+  114 factor: OP_NOT CONST .
+
+    $預設  使用規則 114 以縮減 (factor)
+
+
+狀態 123
+
+  111 factor: OP_NOT MK_LPAREN . relop_expr MK_RPAREN
+
+    ID            偏移，並進入狀態 83
+    CONST         偏移，並進入狀態 84
+    OP_NOT        偏移，並進入狀態 85
+    OP_MINUS      偏移，並進入狀態 86
+    MK_LPAREN     偏移，並進入狀態 87
+    FNCALL_READ   偏移，並進入狀態 88
+    FNCALL_FREAD  偏移，並進入狀態 89
+    FNCALL_WRITE  偏移，並進入狀態 90
+
+    lib_call      進入狀態 91
+    relop_expr    進入狀態 180
+    relop_term    進入狀態 93
+    relop_factor  進入狀態 94
+    expr          進入狀態 95
+    term          進入狀態 96
+    factor        進入狀態 97
+    var_ref       進入狀態 98
+
+
+狀態 124
+
+  123 factor: OP_NOT lib_call .
+
+    $預設  使用規則 123 以縮減 (factor)
+
+
+狀態 125
+
+  120 factor: OP_NOT var_ref .
+  125 var_ref: var_ref . dim
+  126        | var_ref . struct_tail
+
+    MK_LB   偏移，並進入狀態 146
+    MK_DOT  偏移，並進入狀態 147
+
+    $預設  使用規則 120 以縮減 (factor)
+
+    dim          進入狀態 148
+    struct_tail  進入狀態 149
+
+
+狀態 126
+
+  116 factor: OP_MINUS ID . MK_LPAREN relop_expr_list MK_RPAREN
+  124 var_ref: ID .
+
+    MK_LPAREN  偏移，並進入狀態 181
+
+    $預設  使用規則 124 以縮減 (var_ref)
+
+
+狀態 127
+
+  113 factor: OP_MINUS CONST .
+
+    $預設  使用規則 113 以縮減 (factor)
+
+
+狀態 128
+
+  110 factor: OP_MINUS MK_LPAREN . relop_expr MK_RPAREN
+
+    ID            偏移，並進入狀態 83
+    CONST         偏移，並進入狀態 84
+    OP_NOT        偏移，並進入狀態 85
+    OP_MINUS      偏移，並進入狀態 86
+    MK_LPAREN     偏移，並進入狀態 87
+    FNCALL_READ   偏移，並進入狀態 88
+    FNCALL_FREAD  偏移，並進入狀態 89
+    FNCALL_WRITE  偏移，並進入狀態 90
+
+    lib_call      進入狀態 91
+    relop_expr    進入狀態 182
+    relop_term    進入狀態 93
+    relop_factor  進入狀態 94
+    expr          進入狀態 95
+    term          進入狀態 96
+    factor        進入狀態 97
+    var_ref       進入狀態 98
+
+
+狀態 129
+
+  122 factor: OP_MINUS lib_call .
+
+    $預設  使用規則 122 以縮減 (factor)
+
+
+狀態 130
+
+  119 factor: OP_MINUS var_ref .
+  125 var_ref: var_ref . dim
+  126        | var_ref . struct_tail
+
+    MK_LB   偏移，並進入狀態 146
+    MK_DOT  偏移，並進入狀態 147
+
+    $預設  使用規則 119 以縮減 (factor)
+
+    dim          進入狀態 148
+    struct_tail  進入狀態 149
+
+
+狀態 131
+
+   86 relop_expr: relop_expr . OP_OR relop_term
+  109 factor: MK_LPAREN relop_expr . MK_RPAREN
+
+    OP_OR      偏移，並進入狀態 135
+    MK_RPAREN  偏移，並進入狀態 183
+
+
+狀態 132
+
+   75 lib_call: FNCALL_READ MK_LPAREN . MK_RPAREN
+
+    MK_RPAREN  偏移，並進入狀態 184
+
+
+狀態 133
+
+   76 lib_call: FNCALL_FREAD MK_LPAREN . MK_RPAREN
+
+    MK_RPAREN  偏移，並進入狀態 185
+
+
+狀態 134
+
+   77 lib_call: FNCALL_WRITE MK_LPAREN . CONST MK_RPAREN
+   78         | FNCALL_WRITE MK_LPAREN . var_ref MK_RPAREN
+
+    ID     偏移，並進入狀態 186
+    CONST  偏移，並進入狀態 187
+
+    var_ref  進入狀態 188
+
+
+狀態 135
+
+   86 relop_expr: relop_expr OP_OR . relop_term
+
+    ID            偏移，並進入狀態 83
+    CONST         偏移，並進入狀態 84
+    OP_NOT        偏移，並進入狀態 85
+    OP_MINUS      偏移，並進入狀態 86
+    MK_LPAREN     偏移，並進入狀態 87
+    FNCALL_READ   偏移，並進入狀態 88
+    FNCALL_FREAD  偏移，並進入狀態 89
+    FNCALL_WRITE  偏移，並進入狀態 90
+
+    lib_call      進入狀態 91
+    relop_term    進入狀態 189
+    relop_factor  進入狀態 94
+    expr          進入狀態 95
+    term          進入狀態 96
+    factor        進入狀態 97
+    var_ref       進入狀態 98
+
+
+狀態 136
+
+   88 relop_term: relop_term OP_AND . relop_factor
+
+    ID            偏移，並進入狀態 83
+    CONST         偏移，並進入狀態 84
+    OP_NOT        偏移，並進入狀態 85
+    OP_MINUS      偏移，並進入狀態 86
+    MK_LPAREN     偏移，並進入狀態 87
+    FNCALL_READ   偏移，並進入狀態 88
+    FNCALL_FREAD  偏移，並進入狀態 89
+    FNCALL_WRITE  偏移，並進入狀態 90
+
+    lib_call      進入狀態 91
+    relop_factor  進入狀態 190
+    expr          進入狀態 95
+    term          進入狀態 96
+    factor        進入狀態 97
+    var_ref       進入狀態 98
+
+
+狀態 137
+
+   91 rel_op: OP_EQ .
+
+    $預設  使用規則 91 以縮減 (rel_op)
+
+
+狀態 138
+
+   94 rel_op: OP_NE .
+
+    $預設  使用規則 94 以縮減 (rel_op)
+
+
+狀態 139
+
+   95 rel_op: OP_GT .
+
+    $預設  使用規則 95 以縮減 (rel_op)
+
+
+狀態 140
+
+   96 rel_op: OP_LT .
+
+    $預設  使用規則 96 以縮減 (rel_op)
+
+
+狀態 141
+
+   92 rel_op: OP_GE .
+
+    $預設  使用規則 92 以縮減 (rel_op)
+
+
+狀態 142
+
+   93 rel_op: OP_LE .
+
+    $預設  使用規則 93 以縮減 (rel_op)
+
+
+狀態 143
+
+   90 relop_factor: expr rel_op . expr
+
+    ID            偏移，並進入狀態 83
+    CONST         偏移，並進入狀態 84
+    OP_NOT        偏移，並進入狀態 85
+    OP_MINUS      偏移，並進入狀態 86
+    MK_LPAREN     偏移，並進入狀態 87
+    FNCALL_READ   偏移，並進入狀態 88
+    FNCALL_FREAD  偏移，並進入狀態 89
+    FNCALL_WRITE  偏移，並進入狀態 90
+
+    lib_call  進入狀態 91
+    expr      進入狀態 191
+    term      進入狀態 96
+    factor    進入狀態 97
+    var_ref   進入狀態 98
+
+
+狀態 144
+
+  101 expr: expr add_op . term
+
+    ID            偏移，並進入狀態 83
+    CONST         偏移，並進入狀態 84
+    OP_NOT        偏移，並進入狀態 85
+    OP_MINUS      偏移，並進入狀態 86
+    MK_LPAREN     偏移，並進入狀態 87
+    FNCALL_READ   偏移，並進入狀態 88
+    FNCALL_FREAD  偏移，並進入狀態 89
+    FNCALL_WRITE  偏移，並進入狀態 90
+
+    lib_call  進入狀態 91
+    term      進入狀態 192
+    factor    進入狀態 97
+    var_ref   進入狀態 98
+
+
+狀態 145
+
+  105 term: term mul_op . factor
+
+    ID            偏移，並進入狀態 83
+    CONST         偏移，並進入狀態 84
+    OP_NOT        偏移，並進入狀態 85
+    OP_MINUS      偏移，並進入狀態 86
+    MK_LPAREN     偏移，並進入狀態 87
+    FNCALL_READ   偏移，並進入狀態 88
+    FNCALL_FREAD  偏移，並進入狀態 89
+    FNCALL_WRITE  偏移，並進入狀態 90
+
+    lib_call  進入狀態 91
+    factor    進入狀態 193
+    var_ref   進入狀態 98
+
+
+狀態 146
+
+  127 dim: MK_LB . expr MK_RB
+
+    ID            偏移，並進入狀態 83
+    CONST         偏移，並進入狀態 84
+    OP_NOT        偏移，並進入狀態 85
+    OP_MINUS      偏移，並進入狀態 86
+    MK_LPAREN     偏移，並進入狀態 87
+    FNCALL_READ   偏移，並進入狀態 88
+    FNCALL_FREAD  偏移，並進入狀態 89
+    FNCALL_WRITE  偏移，並進入狀態 90
+
+    lib_call  進入狀態 91
+    expr      進入狀態 194
+    term      進入狀態 96
+    factor    進入狀態 97
+    var_ref   進入狀態 98
+
+
+狀態 147
+
+  128 struct_tail: MK_DOT . ID
+
+    ID  偏移，並進入狀態 195
+
+
+狀態 148
+
+  125 var_ref: var_ref dim .
+
+    $預設  使用規則 125 以縮減 (var_ref)
+
+
+狀態 149
+
+  126 var_ref: var_ref struct_tail .
+
+    $預設  使用規則 126 以縮減 (var_ref)
+
+
+狀態 150
+
+    9 function_decl: type ID MK_LPAREN MK_RPAREN MK_LBRACE . block MK_RBRACE
+
+    ID            偏移，並進入狀態 158
+    INT           偏移，並進入狀態 6
+    FLOAT         偏移，並進入狀態 7
+    IF            偏移，並進入狀態 159
+    WHILE         偏移，並進入狀態 160
+    FOR           偏移，並進入狀態 161
+    STRUCT        偏移，並進入狀態 8
+    TYPEDEF       偏移，並進入狀態 9
+    MK_LBRACE     偏移，並進入狀態 162
+    MK_SEMICOLON  偏移，並進入狀態 163
+    RETURN        偏移，並進入狀態 164
+    FNCALL_READ   偏移，並進入狀態 88
+    FNCALL_FREAD  偏移，並進入狀態 89
+    FNCALL_WRITE  偏移，並進入狀態 90
+
+    $預設  使用規則 26 以縮減 (block)
+
+    block             進入狀態 196
+    decl_list         進入狀態 166
+    decl              進入狀態 13
+    type_decl         進入狀態 14
+    var_decl          進入狀態 15
+    type              進入狀態 47
+    struct_type       進入狀態 48
+    struct_decl       進入狀態 18
+    anonymous_struct  進入狀態 19
+    stmt_list         進入狀態 167
+    stmt              進入狀態 168
+    lib_call          進入狀態 169
+    var_ref           進入狀態 170
+
+
+狀態 151
+
+    6 function_decl: type ID MK_LPAREN param_list MK_RPAREN . MK_LBRACE block MK_RBRACE
+
+    MK_LBRACE  偏移，並進入狀態 197
+
+
+狀態 152
+
+   10 function_decl: struct_type ID MK_LPAREN MK_RPAREN MK_LBRACE . block MK_RBRACE
+
+    ID            偏移，並進入狀態 158
+    INT           偏移，並進入狀態 6
+    FLOAT         偏移，並進入狀態 7
+    IF            偏移，並進入狀態 159
+    WHILE         偏移，並進入狀態 160
+    FOR           偏移，並進入狀態 161
+    STRUCT        偏移，並進入狀態 8
+    TYPEDEF       偏移，並進入狀態 9
+    MK_LBRACE     偏移，並進入狀態 162
+    MK_SEMICOLON  偏移，並進入狀態 163
+    RETURN        偏移，並進入狀態 164
+    FNCALL_READ   偏移，並進入狀態 88
+    FNCALL_FREAD  偏移，並進入狀態 89
+    FNCALL_WRITE  偏移，並進入狀態 90
+
+    $預設  使用規則 26 以縮減 (block)
+
+    block             進入狀態 198
+    decl_list         進入狀態 166
+    decl              進入狀態 13
+    type_decl         進入狀態 14
+    var_decl          進入狀態 15
+    type              進入狀態 47
+    struct_type       進入狀態 48
+    struct_decl       進入狀態 18
+    anonymous_struct  進入狀態 19
+    stmt_list         進入狀態 167
+    stmt              進入狀態 168
+    lib_call          進入狀態 169
+    var_ref           進入狀態 170
+
+
+狀態 153
+
+    7 function_decl: struct_type ID MK_LPAREN param_list MK_RPAREN . MK_LBRACE block MK_RBRACE
+
+    MK_LBRACE  偏移，並進入狀態 199
+
+
+狀態 154
+
+   57 cfactor: MK_LPAREN cexpr MK_RPAREN .
+
+    $預設  使用規則 57 以縮減 (cfactor)
+
+
+狀態 155
+
+   52 cexpr: cexpr add_op mcexpr .
+   54 mcexpr: mcexpr . mul_op cfactor
+
+    OP_TIMES   偏移，並進入狀態 109
+    OP_DIVIDE  偏移，並進入狀態 110
+
+    $預設  使用規則 52 以縮減 (cexpr)
+
+    mul_op  進入狀態 111
+
+
+狀態 156
+
+   54 mcexpr: mcexpr mul_op cfactor .
+
+    $預設  使用規則 54 以縮減 (mcexpr)
+
+
+狀態 157
+
+   51 dim_decl: dim_decl MK_LB cexpr MK_RB .
+
+    $預設  使用規則 51 以縮減 (dim_decl)
+
+
+狀態 158
+
+   40 var_decl: ID . id_list MK_SEMICOLON
+  124 var_ref: ID .
+
+    ID  偏移，並進入狀態 20
+
+    $預設  使用規則 124 以縮減 (var_ref)
+
+    id_list  進入狀態 21
+
+
+狀態 159
+
+   69 stmt: IF . MK_LPAREN relop_expr_list MK_RPAREN stmt
+   70     | IF . MK_LPAREN relop_expr_list MK_RPAREN stmt ELSE stmt
+
+    MK_LPAREN  偏移，並進入狀態 200
+
+
+狀態 160
+
+   66 stmt: WHILE . MK_LPAREN relop_expr_list MK_RPAREN stmt
+
+    MK_LPAREN  偏移，並進入狀態 201
+
+
+狀態 161
+
+   67 stmt: FOR . MK_LPAREN assign_expr_list MK_SEMICOLON relop_expr_list MK_SEMICOLON assign_expr_list MK_RPAREN stmt
+
+    MK_LPAREN  偏移，並進入狀態 202
+
+
+狀態 162
+
+   65 stmt: MK_LBRACE . block MK_RBRACE
+
+    ID            偏移，並進入狀態 158
+    INT           偏移，並進入狀態 6
+    FLOAT         偏移，並進入狀態 7
+    IF            偏移，並進入狀態 159
+    WHILE         偏移，並進入狀態 160
+    FOR           偏移，並進入狀態 161
+    STRUCT        偏移，並進入狀態 8
+    TYPEDEF       偏移，並進入狀態 9
+    MK_LBRACE     偏移，並進入狀態 162
+    MK_SEMICOLON  偏移，並進入狀態 163
+    RETURN        偏移，並進入狀態 164
+    FNCALL_READ   偏移，並進入狀態 88
+    FNCALL_FREAD  偏移，並進入狀態 89
+    FNCALL_WRITE  偏移，並進入狀態 90
+
+    $預設  使用規則 26 以縮減 (block)
+
+    block             進入狀態 203
+    decl_list         進入狀態 166
+    decl              進入狀態 13
+    type_decl         進入狀態 14
+    var_decl          進入狀態 15
+    type              進入狀態 47
+    struct_type       進入狀態 48
+    struct_decl       進入狀態 18
+    anonymous_struct  進入狀態 19
+    stmt_list         進入狀態 167
+    stmt              進入狀態 168
+    lib_call          進入狀態 169
+    var_ref           進入狀態 170
+
+
+狀態 163
+
+   72 stmt: MK_SEMICOLON .
+
+    $預設  使用規則 72 以縮減 (stmt)
+
+
+狀態 164
+
+   73 stmt: RETURN . MK_SEMICOLON
+   74     | RETURN . relop_expr MK_SEMICOLON
+
+    ID            偏移，並進入狀態 83
+    CONST         偏移，並進入狀態 84
+    OP_NOT        偏移，並進入狀態 85
+    OP_MINUS      偏移，並進入狀態 86
+    MK_LPAREN     偏移，並進入狀態 87
+    MK_SEMICOLON  偏移，並進入狀態 204
+    FNCALL_READ   偏移，並進入狀態 88
+    FNCALL_FREAD  偏移，並進入狀態 89
+    FNCALL_WRITE  偏移，並進入狀態 90
+
+    lib_call      進入狀態 91
+    relop_expr    進入狀態 205
+    relop_term    進入狀態 93
+    relop_factor  進入狀態 94
+    expr          進入狀態 95
+    term          進入狀態 96
+    factor        進入狀態 97
+    var_ref       進入狀態 98
+
+
+狀態 165
+
+   11 function_decl: VOID ID MK_LPAREN MK_RPAREN MK_LBRACE block . MK_RBRACE
+
+    MK_RBRACE  偏移，並進入狀態 206
+
+
+狀態 166
+
+   23 block: decl_list . stmt_list
+   25      | decl_list .
+   27 decl_list: decl_list . decl
+
+    ID            偏移，並進入狀態 158
+    INT           偏移，並進入狀態 6
+    FLOAT         偏移，並進入狀態 7
+    IF            偏移，並進入狀態 159
+    WHILE         偏移，並進入狀態 160
+    FOR           偏移，並進入狀態 161
+    STRUCT        偏移，並進入狀態 8
+    TYPEDEF       偏移，並進入狀態 9
+    MK_LBRACE     偏移，並進入狀態 162
+    MK_SEMICOLON  偏移，並進入狀態 163
+    RETURN        偏移，並進入狀態 164
+    FNCALL_READ   偏移，並進入狀態 88
+    FNCALL_FREAD  偏移，並進入狀態 89
+    FNCALL_WRITE  偏移，並進入狀態 90
+
+    $預設  使用規則 25 以縮減 (block)
+
+    decl              進入狀態 31
+    type_decl         進入狀態 14
+    var_decl          進入狀態 15
+    type              進入狀態 47
+    struct_type       進入狀態 48
+    struct_decl       進入狀態 18
+    anonymous_struct  進入狀態 19
+    stmt_list         進入狀態 207
+    stmt              進入狀態 168
+    lib_call          進入狀態 169
+    var_ref           進入狀態 170
+
+
+狀態 167
+
+   24 block: stmt_list .
+   63 stmt_list: stmt_list . stmt
+
+    ID            偏移，並進入狀態 186
+    IF            偏移，並進入狀態 159
+    WHILE         偏移，並進入狀態 160
+    FOR           偏移，並進入狀態 161
+    MK_LBRACE     偏移，並進入狀態 162
+    MK_SEMICOLON  偏移，並進入狀態 163
+    RETURN        偏移，並進入狀態 164
+    FNCALL_READ   偏移，並進入狀態 88
+    FNCALL_FREAD  偏移，並進入狀態 89
+    FNCALL_WRITE  偏移，並進入狀態 90
+
+    $預設  使用規則 24 以縮減 (block)
+
+    stmt      進入狀態 208
+    lib_call  進入狀態 169
+    var_ref   進入狀態 170
+
+
+狀態 168
+
+   64 stmt_list: stmt .
+
+    $預設  使用規則 64 以縮減 (stmt_list)
+
+
+狀態 169
+
+   71 stmt: lib_call . MK_SEMICOLON
+
+    MK_SEMICOLON  偏移，並進入狀態 209
+
+
+狀態 170
+
+   68 stmt: var_ref . OP_ASSIGN relop_expr MK_SEMICOLON
+  125 var_ref: var_ref . dim
+  126        | var_ref . struct_tail
+
+    OP_ASSIGN  偏移，並進入狀態 210
+    MK_LB      偏移，並進入狀態 146
+    MK_DOT     偏移，並進入狀態 147
+
+    dim          進入狀態 148
+    struct_tail  進入狀態 149
+
+
+狀態 171
+
+    8 function_decl: VOID ID MK_LPAREN param_list MK_RPAREN MK_LBRACE . block MK_RBRACE
+
+    ID            偏移，並進入狀態 158
+    INT           偏移，並進入狀態 6
+    FLOAT         偏移，並進入狀態 7
+    IF            偏移，並進入狀態 159
+    WHILE         偏移，並進入狀態 160
+    FOR           偏移，並進入狀態 161
+    STRUCT        偏移，並進入狀態 8
+    TYPEDEF       偏移，並進入狀態 9
+    MK_LBRACE     偏移，並進入狀態 162
+    MK_SEMICOLON  偏移，並進入狀態 163
+    RETURN        偏移，並進入狀態 164
+    FNCALL_READ   偏移，並進入狀態 88
+    FNCALL_FREAD  偏移，並進入狀態 89
+    FNCALL_WRITE  偏移，並進入狀態 90
+
+    $預設  使用規則 26 以縮減 (block)
+
+    block             進入狀態 211
+    decl_list         進入狀態 166
+    decl              進入狀態 13
+    type_decl         進入狀態 14
+    var_decl          進入狀態 15
+    type              進入狀態 47
+    struct_type       進入狀態 48
+    struct_decl       進入狀態 18
+    anonymous_struct  進入狀態 19
+    stmt_list         進入狀態 167
+    stmt              進入狀態 168
+    lib_call          進入狀態 169
+    var_ref           進入狀態 170
+
+
+狀態 172
+
+   12 param_list: param_list MK_COMMA param .
+
+    $預設  使用規則 12 以縮減 (param_list)
+
+
+狀態 173
+
+   18 dim_fn: MK_LB . expr_null MK_RB dimfn1
+
+    ID            偏移，並進入狀態 83
+    CONST         偏移，並進入狀態 84
+    OP_NOT        偏移，並進入狀態 85
+    OP_MINUS      偏移，並進入狀態 86
+    MK_LPAREN     偏移，並進入狀態 87
+    FNCALL_READ   偏移，並進入狀態 88
+    FNCALL_FREAD  偏移，並進入狀態 89
+    FNCALL_WRITE  偏移，並進入狀態 90
+
+    $預設  使用規則 22 以縮減 (expr_null)
+
+    expr_null  進入狀態 212
+    lib_call   進入狀態 91
+    expr       進入狀態 213
+    term       進入狀態 96
+    factor     進入狀態 97
+    var_ref    進入狀態 98
+
+
+狀態 174
+
+   16 param: type ID dim_fn .
+
+    $預設  使用規則 16 以縮減 (param)
+
+
+狀態 175
+
+   17 param: struct_type ID dim_fn .
+
+    $預設  使用規則 17 以縮減 (param)
+
+
+狀態 176
+
+   86 relop_expr: relop_expr . OP_OR relop_term
+  100 nonempty_relop_expr_list: relop_expr .
+
+    OP_OR  偏移，並進入狀態 135
+
+    $預設  使用規則 100 以縮減 (nonempty_relop_expr_list)
+
+
+狀態 177
+
+  115 factor: ID MK_LPAREN relop_expr_list . MK_RPAREN
+
+    MK_RPAREN  偏移，並進入狀態 214
+
+
+狀態 178
+
+   97 relop_expr_list: nonempty_relop_expr_list .
+   99 nonempty_relop_expr_list: nonempty_relop_expr_list . MK_COMMA relop_expr
+
+    MK_COMMA  偏移，並進入狀態 215
+
+    $預設  使用規則 97 以縮減 (relop_expr_list)
+
+
+狀態 179
+
+  117 factor: OP_NOT ID MK_LPAREN . relop_expr_list MK_RPAREN
+
+    ID            偏移，並進入狀態 83
+    CONST         偏移，並進入狀態 84
+    OP_NOT        偏移，並進入狀態 85
+    OP_MINUS      偏移，並進入狀態 86
+    MK_LPAREN     偏移，並進入狀態 87
+    FNCALL_READ   偏移，並進入狀態 88
+    FNCALL_FREAD  偏移，並進入狀態 89
+    FNCALL_WRITE  偏移，並進入狀態 90
+
+    $預設  使用規則 98 以縮減 (relop_expr_list)
+
+    lib_call                  進入狀態 91
+    relop_expr                進入狀態 176
+    relop_term                進入狀態 93
+    relop_factor              進入狀態 94
+    relop_expr_list           進入狀態 216
+    nonempty_relop_expr_list  進入狀態 178
+    expr                      進入狀態 95
+    term                      進入狀態 96
+    factor                    進入狀態 97
+    var_ref                   進入狀態 98
+
+
+狀態 180
+
+   86 relop_expr: relop_expr . OP_OR relop_term
+  111 factor: OP_NOT MK_LPAREN relop_expr . MK_RPAREN
+
+    OP_OR      偏移，並進入狀態 135
+    MK_RPAREN  偏移，並進入狀態 217
+
+
+狀態 181
+
+  116 factor: OP_MINUS ID MK_LPAREN . relop_expr_list MK_RPAREN
+
+    ID            偏移，並進入狀態 83
+    CONST         偏移，並進入狀態 84
+    OP_NOT        偏移，並進入狀態 85
+    OP_MINUS      偏移，並進入狀態 86
+    MK_LPAREN     偏移，並進入狀態 87
+    FNCALL_READ   偏移，並進入狀態 88
+    FNCALL_FREAD  偏移，並進入狀態 89
+    FNCALL_WRITE  偏移，並進入狀態 90
+
+    $預設  使用規則 98 以縮減 (relop_expr_list)
+
+    lib_call                  進入狀態 91
+    relop_expr                進入狀態 176
+    relop_term                進入狀態 93
+    relop_factor              進入狀態 94
+    relop_expr_list           進入狀態 218
+    nonempty_relop_expr_list  進入狀態 178
+    expr                      進入狀態 95
+    term                      進入狀態 96
+    factor                    進入狀態 97
+    var_ref                   進入狀態 98
+
+
+狀態 182
+
+   86 relop_expr: relop_expr . OP_OR relop_term
+  110 factor: OP_MINUS MK_LPAREN relop_expr . MK_RPAREN
+
+    OP_OR      偏移，並進入狀態 135
+    MK_RPAREN  偏移，並進入狀態 219
+
+
+狀態 183
+
+  109 factor: MK_LPAREN relop_expr MK_RPAREN .
+
+    $預設  使用規則 109 以縮減 (factor)
+
+
+狀態 184
+
+   75 lib_call: FNCALL_READ MK_LPAREN MK_RPAREN .
+
+    $預設  使用規則 75 以縮減 (lib_call)
+
+
+狀態 185
+
+   76 lib_call: FNCALL_FREAD MK_LPAREN MK_RPAREN .
+
+    $預設  使用規則 76 以縮減 (lib_call)
+
+
+狀態 186
+
+  124 var_ref: ID .
+
+    $預設  使用規則 124 以縮減 (var_ref)
+
+
+狀態 187
+
+   77 lib_call: FNCALL_WRITE MK_LPAREN CONST . MK_RPAREN
+
+    MK_RPAREN  偏移，並進入狀態 220
+
+
+狀態 188
+
+   78 lib_call: FNCALL_WRITE MK_LPAREN var_ref . MK_RPAREN
+  125 var_ref: var_ref . dim
+  126        | var_ref . struct_tail
+
+    MK_LB      偏移，並進入狀態 146
+    MK_RPAREN  偏移，並進入狀態 221
+    MK_DOT     偏移，並進入狀態 147
+
+    dim          進入狀態 148
+    struct_tail  進入狀態 149
+
+
+狀態 189
+
+   86 relop_expr: relop_expr OP_OR relop_term .
+   88 relop_term: relop_term . OP_AND relop_factor
+
+    OP_AND  偏移，並進入狀態 136
+
+    $預設  使用規則 86 以縮減 (relop_expr)
+
+
+狀態 190
+
+   88 relop_term: relop_term OP_AND relop_factor .
+
+    $預設  使用規則 88 以縮減 (relop_term)
+
+
+狀態 191
+
+   90 relop_factor: expr rel_op expr .
+  101 expr: expr . add_op term
+
+    OP_PLUS   偏移，並進入狀態 105
+    OP_MINUS  偏移，並進入狀態 106
+
+    $預設  使用規則 90 以縮減 (relop_factor)
+
+    add_op  進入狀態 144
+
+
+狀態 192
+
+  101 expr: expr add_op term .
+  105 term: term . mul_op factor
+
+    OP_TIMES   偏移，並進入狀態 109
+    OP_DIVIDE  偏移，並進入狀態 110
+
+    $預設  使用規則 101 以縮減 (expr)
+
+    mul_op  進入狀態 145
+
+
+狀態 193
+
+  105 term: term mul_op factor .
+
+    $預設  使用規則 105 以縮減 (term)
+
+
+狀態 194
+
+  101 expr: expr . add_op term
+  127 dim: MK_LB expr . MK_RB
+
+    OP_PLUS   偏移，並進入狀態 105
+    OP_MINUS  偏移，並進入狀態 106
+    MK_RB     偏移，並進入狀態 222
+
+    add_op  進入狀態 144
+
+
+狀態 195
+
+  128 struct_tail: MK_DOT ID .
+
+    $預設  使用規則 128 以縮減 (struct_tail)
+
+
+狀態 196
+
+    9 function_decl: type ID MK_LPAREN MK_RPAREN MK_LBRACE block . MK_RBRACE
+
+    MK_RBRACE  偏移，並進入狀態 223
+
+
+狀態 197
+
+    6 function_decl: type ID MK_LPAREN param_list MK_RPAREN MK_LBRACE . block MK_RBRACE
+
+    ID            偏移，並進入狀態 158
+    INT           偏移，並進入狀態 6
+    FLOAT         偏移，並進入狀態 7
+    IF            偏移，並進入狀態 159
+    WHILE         偏移，並進入狀態 160
+    FOR           偏移，並進入狀態 161
+    STRUCT        偏移，並進入狀態 8
+    TYPEDEF       偏移，並進入狀態 9
+    MK_LBRACE     偏移，並進入狀態 162
+    MK_SEMICOLON  偏移，並進入狀態 163
+    RETURN        偏移，並進入狀態 164
+    FNCALL_READ   偏移，並進入狀態 88
+    FNCALL_FREAD  偏移，並進入狀態 89
+    FNCALL_WRITE  偏移，並進入狀態 90
+
+    $預設  使用規則 26 以縮減 (block)
+
+    block             進入狀態 224
+    decl_list         進入狀態 166
+    decl              進入狀態 13
+    type_decl         進入狀態 14
+    var_decl          進入狀態 15
+    type              進入狀態 47
+    struct_type       進入狀態 48
+    struct_decl       進入狀態 18
+    anonymous_struct  進入狀態 19
+    stmt_list         進入狀態 167
+    stmt              進入狀態 168
+    lib_call          進入狀態 169
+    var_ref           進入狀態 170
+
+
+狀態 198
+
+   10 function_decl: struct_type ID MK_LPAREN MK_RPAREN MK_LBRACE block . MK_RBRACE
+
+    MK_RBRACE  偏移，並進入狀態 225
+
+
+狀態 199
+
+    7 function_decl: struct_type ID MK_LPAREN param_list MK_RPAREN MK_LBRACE . block MK_RBRACE
+
+    ID            偏移，並進入狀態 158
+    INT           偏移，並進入狀態 6
+    FLOAT         偏移，並進入狀態 7
+    IF            偏移，並進入狀態 159
+    WHILE         偏移，並進入狀態 160
+    FOR           偏移，並進入狀態 161
+    STRUCT        偏移，並進入狀態 8
+    TYPEDEF       偏移，並進入狀態 9
+    MK_LBRACE     偏移，並進入狀態 162
+    MK_SEMICOLON  偏移，並進入狀態 163
+    RETURN        偏移，並進入狀態 164
+    FNCALL_READ   偏移，並進入狀態 88
+    FNCALL_FREAD  偏移，並進入狀態 89
+    FNCALL_WRITE  偏移，並進入狀態 90
+
+    $預設  使用規則 26 以縮減 (block)
+
+    block             進入狀態 226
+    decl_list         進入狀態 166
+    decl              進入狀態 13
+    type_decl         進入狀態 14
+    var_decl          進入狀態 15
+    type              進入狀態 47
+    struct_type       進入狀態 48
+    struct_decl       進入狀態 18
+    anonymous_struct  進入狀態 19
+    stmt_list         進入狀態 167
+    stmt              進入狀態 168
+    lib_call          進入狀態 169
+    var_ref           進入狀態 170
+
+
+狀態 200
+
+   69 stmt: IF MK_LPAREN . relop_expr_list MK_RPAREN stmt
+   70     | IF MK_LPAREN . relop_expr_list MK_RPAREN stmt ELSE stmt
+
+    ID            偏移，並進入狀態 83
+    CONST         偏移，並進入狀態 84
+    OP_NOT        偏移，並進入狀態 85
+    OP_MINUS      偏移，並進入狀態 86
+    MK_LPAREN     偏移，並進入狀態 87
+    FNCALL_READ   偏移，並進入狀態 88
+    FNCALL_FREAD  偏移，並進入狀態 89
+    FNCALL_WRITE  偏移，並進入狀態 90
+
+    $預設  使用規則 98 以縮減 (relop_expr_list)
+
+    lib_call                  進入狀態 91
+    relop_expr                進入狀態 176
+    relop_term                進入狀態 93
+    relop_factor              進入狀態 94
+    relop_expr_list           進入狀態 227
+    nonempty_relop_expr_list  進入狀態 178
+    expr                      進入狀態 95
+    term                      進入狀態 96
+    factor                    進入狀態 97
+    var_ref                   進入狀態 98
+
+
+狀態 201
+
+   66 stmt: WHILE MK_LPAREN . relop_expr_list MK_RPAREN stmt
+
+    ID            偏移，並進入狀態 83
+    CONST         偏移，並進入狀態 84
+    OP_NOT        偏移，並進入狀態 85
+    OP_MINUS      偏移，並進入狀態 86
+    MK_LPAREN     偏移，並進入狀態 87
+    FNCALL_READ   偏移，並進入狀態 88
+    FNCALL_FREAD  偏移，並進入狀態 89
+    FNCALL_WRITE  偏移，並進入狀態 90
+
+    $預設  使用規則 98 以縮減 (relop_expr_list)
+
+    lib_call                  進入狀態 91
+    relop_expr                進入狀態 176
+    relop_term                進入狀態 93
+    relop_factor              進入狀態 94
+    relop_expr_list           進入狀態 228
+    nonempty_relop_expr_list  進入狀態 178
+    expr                      進入狀態 95
+    term                      進入狀態 96
+    factor                    進入狀態 97
+    var_ref                   進入狀態 98
+
+
+狀態 202
+
+   67 stmt: FOR MK_LPAREN . assign_expr_list MK_SEMICOLON relop_expr_list MK_SEMICOLON assign_expr_list MK_RPAREN stmt
+
+    ID            偏移，並進入狀態 229
+    CONST         偏移，並進入狀態 84
+    OP_NOT        偏移，並進入狀態 85
+    OP_MINUS      偏移，並進入狀態 86
+    MK_LPAREN     偏移，並進入狀態 87
+    FNCALL_READ   偏移，並進入狀態 88
+    FNCALL_FREAD  偏移，並進入狀態 89
+    FNCALL_WRITE  偏移，並進入狀態 90
+
+    $預設  使用規則 80 以縮減 (assign_expr_list)
+
+    lib_call                   進入狀態 91
+    assign_expr_list           進入狀態 230
+    nonempty_assign_expr_list  進入狀態 231
+    assign_expr                進入狀態 232
+    relop_expr                 進入狀態 233
+    relop_term                 進入狀態 93
+    relop_factor               進入狀態 94
+    expr                       進入狀態 95
+    term                       進入狀態 96
+    factor                     進入狀態 97
+    var_ref                    進入狀態 98
+
+
+狀態 203
+
+   65 stmt: MK_LBRACE block . MK_RBRACE
+
+    MK_RBRACE  偏移，並進入狀態 234
+
+
+狀態 204
+
+   73 stmt: RETURN MK_SEMICOLON .
+
+    $預設  使用規則 73 以縮減 (stmt)
+
+
+狀態 205
+
+   74 stmt: RETURN relop_expr . MK_SEMICOLON
+   86 relop_expr: relop_expr . OP_OR relop_term
+
+    OP_OR         偏移，並進入狀態 135
+    MK_SEMICOLON  偏移，並進入狀態 235
+
+
+狀態 206
+
+   11 function_decl: VOID ID MK_LPAREN MK_RPAREN MK_LBRACE block MK_RBRACE .
+
+    $預設  使用規則 11 以縮減 (function_decl)
+
+
+狀態 207
+
+   23 block: decl_list stmt_list .
+   63 stmt_list: stmt_list . stmt
+
+    ID            偏移，並進入狀態 186
+    IF            偏移，並進入狀態 159
+    WHILE         偏移，並進入狀態 160
+    FOR           偏移，並進入狀態 161
+    MK_LBRACE     偏移，並進入狀態 162
+    MK_SEMICOLON  偏移，並進入狀態 163
+    RETURN        偏移，並進入狀態 164
+    FNCALL_READ   偏移，並進入狀態 88
+    FNCALL_FREAD  偏移，並進入狀態 89
+    FNCALL_WRITE  偏移，並進入狀態 90
+
+    $預設  使用規則 23 以縮減 (block)
+
+    stmt      進入狀態 208
+    lib_call  進入狀態 169
+    var_ref   進入狀態 170
+
+
+狀態 208
+
+   63 stmt_list: stmt_list stmt .
+
+    $預設  使用規則 63 以縮減 (stmt_list)
+
+
+狀態 209
+
+   71 stmt: lib_call MK_SEMICOLON .
+
+    $預設  使用規則 71 以縮減 (stmt)
+
+
+狀態 210
+
+   68 stmt: var_ref OP_ASSIGN . relop_expr MK_SEMICOLON
+
+    ID            偏移，並進入狀態 83
+    CONST         偏移，並進入狀態 84
+    OP_NOT        偏移，並進入狀態 85
+    OP_MINUS      偏移，並進入狀態 86
+    MK_LPAREN     偏移，並進入狀態 87
+    FNCALL_READ   偏移，並進入狀態 88
+    FNCALL_FREAD  偏移，並進入狀態 89
+    FNCALL_WRITE  偏移，並進入狀態 90
+
+    lib_call      進入狀態 91
+    relop_expr    進入狀態 236
+    relop_term    進入狀態 93
+    relop_factor  進入狀態 94
+    expr          進入狀態 95
+    term          進入狀態 96
+    factor        進入狀態 97
+    var_ref       進入狀態 98
+
+
+狀態 211
+
+    8 function_decl: VOID ID MK_LPAREN param_list MK_RPAREN MK_LBRACE block . MK_RBRACE
+
+    MK_RBRACE  偏移，並進入狀態 237
+
+
+狀態 212
+
+   18 dim_fn: MK_LB expr_null . MK_RB dimfn1
+
+    MK_RB  偏移，並進入狀態 238
+
+
+狀態 213
+
+   21 expr_null: expr .
+  101 expr: expr . add_op term
+
+    OP_PLUS   偏移，並進入狀態 105
+    OP_MINUS  偏移，並進入狀態 106
+
+    $預設  使用規則 21 以縮減 (expr_null)
+
+    add_op  進入狀態 144
+
+
+狀態 214
+
+  115 factor: ID MK_LPAREN relop_expr_list MK_RPAREN .
+
+    $預設  使用規則 115 以縮減 (factor)
+
+
+狀態 215
+
+   99 nonempty_relop_expr_list: nonempty_relop_expr_list MK_COMMA . relop_expr
+
+    ID            偏移，並進入狀態 83
+    CONST         偏移，並進入狀態 84
+    OP_NOT        偏移，並進入狀態 85
+    OP_MINUS      偏移，並進入狀態 86
+    MK_LPAREN     偏移，並進入狀態 87
+    FNCALL_READ   偏移，並進入狀態 88
+    FNCALL_FREAD  偏移，並進入狀態 89
+    FNCALL_WRITE  偏移，並進入狀態 90
+
+    lib_call      進入狀態 91
+    relop_expr    進入狀態 239
+    relop_term    進入狀態 93
+    relop_factor  進入狀態 94
+    expr          進入狀態 95
+    term          進入狀態 96
+    factor        進入狀態 97
+    var_ref       進入狀態 98
+
+
+狀態 216
+
+  117 factor: OP_NOT ID MK_LPAREN relop_expr_list . MK_RPAREN
+
+    MK_RPAREN  偏移，並進入狀態 240
+
+
+狀態 217
+
+  111 factor: OP_NOT MK_LPAREN relop_expr MK_RPAREN .
+
+    $預設  使用規則 111 以縮減 (factor)
+
+
+狀態 218
+
+  116 factor: OP_MINUS ID MK_LPAREN relop_expr_list . MK_RPAREN
+
+    MK_RPAREN  偏移，並進入狀態 241
+
+
+狀態 219
+
+  110 factor: OP_MINUS MK_LPAREN relop_expr MK_RPAREN .
+
+    $預設  使用規則 110 以縮減 (factor)
+
+
+狀態 220
+
+   77 lib_call: FNCALL_WRITE MK_LPAREN CONST MK_RPAREN .
+
+    $預設  使用規則 77 以縮減 (lib_call)
+
+
+狀態 221
+
+   78 lib_call: FNCALL_WRITE MK_LPAREN var_ref MK_RPAREN .
+
+    $預設  使用規則 78 以縮減 (lib_call)
+
+
+狀態 222
+
+  127 dim: MK_LB expr MK_RB .
+
+    $預設  使用規則 127 以縮減 (dim)
+
+
+狀態 223
+
+    9 function_decl: type ID MK_LPAREN MK_RPAREN MK_LBRACE block MK_RBRACE .
+
+    $預設  使用規則 9 以縮減 (function_decl)
+
+
+狀態 224
+
+    6 function_decl: type ID MK_LPAREN param_list MK_RPAREN MK_LBRACE block . MK_RBRACE
+
+    MK_RBRACE  偏移，並進入狀態 242
+
+
+狀態 225
+
+   10 function_decl: struct_type ID MK_LPAREN MK_RPAREN MK_LBRACE block MK_RBRACE .
+
+    $預設  使用規則 10 以縮減 (function_decl)
+
+
+狀態 226
+
+    7 function_decl: struct_type ID MK_LPAREN param_list MK_RPAREN MK_LBRACE block . MK_RBRACE
+
+    MK_RBRACE  偏移，並進入狀態 243
+
+
+狀態 227
+
+   69 stmt: IF MK_LPAREN relop_expr_list . MK_RPAREN stmt
+   70     | IF MK_LPAREN relop_expr_list . MK_RPAREN stmt ELSE stmt
+
+    MK_RPAREN  偏移，並進入狀態 244
+
+
+狀態 228
+
+   66 stmt: WHILE MK_LPAREN relop_expr_list . MK_RPAREN stmt
+
+    MK_RPAREN  偏移，並進入狀態 245
+
+
+狀態 229
+
+   83 assign_expr: ID . OP_ASSIGN relop_expr
+  115 factor: ID . MK_LPAREN relop_expr_list MK_RPAREN
+  124 var_ref: ID .
+
+    OP_ASSIGN  偏移，並進入狀態 246
+    MK_LPAREN  偏移，並進入狀態 120
+
+    $預設  使用規則 124 以縮減 (var_ref)
+
+
+狀態 230
+
+   67 stmt: FOR MK_LPAREN assign_expr_list . MK_SEMICOLON relop_expr_list MK_SEMICOLON assign_expr_list MK_RPAREN stmt
+
+    MK_SEMICOLON  偏移，並進入狀態 247
+
+
+狀態 231
+
+   79 assign_expr_list: nonempty_assign_expr_list .
+   81 nonempty_assign_expr_list: nonempty_assign_expr_list . MK_COMMA assign_expr
+
+    MK_COMMA  偏移，並進入狀態 248
+
+    $預設  使用規則 79 以縮減 (assign_expr_list)
+
+
+狀態 232
+
+   82 nonempty_assign_expr_list: assign_expr .
+
+    $預設  使用規則 82 以縮減 (nonempty_assign_expr_list)
+
+
+狀態 233
+
+   84 assign_expr: relop_expr .
+   86 relop_expr: relop_expr . OP_OR relop_term
+
+    OP_OR  偏移，並進入狀態 135
+
+    $預設  使用規則 84 以縮減 (assign_expr)
+
+
+狀態 234
+
+   65 stmt: MK_LBRACE block MK_RBRACE .
+
+    $預設  使用規則 65 以縮減 (stmt)
+
+
+狀態 235
+
+   74 stmt: RETURN relop_expr MK_SEMICOLON .
+
+    $預設  使用規則 74 以縮減 (stmt)
+
+
+狀態 236
+
+   68 stmt: var_ref OP_ASSIGN relop_expr . MK_SEMICOLON
+   86 relop_expr: relop_expr . OP_OR relop_term
+
+    OP_OR         偏移，並進入狀態 135
+    MK_SEMICOLON  偏移，並進入狀態 249
+
+
+狀態 237
+
+    8 function_decl: VOID ID MK_LPAREN param_list MK_RPAREN MK_LBRACE block MK_RBRACE .
+
+    $預設  使用規則 8 以縮減 (function_decl)
+
+
+狀態 238
+
+   18 dim_fn: MK_LB expr_null MK_RB . dimfn1
+
+    MK_LB  偏移，並進入狀態 250
+
+    $預設  使用規則 20 以縮減 (dimfn1)
+
+    dimfn1  進入狀態 251
+
+
+狀態 239
+
+   86 relop_expr: relop_expr . OP_OR relop_term
+   99 nonempty_relop_expr_list: nonempty_relop_expr_list MK_COMMA relop_expr .
+
+    OP_OR  偏移，並進入狀態 135
+
+    $預設  使用規則 99 以縮減 (nonempty_relop_expr_list)
+
+
+狀態 240
+
+  117 factor: OP_NOT ID MK_LPAREN relop_expr_list MK_RPAREN .
+
+    $預設  使用規則 117 以縮減 (factor)
+
+
+狀態 241
+
+  116 factor: OP_MINUS ID MK_LPAREN relop_expr_list MK_RPAREN .
+
+    $預設  使用規則 116 以縮減 (factor)
+
+
+狀態 242
+
+    6 function_decl: type ID MK_LPAREN param_list MK_RPAREN MK_LBRACE block MK_RBRACE .
+
+    $預設  使用規則 6 以縮減 (function_decl)
+
+
+狀態 243
+
+    7 function_decl: struct_type ID MK_LPAREN param_list MK_RPAREN MK_LBRACE block MK_RBRACE .
+
+    $預設  使用規則 7 以縮減 (function_decl)
+
+
+狀態 244
+
+   69 stmt: IF MK_LPAREN relop_expr_list MK_RPAREN . stmt
+   70     | IF MK_LPAREN relop_expr_list MK_RPAREN . stmt ELSE stmt
+
+    ID            偏移，並進入狀態 186
+    IF            偏移，並進入狀態 159
+    WHILE         偏移，並進入狀態 160
+    FOR           偏移，並進入狀態 161
+    MK_LBRACE     偏移，並進入狀態 162
+    MK_SEMICOLON  偏移，並進入狀態 163
+    RETURN        偏移，並進入狀態 164
+    FNCALL_READ   偏移，並進入狀態 88
+    FNCALL_FREAD  偏移，並進入狀態 89
+    FNCALL_WRITE  偏移，並進入狀態 90
+
+    stmt      進入狀態 252
+    lib_call  進入狀態 169
+    var_ref   進入狀態 170
+
+
+狀態 245
+
+   66 stmt: WHILE MK_LPAREN relop_expr_list MK_RPAREN . stmt
+
+    ID            偏移，並進入狀態 186
+    IF            偏移，並進入狀態 159
+    WHILE         偏移，並進入狀態 160
+    FOR           偏移，並進入狀態 161
+    MK_LBRACE     偏移，並進入狀態 162
+    MK_SEMICOLON  偏移，並進入狀態 163
+    RETURN        偏移，並進入狀態 164
+    FNCALL_READ   偏移，並進入狀態 88
+    FNCALL_FREAD  偏移，並進入狀態 89
+    FNCALL_WRITE  偏移，並進入狀態 90
+
+    stmt      進入狀態 253
+    lib_call  進入狀態 169
+    var_ref   進入狀態 170
+
+
+狀態 246
+
+   83 assign_expr: ID OP_ASSIGN . relop_expr
+
+    ID            偏移，並進入狀態 83
+    CONST         偏移，並進入狀態 84
+    OP_NOT        偏移，並進入狀態 85
+    OP_MINUS      偏移，並進入狀態 86
+    MK_LPAREN     偏移，並進入狀態 87
+    FNCALL_READ   偏移，並進入狀態 88
+    FNCALL_FREAD  偏移，並進入狀態 89
+    FNCALL_WRITE  偏移，並進入狀態 90
+
+    lib_call      進入狀態 91
+    relop_expr    進入狀態 254
+    relop_term    進入狀態 93
+    relop_factor  進入狀態 94
+    expr          進入狀態 95
+    term          進入狀態 96
+    factor        進入狀態 97
+    var_ref       進入狀態 98
+
+
+狀態 247
+
+   67 stmt: FOR MK_LPAREN assign_expr_list MK_SEMICOLON . relop_expr_list MK_SEMICOLON assign_expr_list MK_RPAREN stmt
+
+    ID            偏移，並進入狀態 83
+    CONST         偏移，並進入狀態 84
+    OP_NOT        偏移，並進入狀態 85
+    OP_MINUS      偏移，並進入狀態 86
+    MK_LPAREN     偏移，並進入狀態 87
+    FNCALL_READ   偏移，並進入狀態 88
+    FNCALL_FREAD  偏移，並進入狀態 89
+    FNCALL_WRITE  偏移，並進入狀態 90
+
+    $預設  使用規則 98 以縮減 (relop_expr_list)
+
+    lib_call                  進入狀態 91
+    relop_expr                進入狀態 176
+    relop_term                進入狀態 93
+    relop_factor              進入狀態 94
+    relop_expr_list           進入狀態 255
+    nonempty_relop_expr_list  進入狀態 178
+    expr                      進入狀態 95
+    term                      進入狀態 96
+    factor                    進入狀態 97
+    var_ref                   進入狀態 98
+
+
+狀態 248
+
+   81 nonempty_assign_expr_list: nonempty_assign_expr_list MK_COMMA . assign_expr
+
+    ID            偏移，並進入狀態 229
+    CONST         偏移，並進入狀態 84
+    OP_NOT        偏移，並進入狀態 85
+    OP_MINUS      偏移，並進入狀態 86
+    MK_LPAREN     偏移，並進入狀態 87
+    FNCALL_READ   偏移，並進入狀態 88
+    FNCALL_FREAD  偏移，並進入狀態 89
+    FNCALL_WRITE  偏移，並進入狀態 90
+
+    lib_call      進入狀態 91
+    assign_expr   進入狀態 256
+    relop_expr    進入狀態 233
+    relop_term    進入狀態 93
+    relop_factor  進入狀態 94
+    expr          進入狀態 95
+    term          進入狀態 96
+    factor        進入狀態 97
+    var_ref       進入狀態 98
+
+
+狀態 249
+
+   68 stmt: var_ref OP_ASSIGN relop_expr MK_SEMICOLON .
+
+    $預設  使用規則 68 以縮減 (stmt)
+
+
+狀態 250
+
+   19 dimfn1: MK_LB . expr MK_RB dimfn1
+
+    ID            偏移，並進入狀態 83
+    CONST         偏移，並進入狀態 84
+    OP_NOT        偏移，並進入狀態 85
+    OP_MINUS      偏移，並進入狀態 86
+    MK_LPAREN     偏移，並進入狀態 87
+    FNCALL_READ   偏移，並進入狀態 88
+    FNCALL_FREAD  偏移，並進入狀態 89
+    FNCALL_WRITE  偏移，並進入狀態 90
+
+    lib_call  進入狀態 91
+    expr      進入狀態 257
+    term      進入狀態 96
+    factor    進入狀態 97
+    var_ref   進入狀態 98
+
+
+狀態 251
+
+   18 dim_fn: MK_LB expr_null MK_RB dimfn1 .
+
+    $預設  使用規則 18 以縮減 (dim_fn)
+
+
+狀態 252
+
+   69 stmt: IF MK_LPAREN relop_expr_list MK_RPAREN stmt .
+   70     | IF MK_LPAREN relop_expr_list MK_RPAREN stmt . ELSE stmt
+
+    ELSE  偏移，並進入狀態 258
+
+    ELSE     [使用規則 69 以縮減 (stmt)]
+    $預設  使用規則 69 以縮減 (stmt)
+
+
+狀態 253
+
+   66 stmt: WHILE MK_LPAREN relop_expr_list MK_RPAREN stmt .
+
+    $預設  使用規則 66 以縮減 (stmt)
+
+
+狀態 254
+
+   83 assign_expr: ID OP_ASSIGN relop_expr .
+   86 relop_expr: relop_expr . OP_OR relop_term
+
+    OP_OR  偏移，並進入狀態 135
+
+    $預設  使用規則 83 以縮減 (assign_expr)
+
+
+狀態 255
+
+   67 stmt: FOR MK_LPAREN assign_expr_list MK_SEMICOLON relop_expr_list . MK_SEMICOLON assign_expr_list MK_RPAREN stmt
+
+    MK_SEMICOLON  偏移，並進入狀態 259
+
+
+狀態 256
+
+   81 nonempty_assign_expr_list: nonempty_assign_expr_list MK_COMMA assign_expr .
+
+    $預設  使用規則 81 以縮減 (nonempty_assign_expr_list)
+
+
+狀態 257
+
+   19 dimfn1: MK_LB expr . MK_RB dimfn1
+  101 expr: expr . add_op term
+
+    OP_PLUS   偏移，並進入狀態 105
+    OP_MINUS  偏移，並進入狀態 106
+    MK_RB     偏移，並進入狀態 260
+
+    add_op  進入狀態 144
+
+
+狀態 258
+
+   70 stmt: IF MK_LPAREN relop_expr_list MK_RPAREN stmt ELSE . stmt
+
+    ID            偏移，並進入狀態 186
+    IF            偏移，並進入狀態 159
+    WHILE         偏移，並進入狀態 160
+    FOR           偏移，並進入狀態 161
+    MK_LBRACE     偏移，並進入狀態 162
+    MK_SEMICOLON  偏移，並進入狀態 163
+    RETURN        偏移，並進入狀態 164
+    FNCALL_READ   偏移，並進入狀態 88
+    FNCALL_FREAD  偏移，並進入狀態 89
+    FNCALL_WRITE  偏移，並進入狀態 90
+
+    stmt      進入狀態 261
+    lib_call  進入狀態 169
+    var_ref   進入狀態 170
+
+
+狀態 259
+
+   67 stmt: FOR MK_LPAREN assign_expr_list MK_SEMICOLON relop_expr_list MK_SEMICOLON . assign_expr_list MK_RPAREN stmt
+
+    ID            偏移，並進入狀態 229
+    CONST         偏移，並進入狀態 84
+    OP_NOT        偏移，並進入狀態 85
+    OP_MINUS      偏移，並進入狀態 86
+    MK_LPAREN     偏移，並進入狀態 87
+    FNCALL_READ   偏移，並進入狀態 88
+    FNCALL_FREAD  偏移，並進入狀態 89
+    FNCALL_WRITE  偏移，並進入狀態 90
+
+    $預設  使用規則 80 以縮減 (assign_expr_list)
+
+    lib_call                   進入狀態 91
+    assign_expr_list           進入狀態 262
+    nonempty_assign_expr_list  進入狀態 231
+    assign_expr                進入狀態 232
+    relop_expr                 進入狀態 233
+    relop_term                 進入狀態 93
+    relop_factor               進入狀態 94
+    expr                       進入狀態 95
+    term                       進入狀態 96
+    factor                     進入狀態 97
+    var_ref                    進入狀態 98
+
+
+狀態 260
+
+   19 dimfn1: MK_LB expr MK_RB . dimfn1
+
+    MK_LB  偏移，並進入狀態 250
+
+    $預設  使用規則 20 以縮減 (dimfn1)
+
+    dimfn1  進入狀態 263
+
+
+狀態 261
+
+   70 stmt: IF MK_LPAREN relop_expr_list MK_RPAREN stmt ELSE stmt .
+
+    $預設  使用規則 70 以縮減 (stmt)
+
+
+狀態 262
+
+   67 stmt: FOR MK_LPAREN assign_expr_list MK_SEMICOLON relop_expr_list MK_SEMICOLON assign_expr_list . MK_RPAREN stmt
+
+    MK_RPAREN  偏移，並進入狀態 264
+
+
+狀態 263
+
+   19 dimfn1: MK_LB expr MK_RB dimfn1 .
+
+    $預設  使用規則 19 以縮減 (dimfn1)
+
+
+狀態 264
+
+   67 stmt: FOR MK_LPAREN assign_expr_list MK_SEMICOLON relop_expr_list MK_SEMICOLON assign_expr_list MK_RPAREN . stmt
+
+    ID            偏移，並進入狀態 186
+    IF            偏移，並進入狀態 159
+    WHILE         偏移，並進入狀態 160
+    FOR           偏移，並進入狀態 161
+    MK_LBRACE     偏移，並進入狀態 162
+    MK_SEMICOLON  偏移，並進入狀態 163
+    RETURN        偏移，並進入狀態 164
+    FNCALL_READ   偏移，並進入狀態 88
+    FNCALL_FREAD  偏移，並進入狀態 89
+    FNCALL_WRITE  偏移，並進入狀態 90
+
+    stmt      進入狀態 265
+    lib_call  進入狀態 169
+    var_ref   進入狀態 170
+
+
+狀態 265
+
+   67 stmt: FOR MK_LPAREN assign_expr_list MK_SEMICOLON relop_expr_list MK_SEMICOLON assign_expr_list MK_RPAREN stmt .
+
+    $預設  使用規則 67 以縮減 (stmt)
