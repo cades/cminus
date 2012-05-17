@@ -1,9 +1,9 @@
 TARGET = parser
 OBJECT = parser.tab.c parser.tab.o lex.yy.c 
-CC = gcc
+CC = g++
 LEX = flex
 YACC = bison -v
-YACCFLAG = 
+YACCFLAG = -d
 LIBS = -lfl 
 
 parser: parser.tab.o	

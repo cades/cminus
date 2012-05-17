@@ -5,10 +5,37 @@
 #include <stdlib.h>
 #include <string.h>
 static int linenumber = 1;
+int yylex(void);    
+int yyerror (char *mesg);
 %}
 
+%union Record {
 
-%token ID
+  struct Lexeme {
+    enum Type {stringConst, intConst, floatConst} type;
+    union {
+      char *stringValue;
+      int intValue;
+      float floatValue;
+    };
+  } lexeme;
+
+  struct {
+    struct Lexeme lexeme;
+    enum SymbolType { const_name, var_name, func_name, struct_tag, param } idType;
+    int isArray;
+    int dimention;
+    int lengthOfDim[10];
+  } var_info;
+
+  int num;
+}
+
+%type <var_info> var_ref 
+%type <num> dim
+%type <num> expr
+
+%token <lexeme> ID
 %token CONST
 %token VOID    
 %token INT     
@@ -44,10 +71,6 @@ static int linenumber = 1;
 %token MK_DOT  
 %token ERROR
 %token RETURN
-
-%token FNCALL_READ
-%token FNCALL_FREAD
-%token FNCALL_WRITE
 
 %start program
 
@@ -258,13 +281,19 @@ factor		: MK_LPAREN relop_expr MK_RPAREN /* | -(<relop_expr>) */
 		| OP_MINUS var_ref
 		| OP_NOT var_ref
 		;
-var_ref		: ID
-		| var_ref dim
-		| var_ref struct_tail
+var_ref		: ID { $$.lexeme = $1; }
+                | var_ref dim  /* knowing I'm a array */
+		{
+		  $$ = $1;
+		  $$.isArray = 1;
+		  $$.lengthOfDim[$$.dimention] = $2;
+		  $$.dimention++;
+		}
+                | var_ref struct_tail { $$ = $1; } /* knowing I'm a struct */
 		;
 
 
-dim		: MK_LB expr MK_RB
+dim		: MK_LB expr MK_RB { $$ = $2; }
 		;
 
 struct_tail	: MK_DOT ID
@@ -273,9 +302,9 @@ struct_tail	: MK_DOT ID
 %%
 
 #include "lex.yy.c"
-main (argc, argv)
-int argc;
-char *argv[];
+#define TABLE_SIZE 1024
+
+main (int argc, char *argv[])
   {
      yyin = fopen(argv[1],"r");
      yyparse();
@@ -283,8 +312,7 @@ char *argv[];
   } /* main */
 
 
-int yyerror (mesg)
-char *mesg;
+int yyerror (char *mesg)
   {
   printf("%s\t%d\t%s\t%s\n", "Error found in Line ", linenumber, "next token: ", yytext );
   exit(1);
