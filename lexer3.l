@@ -1,6 +1,6 @@
 %{
 #include <stdio.h>
-
+//#inclyde "parser.tab.h"
 %}
 letter   [A-Za-z]
 digit    [0-9]
@@ -30,9 +30,10 @@ op_plus "+"
 op_minus "-"
 op_times "*"
 op_divide "/"
-constant {digit}+(("."){digit}+)?
-comment	"/*"(([^*])|([*]+[^/*]))*("*")+"/"
+int_constant {digit}+
+flt_constant {digit}+(("."){digit}+)?
 s-const \"([^"\n])*\"
+comment	"/*"(([^*])|([*]+[^/*]))*("*")+"/"
 ws       [ \t]+
 newline  "\n"
 mk_lparen "("
@@ -83,8 +84,9 @@ error    .
 {op_minus}      return OP_MINUS;
 {op_times}      return OP_TIMES;
 {op_divide}     return OP_DIVIDE;
-{constant}      {  return CONST;}
-{s-const}       {  return CONST;}
+{int_constant}  { return CONST;}
+{flt_constant}  { return CONST;}
+{s-const}       { return CONST;}
 {mk_lparen}     return MK_LPAREN;
 {mk_rparen}     return MK_RPAREN;
 {mk_lbrace}     return MK_LBRACE;
