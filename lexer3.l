@@ -15,9 +15,6 @@ kwStruct "struct"
 kwUnion  "union"
 kwTypedef "typedef"
 kwReturn "return"
-fncall_read "read"
-fncall_fread "fread"
-fncall_write "write"
 ID       ({letter})({letter}|{digit}|"_")*
 op_assign        "="
 op_or   "||"
@@ -52,7 +49,14 @@ error    .
 %%
 
 {ws}            ;   /* do nothing with whitespace */
-{comment}	;
+{comment}	{
+                  int i=0;
+		  while(yytext[i]!='\0'){
+		    if(yytext[i]=='\n')
+		      linenumber++;
+		    i++;
+		  }
+                }
 {kwInt}         return INT;
 {kwFloat}       return FLOAT;
 {kwVoid}		return VOID;
@@ -64,9 +68,6 @@ error    .
 {kwUnion}		return STRUCT;
 {kwTypedef}     return TYPEDEF;
 {kwReturn}      return RETURN;
-{fncall_read}   return FNCALL_READ;
-{fncall_fread}  return FNCALL_FREAD;
-{fncall_write}  return FNCALL_WRITE;
 {ID}            { return ID; }
 {op_assign}     return OP_ASSIGN; 
 {op_and}        return OP_AND;

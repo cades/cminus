@@ -173,22 +173,18 @@ stmt		: MK_LBRACE block MK_RBRACE
                 /* | for Statement */
 	        | FOR MK_LPAREN assign_expr_list MK_SEMICOLON relop_expr_list MK_SEMICOLON assign_expr_list MK_RPAREN stmt 
 		| var_ref OP_ASSIGN relop_expr MK_SEMICOLON
+                /* Can do something and discard it, without assign.
+		   This rule enable function call, implicitly. read and write library calls is contained.
+		 */
+                | relop_expr MK_SEMICOLON
 		/* | If statement */ 
                 | IF MK_LPAREN relop_expr_list MK_RPAREN stmt
 		/* | If then else */ 
                 | IF MK_LPAREN relop_expr_list MK_RPAREN stmt ELSE stmt
-		/* | read and write library calls */ 
-                | lib_call MK_SEMICOLON
 		| MK_SEMICOLON
 		| RETURN MK_SEMICOLON
 		| RETURN relop_expr MK_SEMICOLON
 		;
-
-lib_call        : FNCALL_READ  MK_LPAREN MK_RPAREN
-                | FNCALL_FREAD MK_LPAREN MK_RPAREN
-                | FNCALL_WRITE MK_LPAREN CONST MK_RPAREN
-                | FNCALL_WRITE MK_LPAREN var_ref MK_RPAREN
-                ;
 
 assign_expr_list : nonempty_assign_expr_list
                 |
@@ -261,10 +257,6 @@ factor		: MK_LPAREN relop_expr MK_RPAREN /* | -(<relop_expr>) */
 		| var_ref
 		| OP_MINUS var_ref
 		| OP_NOT var_ref
-                /* | - library function call */
-                | lib_call
-                | OP_MINUS lib_call
-                | OP_NOT lib_call
 		;
 var_ref		: ID
 		| var_ref dim
