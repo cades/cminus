@@ -4,73 +4,48 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <string>
+#include <iostream>
+#include <typeinfo>
+#include "ASTHeaders.h"
+#include "visitorsHeaders.h"
+using namespace std;
 static int linenumber = 1;
 int yylex(void);    
-int yyerror (char *mesg);
-%}
+int yyerror (AbstractNode* node, char *mesg);
 
-%union Record {
 
-  struct Lexeme {
-    enum Type {stringConst, intConst, floatConst} type;
-    union {
-      char *stringValue;
-      int intValue;
-      float floatValue;
-    };
-  } lexeme;
 
-  struct {
-    struct Lexeme lexeme;
-    enum SymbolType { const_name, var_name, func_name, struct_tag, param } idType;
-    int isArray;
-    int dimention;
-    int lengthOfDim[10];
-  } var_info;
-
-  int num;
+    
+void error(string msg) {
+  cout << "Error found in line " << linenumber << endl << msg << endl;
+}
+    
+TypeSpecifier* makeTypeSpecifier(AbstractNode*) {
+    return 0;
 }
 
-%type <var_info> var_ref 
-%type <num> dim
-%type <num> expr
+%}
 
-%token <lexeme> ID
-%token CONST
-%token VOID    
-%token INT     
-%token FLOAT   
-%token IF      
-%token ELSE    
-%token WHILE   
-%token FOR
-%token STRUCT  
-%token TYPEDEF 
-%token OP_ASSIGN  
-%token OP_OR   
-%token OP_AND  
-%token OP_NOT  
-%token OP_EQ   
-%token OP_NE   
-%token OP_GT   
-%token OP_LT   
-%token OP_GE   
-%token OP_LE   
-%token OP_PLUS 
-%token OP_MINUS        
-%token OP_TIMES        
-%token OP_DIVIDE       
-%token MK_LB 
-%token MK_RB 
-%token MK_LPAREN       
-%token MK_RPAREN       
-%token MK_LBRACE       
-%token MK_RBRACE       
-%token MK_COMMA        
-%token MK_SEMICOLON    
-%token MK_DOT  
-%token ERROR
-%token RETURN
+%type <node> decl var_decl  type_decl struct_decl function_decl param
+%type <id>   type struct_type struct_tail /* reference */
+%type <node> cexpr mcexpr cfactor expr term factor relop_expr relop_term relop_factor expr_null stmt assign_expr init_id block
+%type <node> dim dim_decl dim_fn dimfn1 anonymous_struct
+%type <node> var_ref
+%type <opKind> rel_op
+%type <nodeList> program global_decl_list global_decl param_list decl_list id_list init_id_list stmt_list
+%type <nodeList> assign_expr_list nonempty_assign_expr_list relop_expr_list nonempty_relop_expr_list
+
+
+%token <id> ID
+%token <node> CONST  OP_ASSIGN   OP_OR    OP_AND   OP_NOT   
+%token <node> OP_PLUS  OP_MINUS  OP_TIMES  OP_DIVIDE
+%token <opKind> OP_EQ    OP_NE    OP_GT    OP_LT    OP_GE    OP_LE
+%token WHILE FOR IF ELSE VOID INT FLOAT STRUCT TYPEDEF MK_COMMA MK_DOT  MK_LB MK_LBRACE MK_LPAREN MK_RB MK_RBRACE MK_RPAREN MK_SEMICOLON RETURN ERROR 
+ 
+
+
+%parse-param {AbstractNode* root}
 
 %start program
 
@@ -79,241 +54,257 @@ int yyerror (char *mesg);
 /* ==== Grammar Section ==== */
 
 /* Productions */               /* Semantic actions */
-program		: global_decl_list
+program		: global_decl_list	       	{ $$ = $1; root = $1; }
 		;
 
-global_decl_list: global_decl_list global_decl
-                |
+global_decl_list: global_decl_list global_decl	{ $1->append($2); $$ = $1; }
+                | { $$ = new NodeList; } /* empty list */
 		;
 
-global_decl	: decl_list function_decl
-		| function_decl
+global_decl	: decl_list function_decl	{ $1->append($2); $$ = $1; }
+		| function_decl			{  $$ = new NodeList; $$->append($1); }
 		;
 
-function_decl	: type ID MK_LPAREN param_list MK_RPAREN MK_LBRACE block MK_RBRACE 
-
+function_decl	: type ID MK_LPAREN param_list MK_RPAREN MK_LBRACE block MK_RBRACE
+		{ $$ = new FunctionDeclaringNode(makeTypeSpecifier($1), $2, $4, $7); }
 		| struct_type ID MK_LPAREN param_list MK_RPAREN MK_LBRACE block MK_RBRACE
+		{ $$ = new FunctionDeclaringNode(makeTypeSpecifier($1), $2, $4, $7); }
 		| VOID ID MK_LPAREN param_list MK_RPAREN MK_LBRACE block MK_RBRACE
-
+		{ $$ = new FunctionDeclaringNode(makeTypeSpecifier(new Identifier("void")), $2, $4, $7); }
 		| type ID MK_LPAREN  MK_RPAREN MK_LBRACE block MK_RBRACE
-
+		{ $$ = new FunctionDeclaringNode(makeTypeSpecifier($1), $2, new NodeList, $6); }
 		| struct_type ID MK_LPAREN  MK_RPAREN MK_LBRACE block MK_RBRACE
-
+		{ $$ = new FunctionDeclaringNode(makeTypeSpecifier($1), $2, new NodeList, $6); }
 		| VOID ID MK_LPAREN  MK_RPAREN MK_LBRACE block MK_RBRACE
+		{ $$ = new FunctionDeclaringNode(makeTypeSpecifier(new Identifier("void")), $2, new NodeList, $6); }
 		;
 
-param_list	: param_list MK_COMMA  param
-		| param	
+param_list	: param_list MK_COMMA  param	{ $1->append($3); $$ = $1; }
+		| param				{ $$ = new NodeList; $$->append($1); }
 		;
 
-param		: type ID
-		| struct_type ID
-		| type ID dim_fn
-		| struct_type ID dim_fn 
+param		: type ID		{ $$ = new VariableDeclaringNode(makeTypeSpecifier($1), $2); }
+		| struct_type ID	{ $$ = new VariableDeclaringNode(makeTypeSpecifier($1), $2); }
+		| type ID dim_fn    { $$ = new ArrayVariableDeclaringNode(makeTypeSpecifier($1), $2, $3); }
+		| struct_type ID dim_fn	{ $$ = new ArrayVariableDeclaringNode(makeTypeSpecifier($1), $2, $3); }
 		;
-dim_fn		:MK_LB expr_null MK_RB dimfn1
+dim_fn		:MK_LB expr_null MK_RB dimfn1 { $$ = new ArrayDefiningNode($2, $4); }
 		;
-dimfn1		:MK_LB expr MK_RB dimfn1
-		|
+dimfn1		:MK_LB expr MK_RB dimfn1 { $$ = new ArrayDefiningNode($2, $4); }
+		| { $$ = 0; } /* In type checking phase, it'll be replaced by a TypeDescriptor. */
 		;
-expr_null	:expr
-		|
+expr_null	:expr	{ $$ = $1; }
+		|	{ $$ = new EmptyNode; }
 		;
 
-block           : decl_list stmt_list
-                | stmt_list
-                | decl_list
-                |
+block		: decl_list stmt_list	{ $1->append($2); delete $2; $$ = new BlockNode($1); }
+		| stmt_list		{ $$ = new BlockNode($1); }
+		| decl_list		{ $$ = new BlockNode($1); } /* actually a block contains decl without stmt is useless. */
+		|			{ $$ = new EmptyNode; }
                 ;
  
-decl_list	: decl_list decl
-		| decl
+decl_list	: decl_list decl       	{ $1->append($2); $$ = $1; }
+		| decl			{ $$ = new NodeList; $$->append($1); }
 		;
 
-decl	: type_decl
-		| var_decl
+decl		: type_decl	{ $$ = $1; }
+		| var_decl	{ $$ = $1; }
 		;
 
-type_decl 	: TYPEDEF type id_list MK_SEMICOLON
-		| TYPEDEF VOID id_list MK_SEMICOLON
-                | TYPEDEF struct_type id_list MK_SEMICOLON
-                | struct_decl MK_SEMICOLON /* It's struct_decl, NOT struct_type */
-                | TYPEDEF anonymous_struct id_list MK_SEMICOLON
+type_decl 	: TYPEDEF type id_list MK_SEMICOLON		{ $$ = new TypedefNode(makeTypeSpecifier($2), $3); }
+		| TYPEDEF VOID id_list MK_SEMICOLON		{ $$ = new TypedefNode(makeTypeSpecifier(new Identifier("void")), $3); }
+		| TYPEDEF struct_type id_list MK_SEMICOLON      { $$ = new TypedefNode(makeTypeSpecifier($2), $3); }
+		| struct_decl MK_SEMICOLON			{ $$ = $1;} /* It's struct_decl, NOT struct_type */
+		| TYPEDEF anonymous_struct id_list MK_SEMICOLON	{ $$ = new TypedefNode(makeTypeSpecifier($2), $3); }
 		;
 
-var_decl	: type init_id_list MK_SEMICOLON
-		| struct_type id_list MK_SEMICOLON
-                | struct_decl id_list MK_SEMICOLON
-                | anonymous_struct id_list MK_SEMICOLON
-                | ID id_list MK_SEMICOLON  /* the former ID is typedefed struct*/
+var_decl	: type init_id_list MK_SEMICOLON	{ $$ = new VariableListDeclaringNode(makeTypeSpecifier($1), $2); }
+		| struct_type id_list MK_SEMICOLON	{ $$ = new VariableListDeclaringNode(makeTypeSpecifier($1), $2); }
+		| struct_decl id_list MK_SEMICOLON	{ $$ = new VariableListDeclaringNode(makeTypeSpecifier($1), $2); }
+		| anonymous_struct id_list MK_SEMICOLON	{ $$ = new VariableListDeclaringNode(makeTypeSpecifier($1), $2); }
+		| ID id_list MK_SEMICOLON		{ $$ = new VariableListDeclaringNode(makeTypeSpecifier($1), $2); } /* the former ID is typedefed struct*/
 		;
 
-type		: INT
-		| FLOAT
+type		: INT	{ $$ = new Identifier("int");}
+		| FLOAT	{ $$ = new Identifier("float");}
 		;
 
-struct_type	: STRUCT ID		/* | something missing here, isn't it? */
+struct_type	: STRUCT ID	{$$ = new Identifier("[struct:"+$2->name()+"]"); delete $2; }  /* It's type name. Have to separate from typedef struct ...  */
 		;
-struct_decl     : STRUCT ID MK_LBRACE decl_list MK_RBRACE
+struct_decl	: STRUCT ID MK_LBRACE decl_list MK_RBRACE	{ $$ = new TypeDeclaringNode($2, new StructDefiningNode($4)); }
                 ;
-anonymous_struct: STRUCT MK_LBRACE decl_list MK_RBRACE
+anonymous_struct: STRUCT MK_LBRACE decl_list MK_RBRACE	{ $$ = new StructDefiningNode($3); }
                 ;
 
-id_list		: ID
-		| id_list MK_COMMA ID
-		| id_list MK_COMMA ID dim_decl
-		| ID dim_decl
+id_list		: ID				{ $$ = new NodeList; $$->append($1); }
+		| id_list MK_COMMA ID		{ $1->append($3); $$ = $1; }
+		| id_list MK_COMMA ID dim_decl	{ $3 = new IdentifierWithDim($3, $4); delete $3; $1->append($3); $$ = $1; }
+		| ID dim_decl			{ $1 = new IdentifierWithDim($1, $2); delete $2; $$ = new NodeList; $$->append($1); }
 		;
-dim_decl	: MK_LB cexpr MK_RB 
-		| dim_decl MK_LB cexpr MK_RB
+dim_decl	: MK_LB cexpr MK_RB		{ $$ = new ArrayDefiningNode($2, 0); }
+		| MK_LB cexpr MK_RB dim_decl	{ $$ = new ArrayDefiningNode($2, $4);  } /* can refactor to right-recursion */
 		;
-cexpr		: cexpr add_op mcexpr /* This is for array declarations */
-		| mcexpr
+cexpr		: cexpr OP_PLUS mcexpr	{ $$ = new PlusNode($1, $3); }
+		| cexpr OP_MINUS mcexpr	{ $$ = new MinusNode($1, $3); }
+		| mcexpr		{ $$ = $1; }
 		;  
-mcexpr		: mcexpr mul_op cfactor
-		| cfactor 
+mcexpr		: mcexpr OP_TIMES cfactor	{ $$ = new MultiplyNode($1, $3); }
+		| mcexpr OP_DIVIDE cfactor	{ $$ = new DivideNode($1, $3); }
+		| cfactor			{ $$ = $1; }
 		;
-cfactor:	CONST
-		| MK_LPAREN cexpr MK_RPAREN
-		;
-
-init_id_list	: init_id
-		| init_id_list MK_COMMA init_id
+cfactor		: CONST				{ $$ = $1; }
+		| MK_LPAREN cexpr MK_RPAREN	{ $$ = $2; } /* at this point, cexpr has been computed */
 		;
 
-init_id		: ID
-		| ID dim_decl
-		| ID OP_ASSIGN relop_expr
+init_id_list	: init_id			{ $$ = new NodeList; $$->append($1); }
+		| init_id_list MK_COMMA init_id	{ $1->append($3); $$ = $1; }
 		;
 
-stmt_list	: stmt_list stmt
-		| stmt
+init_id		: ID				{ $$ = $1; }
+		| ID dim_decl			{ $1 = new IdentifierWithDim($1, $2); delete $1; $$ = $1;}
+		| ID OP_ASSIGN relop_expr	{ $$ = new AssigningNode($1, $3); }
 		;
 
-stmt		: MK_LBRACE block MK_RBRACE
+stmt_list	: stmt_list stmt	{ $1->append($2); $$ = $1; }
+		| stmt			{ $$ = new NodeList; $$->append($1); }
+		;
+
+stmt		: MK_LBRACE block MK_RBRACE	{ $$ = $2; }
 		/* | While Statement */
-                | WHILE MK_LPAREN relop_expr_list MK_RPAREN stmt 
-                /* | for Statement */
-	        | FOR MK_LPAREN assign_expr_list MK_SEMICOLON relop_expr_list MK_SEMICOLON assign_expr_list MK_RPAREN stmt 
-		| var_ref OP_ASSIGN relop_expr MK_SEMICOLON
-                /* Can do something and discard it, without assign.
-		   This rule enable function call, implicitly. read and write library calls is contained.
-		 */
-                | relop_expr MK_SEMICOLON
+		| WHILE MK_LPAREN relop_expr_list MK_RPAREN stmt { $$ = new WhileLoopingNode($3, $5); }
+		/* | for Statement */
+		| FOR MK_LPAREN assign_expr_list MK_SEMICOLON relop_expr_list MK_SEMICOLON assign_expr_list MK_RPAREN stmt
+		{ $$ = new ForLoopingNode($3, $5, $7, $9); } 
+		| assign_expr MK_SEMICOLON	{ $$ = $1; }
 		/* | If statement */ 
-                | IF MK_LPAREN relop_expr_list MK_RPAREN stmt
+		| IF MK_LPAREN relop_expr_list MK_RPAREN stmt		{ $$ = new IfTestingNode($3, $5, new EmptyNode); }
 		/* | If then else */ 
-                | IF MK_LPAREN relop_expr_list MK_RPAREN stmt ELSE stmt
-		| MK_SEMICOLON
-		| RETURN MK_SEMICOLON
-		| RETURN relop_expr MK_SEMICOLON
+		| IF MK_LPAREN relop_expr_list MK_RPAREN stmt ELSE stmt	{ $$ = new IfTestingNode($3, $5, $7); }
+		| MK_SEMICOLON				{ $$ = new EmptyNode; }
+		| RETURN MK_SEMICOLON			{ $$ = new ReturningNode(new EmptyNode); }
+		| RETURN relop_expr MK_SEMICOLON	{ $$ = new ReturningNode($2); }
 		;
 
-assign_expr_list : nonempty_assign_expr_list
-                |
+assign_expr_list : nonempty_assign_expr_list  { $$ = $1; }
+                | { $$ = new NodeList; } /* empty nodelist*/
                 ;
 
-nonempty_assign_expr_list        : nonempty_assign_expr_list MK_COMMA assign_expr
-                | assign_expr
+nonempty_assign_expr_list        : nonempty_assign_expr_list MK_COMMA assign_expr { $1->append($3); $$ = $1; }
+		| assign_expr { $$ = new NodeList; $$->append($1); }
                 ;
 
-assign_expr     : ID OP_ASSIGN relop_expr
-                | relop_expr
+assign_expr     : var_ref OP_ASSIGN relop_expr { $$ = new AssigningNode($1, $3); }
+                | relop_expr { $$ = $1; }
                 ;
 
-relop_expr	: relop_term
-		| relop_expr OP_OR relop_term
+relop_expr	: relop_term { $$ = $1; }
+		| relop_expr OP_OR relop_term { $$ = new ORNode($1, $3); }
 		;
 
-relop_term	: relop_factor
-		| relop_term OP_AND relop_factor
+relop_term	: relop_factor { $$ = $1; }
+		| relop_term OP_AND relop_factor { $$ = new ANDNode($1, $3); }
 		;
 
-relop_factor	: expr
+relop_factor	: expr { $$ = $1; }
 		| expr rel_op expr
+{
+  switch($2) {
+  case YYSTYPE::OP_EQ:
+    $$ = new EQNode($1, $3);
+    break;
+  case YYSTYPE::OP_GE:
+    $$ = new GENode($1, $3);
+    break;
+  case YYSTYPE::OP_LE:
+    $$ = new LENode($1, $3);
+    break;
+  case YYSTYPE::OP_NE:
+    $$ = new NENode($1, $3);
+    break;
+  case YYSTYPE::OP_GT:
+    $$ = new GTNode($1, $3);
+    break;
+  case YYSTYPE::OP_LT:
+    $$ = new LTNode($1, $3);
+    break;
+  }
+}
 		;
 
-rel_op		: OP_EQ
-		| OP_GE
-		| OP_LE
-		| OP_NE
-		| OP_GT
-		| OP_LT
+rel_op		: OP_EQ	{ $$ = $1; }
+		| OP_GE	{ $$ = $1; }
+		| OP_LE	{ $$ = $1; }
+		| OP_NE	{ $$ = $1; }
+		| OP_GT	{ $$ = $1; }
+		| OP_LT	{ $$ = $1; }
 		;
 
-relop_expr_list	: nonempty_relop_expr_list 
-		| 
+relop_expr_list	: nonempty_relop_expr_list { $$ = $1; }
+		| { $$ = new NodeList; } /* empty nodelist */
 		;
 
-nonempty_relop_expr_list	: nonempty_relop_expr_list MK_COMMA relop_expr
-		| relop_expr
+nonempty_relop_expr_list	: nonempty_relop_expr_list MK_COMMA relop_expr { $1->append($3); $$ = $1; }
+		| relop_expr		{ $$ = new NodeList; $$->append($1); }
 		;
 
-expr		: expr add_op term
-		| term
+expr		: expr OP_PLUS term	{ $$ = new PlusNode($1, $3); }
+		| expr OP_MINUS term	{ $$ = new MinusNode($1, $3); }
+		| term			{ $$ = $1; }
+
+term		: term OP_TIMES factor	{ $$ = new MultiplyNode($1, $3); }
+		| term OP_DIVIDE factor	{ $$ = new DivideNode($1, $3); }
+		| factor		{ $$ = $1; }
 		;
 
-add_op		: OP_PLUS
-		| OP_MINUS
-		;
-
-term		: term mul_op factor
-		| factor
-		;
-
-mul_op		: OP_TIMES
-		| OP_DIVIDE
-		;
-
-factor		: MK_LPAREN relop_expr MK_RPAREN /* | -(<relop_expr>) */
-                | OP_MINUS MK_LPAREN relop_expr MK_RPAREN 
-		| OP_NOT MK_LPAREN relop_expr MK_RPAREN
+factor		: MK_LPAREN relop_expr MK_RPAREN		{ $$ = $2; } /* | -(<relop_expr>) */
+		| OP_MINUS MK_LPAREN relop_expr MK_RPAREN	{ $$ = new NegNode($3); }
+		| OP_NOT MK_LPAREN relop_expr MK_RPAREN		{ $$ = new NotNode($3); }
 		/* | - constant, here - is an Unary operator */ 
-                | CONST
-		| OP_MINUS CONST
-                | OP_NOT CONST
+		| CONST			{ $$ = $1; }
+		| OP_MINUS CONST	{ $$ = new NegNode($2); }
+		| OP_NOT CONST		{ $$ = new NotNode($2); }
 		/* | - func ( <relop_expr_list> ) */ 
-		| ID MK_LPAREN relop_expr_list MK_RPAREN
-		| OP_MINUS ID MK_LPAREN relop_expr_list MK_RPAREN
-		| OP_NOT ID MK_LPAREN relop_expr_list MK_RPAREN
+		| ID MK_LPAREN relop_expr_list MK_RPAREN		{ $$ = new CallingNode($1, $3); }
+		| OP_MINUS ID MK_LPAREN relop_expr_list MK_RPAREN	{ $$ = new NegNode(new CallingNode($2, $4)); }
+		| OP_NOT ID MK_LPAREN relop_expr_list MK_RPAREN		{ $$ = new NotNode(new CallingNode($2, $4)); }
 		/* | - var-reference */ 
-		| var_ref
-		| OP_MINUS var_ref
-		| OP_NOT var_ref
+		| var_ref		{ $$ = $1; }
+		| OP_MINUS var_ref	{ $$ = new NegNode($2); }
+		| OP_NOT var_ref	{ $$ = new NotNode($2); }
 		;
-var_ref		: ID { $$.lexeme = $1; }
-                | var_ref dim  /* knowing I'm a array */
-		{
-		  $$ = $1;
-		  $$.isArray = 1;
-		  $$.lengthOfDim[$$.dimention] = $2;
-		  $$.dimention++;
-		}
-                | var_ref struct_tail { $$ = $1; } /* knowing I'm a struct */
+var_ref		: ID		{ $$ = $1; }/*{ if (!symtab.retrieveSymbol($1)) error(); }*/
+		| var_ref dim	{ $$ = new ArrayReferencingNode($1, $2); } /* knowing I'm a array. see Dragon book p.383-385. */
+		| var_ref struct_tail { $$ = new StructReferencingNode($1, $2); } /* knowing I'm a struct */
 		;
 
 
 dim		: MK_LB expr MK_RB { $$ = $2; }
 		;
 
-struct_tail	: MK_DOT ID
+struct_tail	: MK_DOT ID { $$ = $2; }
 		;
 
 %%
 
 #include "lex.yy.c"
-#define TABLE_SIZE 1024
+//extern int main(); // when using CppTest, main should leave to CppUTest.
 
-main (int argc, char *argv[])
-  {
-     yyin = fopen(argv[1],"r");
-     yyparse();
-     printf("%s\n", "Parsing completed. No errors found.");
-  } /* main */
+int main (int argc, char *argv[])
+{
+    yyin = fopen(argv[1],"r");
+    AbstractNode* astRoot = 0;
+    
+    yyparse(astRoot);  // pass AST root to yyparse
+    
+    TopDeclVisitor tdVisitor;
+    //astRoot->accept(tdVisitor);
+    
+    printf("%s\n", "Parsing completed. No errors found.");
+} /* main */
 
 
-int yyerror (char *mesg)
-  {
-  printf("%s\t%d\t%s\t%s\n", "Error found in Line ", linenumber, "next token: ", yytext );
-  exit(1);
-  }
+int yyerror (AbstractNode* node, char *mesg)
+{
+    printf("%s\t%d\t%s\t%s\n", "Error found in Line ", linenumber, "next token: ", yytext );
+    exit(1);
+}

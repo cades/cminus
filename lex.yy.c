@@ -359,8 +359,8 @@ static void yy_fatal_error (yyconst char msg[]  );
 	*yy_cp = '\0'; \
 	(yy_c_buf_p) = yy_cp;
 
-#define YY_NUM_RULES 42
-#define YY_END_OF_BUFFER 43
+#define YY_NUM_RULES 43
+#define YY_END_OF_BUFFER 44
 /* This struct is not used in this scanner,
    but its presence is necessary. */
 struct yy_trans_info
@@ -370,13 +370,13 @@ struct yy_trans_info
 	};
 static yyconst flex_int16_t yy_accept[95] =
     {   0,
-        0,    0,   43,   41,    1,   40,   18,   41,   41,   31,
-       32,   27,   25,   37,   26,   39,   28,   29,   38,   21,
-       15,   22,   14,   35,   36,   14,   14,   14,   14,   14,
-       14,   14,   14,   14,   33,   41,   34,    1,   20,    0,
-       30,   16,    0,    0,   29,   23,   19,   24,   14,   14,
+        0,    0,   44,   42,    1,   41,   18,   42,   42,   32,
+       33,   27,   25,   38,   26,   40,   28,   29,   39,   21,
+       15,   22,   14,   36,   37,   14,   14,   14,   14,   14,
+       14,   14,   14,   14,   34,   42,   35,    1,   20,    0,
+       31,   16,    0,    0,   29,   23,   19,   24,   14,   14,
        14,   14,    6,   14,   14,   14,   14,   14,   14,   14,
-       17,    0,    0,   29,   14,   14,    9,    3,   14,   14,
+       17,    0,    0,   30,   14,   14,    9,    3,   14,   14,
        14,   14,   14,   14,    2,    7,   14,   14,   14,   14,
        14,    5,   14,    4,   14,   14,   14,   11,    8,   13,
        10,   14,   12,    0
@@ -513,7 +513,7 @@ char *yytext;
 #line 1 "lexer3.l"
 #line 2 "lexer3.l"
 #include <stdio.h>
-
+//#inclyde "parser.tab.h"
 #line 518 "lex.yy.c"
 
 #define INITIAL 0
@@ -696,7 +696,7 @@ YY_DECL
 	register char *yy_cp, *yy_bp;
 	register int yy_act;
     
-#line 49 "lexer3.l"
+#line 50 "lexer3.l"
 
 
 #line 703 "lex.yy.c"
@@ -784,13 +784,13 @@ do_action:	/* This label is used only to access EOF actions. */
 
 case 1:
 YY_RULE_SETUP
-#line 51 "lexer3.l"
+#line 52 "lexer3.l"
 ;   /* do nothing with whitespace */
 	YY_BREAK
 case 2:
 /* rule 2 can match eol */
 YY_RULE_SETUP
-#line 52 "lexer3.l"
+#line 53 "lexer3.l"
 {
                   int i=0;
 		  while(yytext[i]!='\0'){
@@ -802,206 +802,220 @@ YY_RULE_SETUP
 	YY_BREAK
 case 3:
 YY_RULE_SETUP
-#line 60 "lexer3.l"
+#line 61 "lexer3.l"
 return INT;
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
-#line 61 "lexer3.l"
+#line 62 "lexer3.l"
 return FLOAT;
 	YY_BREAK
 case 5:
 YY_RULE_SETUP
-#line 62 "lexer3.l"
+#line 63 "lexer3.l"
 return VOID;
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
-#line 63 "lexer3.l"
+#line 64 "lexer3.l"
 return IF;
 	YY_BREAK
 case 7:
 YY_RULE_SETUP
-#line 64 "lexer3.l"
+#line 65 "lexer3.l"
 return ELSE;
 	YY_BREAK
 case 8:
 YY_RULE_SETUP
-#line 65 "lexer3.l"
+#line 66 "lexer3.l"
 return WHILE;
 	YY_BREAK
 case 9:
 YY_RULE_SETUP
-#line 66 "lexer3.l"
+#line 67 "lexer3.l"
 return FOR;
 	YY_BREAK
 case 10:
 YY_RULE_SETUP
-#line 67 "lexer3.l"
-return STRUCT;
+#line 68 "lexer3.l"
+{ yylval.structKind = YYSTYPE::STRUCT; return STRUCT; }
 	YY_BREAK
 case 11:
 YY_RULE_SETUP
-#line 68 "lexer3.l"
-return STRUCT;
+#line 69 "lexer3.l"
+{ yylval.structKind = YYSTYPE::UNION; return STRUCT; }
 	YY_BREAK
 case 12:
 YY_RULE_SETUP
-#line 69 "lexer3.l"
+#line 70 "lexer3.l"
 return TYPEDEF;
 	YY_BREAK
 case 13:
 YY_RULE_SETUP
-#line 70 "lexer3.l"
+#line 71 "lexer3.l"
 return RETURN;
 	YY_BREAK
 case 14:
 YY_RULE_SETUP
-#line 71 "lexer3.l"
-{ return ID; }
+#line 72 "lexer3.l"
+{ yylval.id = new Identifier(yytext); return ID; }
 	YY_BREAK
 case 15:
 YY_RULE_SETUP
-#line 72 "lexer3.l"
+#line 73 "lexer3.l"
 return OP_ASSIGN; 
 	YY_BREAK
 case 16:
 YY_RULE_SETUP
-#line 73 "lexer3.l"
+#line 74 "lexer3.l"
 return OP_AND;
 	YY_BREAK
 case 17:
 YY_RULE_SETUP
-#line 74 "lexer3.l"
+#line 75 "lexer3.l"
 return OP_OR;
 	YY_BREAK
 case 18:
 YY_RULE_SETUP
-#line 75 "lexer3.l"
+#line 76 "lexer3.l"
 return OP_NOT;
 	YY_BREAK
 case 19:
 YY_RULE_SETUP
-#line 76 "lexer3.l"
+#line 77 "lexer3.l"
 return OP_EQ;
 	YY_BREAK
 case 20:
 YY_RULE_SETUP
-#line 77 "lexer3.l"
+#line 78 "lexer3.l"
 return OP_NE;
 	YY_BREAK
 case 21:
 YY_RULE_SETUP
-#line 78 "lexer3.l"
+#line 79 "lexer3.l"
 return OP_LT;
 	YY_BREAK
 case 22:
 YY_RULE_SETUP
-#line 79 "lexer3.l"
+#line 80 "lexer3.l"
 return OP_GT;
 	YY_BREAK
 case 23:
 YY_RULE_SETUP
-#line 80 "lexer3.l"
+#line 81 "lexer3.l"
 return OP_LE;
 	YY_BREAK
 case 24:
 YY_RULE_SETUP
-#line 81 "lexer3.l"
+#line 82 "lexer3.l"
 return OP_GE;
 	YY_BREAK
 case 25:
 YY_RULE_SETUP
-#line 82 "lexer3.l"
+#line 83 "lexer3.l"
 return OP_PLUS;
 	YY_BREAK
 case 26:
 YY_RULE_SETUP
-#line 83 "lexer3.l"
+#line 84 "lexer3.l"
 return OP_MINUS;
 	YY_BREAK
 case 27:
 YY_RULE_SETUP
-#line 84 "lexer3.l"
+#line 85 "lexer3.l"
 return OP_TIMES;
 	YY_BREAK
 case 28:
 YY_RULE_SETUP
-#line 85 "lexer3.l"
+#line 86 "lexer3.l"
 return OP_DIVIDE;
 	YY_BREAK
 case 29:
 YY_RULE_SETUP
-#line 86 "lexer3.l"
-{  return CONST;}
+#line 87 "lexer3.l"
+{
+		  yylval.node = new IntLiteral(atoi(yytext));
+		  return CONST;
+		}
 	YY_BREAK
 case 30:
 YY_RULE_SETUP
-#line 87 "lexer3.l"
-{  return CONST;}
+#line 91 "lexer3.l"
+{
+		  yylval.node = new FloatLiteral(atof(yytext)); 
+		  return CONST;
+		}
 	YY_BREAK
 case 31:
 YY_RULE_SETUP
-#line 88 "lexer3.l"
-return MK_LPAREN;
+#line 95 "lexer3.l"
+{
+		  yylval.node = new StringLiteral(string(yytext));
+		  return CONST;
+		}
 	YY_BREAK
 case 32:
 YY_RULE_SETUP
-#line 89 "lexer3.l"
-return MK_RPAREN;
+#line 99 "lexer3.l"
+return MK_LPAREN;
 	YY_BREAK
 case 33:
 YY_RULE_SETUP
-#line 90 "lexer3.l"
-return MK_LBRACE;
+#line 100 "lexer3.l"
+return MK_RPAREN;
 	YY_BREAK
 case 34:
 YY_RULE_SETUP
-#line 91 "lexer3.l"
-return MK_RBRACE;
+#line 101 "lexer3.l"
+return MK_LBRACE;
 	YY_BREAK
 case 35:
 YY_RULE_SETUP
-#line 92 "lexer3.l"
-return MK_LB;
+#line 102 "lexer3.l"
+return MK_RBRACE;
 	YY_BREAK
 case 36:
 YY_RULE_SETUP
-#line 93 "lexer3.l"
-return MK_RB;
+#line 103 "lexer3.l"
+return MK_LB;
 	YY_BREAK
 case 37:
 YY_RULE_SETUP
-#line 94 "lexer3.l"
-return MK_COMMA;
+#line 104 "lexer3.l"
+return MK_RB;
 	YY_BREAK
 case 38:
 YY_RULE_SETUP
-#line 95 "lexer3.l"
-return MK_SEMICOLON;
+#line 105 "lexer3.l"
+return MK_COMMA;
 	YY_BREAK
 case 39:
 YY_RULE_SETUP
-#line 96 "lexer3.l"
-return MK_DOT;
+#line 106 "lexer3.l"
+return MK_SEMICOLON;
 	YY_BREAK
 case 40:
-/* rule 40 can match eol */
 YY_RULE_SETUP
-#line 97 "lexer3.l"
-linenumber += 1;
+#line 107 "lexer3.l"
+return MK_DOT;
 	YY_BREAK
 case 41:
+/* rule 41 can match eol */
 YY_RULE_SETUP
-#line 98 "lexer3.l"
-return ERROR;
+#line 108 "lexer3.l"
+linenumber += 1;
 	YY_BREAK
 case 42:
 YY_RULE_SETUP
-#line 101 "lexer3.l"
+#line 109 "lexer3.l"
+return ERROR;
+	YY_BREAK
+case 43:
+YY_RULE_SETUP
+#line 112 "lexer3.l"
 ECHO;
 	YY_BREAK
-#line 1005 "lex.yy.c"
+#line 1019 "lex.yy.c"
 case YY_STATE_EOF(INITIAL):
 	yyterminate();
 
@@ -1999,7 +2013,7 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 101 "lexer3.l"
+#line 112 "lexer3.l"
 
 
 

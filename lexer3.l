@@ -65,11 +65,11 @@ error    .
 {kwElse}        return ELSE;
 {kwWhile}       return WHILE;
 {kwFor}      	return FOR;
-{kwStruct}		return STRUCT;
-{kwUnion}		return STRUCT;
+{kwStruct}		{ yylval.structKind = YYSTYPE::STRUCT; return STRUCT; }
+{kwUnion}		{ yylval.structKind = YYSTYPE::UNION; return STRUCT; }
 {kwTypedef}     return TYPEDEF;
 {kwReturn}      return RETURN;
-{ID}            { return ID; }
+{ID}            { yylval.id = new Identifier(yytext); return ID; }
 {op_assign}     return OP_ASSIGN; 
 {op_and}        return OP_AND;
 {op_or}         return OP_OR;
@@ -84,9 +84,18 @@ error    .
 {op_minus}      return OP_MINUS;
 {op_times}      return OP_TIMES;
 {op_divide}     return OP_DIVIDE;
-{int_constant}  { return CONST;}
-{flt_constant}  { return CONST;}
-{s-const}       { return CONST;}
+{int_constant}  {
+		  yylval.node = new IntLiteral(atoi(yytext));
+		  return CONST;
+		}
+{flt_constant}  {
+		  yylval.node = new FloatLiteral(atof(yytext)); 
+		  return CONST;
+		}
+{s-const}       {
+		  yylval.node = new StringLiteral(string(yytext));
+		  return CONST;
+		}
 {mk_lparen}     return MK_LPAREN;
 {mk_rparen}     return MK_RPAREN;
 {mk_lbrace}     return MK_LBRACE;

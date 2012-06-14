@@ -1,13 +1,19 @@
 TARGET = parser
-OBJECT = parser.tab.c parser.tab.o lex.yy.c 
-CC = g++
+OBJECT = parser.tab.c parser.tab.o lex.yy.c
+CC = g++ -Wno-write-strings -g
 LEX = flex
 YACC = bison -v
 YACCFLAG = -d
 LIBS = -lfl 
+TEST_LIBS =  -lCppUTest -L/Users/mac/learncpp/CppUTest/lib
+TEST_INCLUDE =  -I/Users/mac/learncpp/CppUTest/include
 
-parser: parser.tab.o	
-	$(CC) -o $(TARGET) parser.tab.o $(LIBS)
+#ALL_AST_SRCS := $(wildcard node/Debug/*.o)
+#AST_SRCS     := $(filter-out %Test.o, $(ALL_AST_SRCS))
+AST_SRCS      := AST/Debug/Node/*.o AST/Debug/Visitor/*.o
+
+parser: parser.tab.o
+	$(CC) -o $(TARGET) parser.tab.o $(AST_SRCS) $(LIBS)
 
 parser.tab.o: parser.tab.c lex.yy.c
 	$(CC) -c parser.tab.c
@@ -20,4 +26,7 @@ parser.tab.c: parser.y
 
 clean:
 	rm -f $(TARGET) $(OBJECT) 
+
+test: parser.tab.o
+	$(CC) -o test parser.tab.o  RunAllTest.cpp MemoryLeakTest.cpp $(AST_SRCS) $(LIBS) $(TEST_LIBS) $(TEST_INCLUDE)
 
