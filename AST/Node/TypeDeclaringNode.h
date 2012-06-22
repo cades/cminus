@@ -19,7 +19,7 @@ class StructDefiningNode;
 
 class TypeDeclaringNode: public AbstractNode {
 public:
-	TypeDeclaringNode(Identifier* typeName, AbstractNode* typeSpec);
+	TypeDeclaringNode(Identifier* typeName, StructDefiningNode* typeSpec);
 	virtual ~TypeDeclaringNode();
 	virtual void accept(NodeVisitor& visitor);
 	StructDefiningNode* typeSpec();
@@ -33,7 +33,7 @@ public:
 	virtual IIterator* createIterator() { return new NullIterator; }
 private:
 	Identifier* typeName_;
-	AbstractNode* typeSpec_;
+	StructDefiningNode* typeSpec_;
 };
 
 #endif /* TYPEDECLARINGNODE_H_ */

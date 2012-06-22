@@ -22,8 +22,8 @@ public:
 	virtual void accept(NodeVisitor& visitor);
 
 	string name() { return name_; }
+	Attributes* getAttributes() const { return attributesRef_; }
 	void setAttributes(Attributes* attr);
-	//Attributes* getAttributes() const { return attributesRef_; }
 	TypeDescriptor *getType() const { return type_; }
 	void setType(TypeDescriptor *type_) { this->type_ = type_; }
 private:

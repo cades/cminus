@@ -10,7 +10,7 @@
 #include <stdexcept>
 #include "StructDefiningNode.h"
 
-TypeDeclaringNode::TypeDeclaringNode(Identifier* typeName, AbstractNode* typeSpec)
+TypeDeclaringNode::TypeDeclaringNode(Identifier* typeName, StructDefiningNode* typeSpec)
 : typeName_(typeName), typeSpec_(typeSpec) {
 	// TODO Auto-generated constructor stub
 

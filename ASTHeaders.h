@@ -61,6 +61,9 @@
 #include "AST/Node/TypeSpecifierByStruct.h"
 
 
+// symbol table
+#include "AST/SymbolTable/SymbolTable.h"
+
 
 union YYSTYPE {
     enum StructKind { STRUCT, UNION };
