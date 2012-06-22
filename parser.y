@@ -305,7 +305,8 @@ int main (int argc, char *argv[])
     
     yyparse(astRoot, LocalVarRepo());  // pass AST root to yyparse
     
-    //TopDeclVisitor tdVisitor;
+    SymbolTable symbolTable;
+    //TopDeclVisitor tdVisitor(symbolTable, cout);
     //astRoot->accept(tdVisitor);
     
     printf("%s\n", "Parsing completed. No errors found.");
