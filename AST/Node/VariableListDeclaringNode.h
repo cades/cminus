@@ -18,6 +18,7 @@ public:
 	VariableListDeclaringNode(Identifier* typeName, IdentifierList* idList);
 	virtual ~VariableListDeclaringNode();
 	virtual void accept(NodeVisitor& visitor);
+    Identifier *getTypeName() const;
 	virtual IdentifierList::Iterator* createIterator() { return idList_->createIterator(); }
 private:
 	Identifier* typeName_;

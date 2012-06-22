@@ -12,18 +12,24 @@
 #include <string>
 using std::string;
 class NodeVisitor;
-class TypeAttributes;
+class Attributes;
+class TypeDescriptor;
 
 class Identifier: public AbstractNode {
 public:
 	Identifier(const string&);
 	virtual ~Identifier();
 	virtual void accept(NodeVisitor& visitor);
+
 	string name() { return name_; }
-	void setType(TypeAttributes*);
+	void setAttributes(Attributes* attr);
+	//Attributes* getAttributes() const { return attributesRef_; }
+	TypeDescriptor *getType() const { return type_; }
+	void setType(TypeDescriptor *type_) { this->type_ = type_; }
 private:
 	string name_;
-	TypeAttributes* type_;
+	Attributes* attributesRef_;
+	TypeDescriptor* type_;
 };
 
 #endif /* IDENTIFIER_H_ */

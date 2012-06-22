@@ -8,7 +8,7 @@
 #include "StructDefiningNode.h"
 #include "../Visitor/NodeVisitor.h"
 
-StructDefiningNode::StructDefiningNode(NodeList* fieldDeclList) : fieldDeclList_(fieldDeclList) {
+StructDefiningNode::StructDefiningNode(DeclaringList* fieldDeclList) : fieldDeclList_(fieldDeclList) {
 	// TODO Auto-generated constructor stub
 
 }

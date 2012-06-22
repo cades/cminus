@@ -7,6 +7,7 @@
 
 #include "Identifier.h"
 #include "../Visitor/NodeVisitor.h"
+#include "../SymbolTable/Attributes/Attributes.h"
 
 Identifier::Identifier(const string& s) : name_(s) {
 	// TODO Auto-generated constructor stub
@@ -19,8 +20,11 @@ Identifier::~Identifier() {
 
 void Identifier::accept(NodeVisitor& visitor) { visitor.visit(*this); }
 
-void Identifier::setType(TypeAttributes *typeAttr) {
-	type_ = typeAttr;
+void Identifier::setAttributes(Attributes* attr) {
+	attributesRef_ = attr;
+	if (attr == 0) type_ = 0;
+	type_ = attr->getType();
 }
+
 
 

@@ -38,15 +38,15 @@ void TypeVisitor::visit(Identifier & id) {
 	try {
 		Attributes* attr = currentSymbolTable().retrieveSymbol(id.name());
 		if (TypeAttributes* typeAttr = dynamic_cast<TypeAttributes*>(attr)) {
-			id.setType(typeAttr);
+			id.setAttributes(typeAttr);
 		} else {	// symbol found, but not a type name
 			os_ << "This identifier '" + id.name() + "' is not a type name. \n";
-			id.setType(0);	// NOTICE by design, null attribute and error type is 0.
+			id.setAttributes(0);	// NOTICE by design, null attribute and error type is 0.
 		}
 	} catch (std::runtime_error& e) { // symbol not found
 		assert (e.what() == "Symbol '" + id.name() + "' not found: There're no such symbol in EVERY scope.");
 		os_ << "Type name '" + id.name() + "' not found. \n";
-		id.setType(0);		// NOTICE by design, null attribute and error type is 0.
+		id.setAttributes(0);		// NOTICE by design, null attribute and error type is 0.
 	}
 }
 
@@ -72,7 +72,7 @@ void TypeVisitor::visit(ArrayDefiningNode& arrayDef) {
 				try {
 					Attributes* attr = currentSymbolTable().retrieveSymbol(id->name());
 					if (TypeAttributes* typeAttr = dynamic_cast<TypeAttributes*>(attr)) { // success case 1
-						atd->setElementType(typeAttr->type());
+						atd->setElementType(typeAttr->getType());
 						atd->setBounds(lit->getValue());
 						arrayDef.setType(atd);
 					} else {
@@ -129,7 +129,8 @@ void TypeVisitor::visit(StructDefiningNode & structDef) {
 	StructDefiningNode::Iterator* declIter = structDef.createIterator();
 	for (declIter->First(); !declIter->IsDone(); declIter->Next()) {	// iterate through each field declaration
 		// declIter->CurrentItem() is VariableListDeclaringNode
-		//declIter->CurrentItem()->XXXXXX->accept(*this);
+		VariableListDeclaringNode& decl = *declIter->CurrentItem();
+		decl.getTypeName()->accept(*this);
 
 		/* FIXME This is bad. It may fail at run-time. But I don't want to add try catch block.
 		 * So far I just can use assert(dynamic_cast) + static_cast to make it compile. Have to overcome it at compile time.
@@ -139,28 +140,19 @@ void TypeVisitor::visit(StructDefiningNode & structDef) {
 		IdentifierList::Iterator* idIter = static_cast<IdentifierList::Iterator*>(
 				declIter->CurrentItem()->createIterator());
 		for (idIter->First(); idIter->IsDone(); idIter->Next()) { // iterate through every id
-			if (typeRef->getSymbolTable().declaredLocally(idIter->CurrentItem()->name())) {
-				os_ << "Name cannot be redeclared :" << idIter->CurrentItem()->name() << "\n";
-				idIter->CurrentItem()->setType(0); // NOTICE by design, null attribute and error type is 0.
+			Identifier& id = *idIter->CurrentItem();
+			if (typeRef->getSymbolTable().declaredLocally(id.name())) {
+				os_ << "Name cannot be redeclared :" << id.name() << "\n";
+				idIter->CurrentItem()->setAttributes(0); // NOTICE by design, null attribute and error type is 0.
 			} else {
 				FieldAttributes* attr = new FieldAttributes;
-				//attr->setType()
+				attr->setType(decl.getTypeName()->getType());
+				typeRef->getSymbolTable().enterSymbol(id.name(), attr);
+				id.setType(decl.getTypeName()->getType());
+				id.setAttributes(attr);
 			}
 		}
 	}
+	structDef.setType(typeRef);
 }
-
-void TypeVisitor::setSymbolTableTo(SymbolTable& newSymtab)
-{
-	symtab_ = &newSymtab;
-}
-
-
-
-void TypeVisitor::setSymbolTableBack()
-{
-	symtab_ = originalSymtab_;
-}
-
-
 

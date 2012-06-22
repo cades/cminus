@@ -19,3 +19,10 @@ VariableListDeclaringNode::~VariableListDeclaringNode() {
 }
 
 void VariableListDeclaringNode::accept(NodeVisitor& visitor) { visitor.visit(*this); }
+
+Identifier *VariableListDeclaringNode::getTypeName() const
+{
+    return typeName_;
+}
+
+

@@ -64,8 +64,6 @@ public:
 	virtual void visit(WhileLoopingNode& node) {}
 
 private:
-	void setSymbolTableTo(SymbolTable& newSymtab);
-	void setSymbolTableBack();
 	SymbolTable* const originalSymtab_;
 };
 

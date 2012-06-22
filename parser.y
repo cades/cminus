@@ -35,17 +35,19 @@ Identifier* generateUniqueId() {
 
 %}
 
-%type <node> decl var_decl type_decl function_decl param  struct_declaration
+%type <node> decl type_decl function_decl param  
 %type <id>   type tag opt_tag struct_tail /* reference */
 %type <node> relop_expr relop_term relop_factor stmt assign_expr block
 %type <node> dim dim_decl dim_fn dimfn1 
 %type <node> var_ref
 %type <opKind> rel_op
-%type <nodeList> program global_decl_list global_decl param_list decl_list stmt_list struct_declaration_list
+%type <nodeList> program global_decl_list global_decl param_list decl_list stmt_list
 %type <nodeList> assign_expr_list nonempty_assign_expr_list relop_expr_list nonempty_relop_expr_list
 %type <expr> cexpr_null cexpr mcexpr cfactor expr term factor
 %type <typeDeclNode> struct_type
 %type <idList> id_list init_id_list
+%type <declList> struct_declaration_list
+%type <varListDecl> var_decl struct_declaration
 %type <id> init_id
 
 %token <expr> CONST
@@ -131,7 +133,7 @@ struct_type	: STRUCT opt_tag MK_LBRACE struct_declaration_list MK_RBRACE	{ $$ = 
 /*		| STRUCT tag {}*/
 		;
 struct_declaration_list
-		: struct_declaration				{ $$ = new NodeList; $$->append($1); }
+		: struct_declaration				{ $$ = new DeclaringList; $$->append($1); }
 		| struct_declaration_list struct_declaration	{ $1->append($2); $$ = $1; }
 		;
 struct_declaration:

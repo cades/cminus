@@ -15,7 +15,15 @@ class TypeAttributes: public Attributes {
 public:
 	TypeAttributes();
 	virtual ~TypeAttributes();
-	TypeDescriptor* type() { return typeDesc_; }
+	virtual TypeDescriptor *getType() const
+    {
+        return typeDesc_;
+    }
+
+	virtual void setType(TypeDescriptor *typeDesc_)
+    {
+        this->typeDesc_ = typeDesc_;
+    }
 private:
 	TypeDescriptor* typeDesc_;
 };

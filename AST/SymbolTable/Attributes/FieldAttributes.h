@@ -15,8 +15,8 @@ class FieldAttributes: public Attributes {
 public:
 	FieldAttributes();
 	virtual ~FieldAttributes();
-    TypeDescriptor *getType() const { return typeDesc_; }
-    void setType(TypeDescriptor *typeDesc_) { this->typeDesc_ = typeDesc_; }
+	virtual TypeDescriptor *getType() const { return typeDesc_; }
+	virtual void setType(TypeDescriptor *typeDesc_) { this->typeDesc_ = typeDesc_; }
 
 private:
 	TypeDescriptor* typeDesc_;
