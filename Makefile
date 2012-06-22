@@ -1,17 +1,15 @@
+-include plateform_dependent.mk
 TARGET = parser
-OBJECT = parser.tab.c parser.tab.o lex.yy.c
+OBJECT = parser.tab.c parser.tab.h parser.tab.o lex.yy.c parser.output
 CC = g++ -Wno-write-strings -g
 LEX = flex
 YACC = bison -v
 YACCFLAG = -d
 LIBS = -lfl 
-TEST_LIBS =  -lCppUTest -L/Users/mac/learncpp/CppUTest/lib
-TEST_INCLUDE =  -I/Users/mac/learncpp/CppUTest/include
 
 #ALL_AST_SRCS := $(wildcard node/Debug/*.o)
 #AST_SRCS     := $(filter-out %Test.o, $(ALL_AST_SRCS))
-AST_SRCS      := AST/Debug/Node/*.o AST/Debug/Visitor/*.o
-
+AST_SRCS      := AST/Debug/Node/*.o AST/Debug/Node/Iterator/*.o AST/Debug/Visitor/*.o AST/Debug/Visitor/*/*.o AST/Debug/SymbolTable/*.o AST/Debug/SymbolTable/*/*.o
 parser: parser.tab.o
 	$(CC) -o $(TARGET) parser.tab.o $(AST_SRCS) $(LIBS)
 

@@ -2,9 +2,9 @@
 #define VISITORSHEADERS_H_
 
 #include "AST/Visitor/NodeVisitor.h"
-#include "AST/Visitor/TopDeclVisitor.h"
-#include "AST/Visitor/TypeVisitor.h"
-#include "AST/Visitor/SemanticsVisitor.h"
-#include "AST/Visitor/LHSSemanticsVisitor.h"
+#include "AST/Visitor/DeclarationProcessing/TopDeclVisitor.h"
+#include "AST/Visitor/DeclarationProcessing/TypeVisitor.h"
+#include "AST/Visitor/DeclarationProcessing/SemanticsVisitor.h"
+#include "AST/Visitor/DeclarationProcessing/LHSSemanticsVisitor.h"
 
 #endif

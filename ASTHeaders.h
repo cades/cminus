@@ -4,10 +4,12 @@
 #include "AST/Node/AbstractNode.h"
 #include "AST/Node/EmptyNode.h"
 #include "AST/Node/NodeList.h"
-
+#include "AST/Node/IdentifierList.h"
 // terminals
 #include "AST/Node/Identifier.h"
 #include "AST/Node/IdentifierWithDim.h"
+#include "AST/Node/IdentifierWithInitExpr.h"
+#include "AST/Node/Literal.h"
 #include "AST/Node/IntLiteral.h"
 #include "AST/Node/FloatLiteral.h"
 #include "AST/Node/StringLiteral.h"
@@ -20,6 +22,9 @@
 #include "AST/Node/MultiplyNode.h"
 #include "AST/Node/DivideNode.h"
 
+#include "AST/Node/Expression.h"
+#include "AST/Node/EmptyExpression.h"
+#include "AST/Node/Factor.h"
 #include "AST/Node/NegNode.h"
 #include "AST/Node/NotNode.h"
 #include "AST/Node/ANDNode.h"
@@ -62,8 +67,10 @@ union YYSTYPE {
     OpKind opKind;
     AbstractNode* node;
     NodeList* nodeList;
+    IdentifierList* idList;
     Identifier* id;
-    
+    Expression* expr;
+    TypeDeclaringNode* typeDeclNode;
 };
 
 typedef union YYSTYPE YYSTYPE;

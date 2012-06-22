@@ -6,39 +6,51 @@
 #include <string.h>
 #include <string>
 #include <iostream>
+#include <sstream>
 #include <typeinfo>
 #include "ASTHeaders.h"
 #include "visitorsHeaders.h"
 using namespace std;
 static int linenumber = 1;
+
+struct LocalVarRepo {
+    string currentTypeName;
+};
+    
 int yylex(void);    
-int yyerror (AbstractNode* node, char *mesg);
-
-
+int yyerror (AbstractNode* node, LocalVarRepo localVarRepo, char *mesg);
 
     
 void error(string msg) {
   cout << "Error found in line " << linenumber << endl << msg << endl;
 }
-    
-TypeSpecifier* makeTypeSpecifier(AbstractNode*) {
-    return 0;
+
+
+Identifier* generateUniqueId() {
+    static int uniqueId = 0;
+    stringstream ss;
+    ss << "UNIQUE_ID_NO." << uniqueId;
+    return new Identifier(ss.str());
 }
 
 %}
 
-%type <node> decl var_decl  type_decl struct_decl function_decl param
-%type <id>   type struct_type struct_tail /* reference */
-%type <node> cexpr mcexpr cfactor expr term factor relop_expr relop_term relop_factor expr_null stmt assign_expr init_id block
-%type <node> dim dim_decl dim_fn dimfn1 anonymous_struct
+%type <node> decl var_decl type_decl function_decl param  struct_declaration
+%type <id>   type tag opt_tag struct_tail /* reference */
+%type <node> relop_expr relop_term relop_factor stmt assign_expr block
+%type <node> dim dim_decl dim_fn dimfn1 
 %type <node> var_ref
 %type <opKind> rel_op
-%type <nodeList> program global_decl_list global_decl param_list decl_list id_list init_id_list stmt_list
+%type <nodeList> program global_decl_list global_decl param_list decl_list stmt_list struct_declaration_list
 %type <nodeList> assign_expr_list nonempty_assign_expr_list relop_expr_list nonempty_relop_expr_list
+%type <expr> cexpr_null cexpr mcexpr cfactor expr term factor
+%type <typeDeclNode> struct_type
+%type <idList> id_list init_id_list
+%type <id> init_id
 
-
+%token <expr> CONST
 %token <id> ID
-%token <node> CONST  OP_ASSIGN   OP_OR    OP_AND   OP_NOT   
+%token <node> OP_ASSIGN   OP_OR    OP_AND   OP_NOT   
 %token <node> OP_PLUS  OP_MINUS  OP_TIMES  OP_DIVIDE
 %token <opKind> OP_EQ    OP_NE    OP_GT    OP_LT    OP_GE    OP_LE
 %token WHILE FOR IF ELSE VOID INT FLOAT STRUCT TYPEDEF MK_COMMA MK_DOT  MK_LB MK_LBRACE MK_LPAREN MK_RB MK_RBRACE MK_RPAREN MK_SEMICOLON RETURN ERROR 
@@ -46,6 +58,7 @@ TypeSpecifier* makeTypeSpecifier(AbstractNode*) {
 
 
 %parse-param {AbstractNode* root}
+%parse-param {LocalVarRepo localVarRepo}
 
 %start program
 
@@ -66,42 +79,32 @@ global_decl	: decl_list function_decl	{ $1->append($2); $$ = $1; }
 		;
 
 function_decl	: type ID MK_LPAREN param_list MK_RPAREN MK_LBRACE block MK_RBRACE
-		{ $$ = new FunctionDeclaringNode(makeTypeSpecifier($1), $2, $4, $7); }
-		| struct_type ID MK_LPAREN param_list MK_RPAREN MK_LBRACE block MK_RBRACE
-		{ $$ = new FunctionDeclaringNode(makeTypeSpecifier($1), $2, $4, $7); }
-		| VOID ID MK_LPAREN param_list MK_RPAREN MK_LBRACE block MK_RBRACE
-		{ $$ = new FunctionDeclaringNode(makeTypeSpecifier(new Identifier("void")), $2, $4, $7); }
+		{ $$ = new FunctionDeclaringNode($1, $2, $4, $7); }
 		| type ID MK_LPAREN  MK_RPAREN MK_LBRACE block MK_RBRACE
-		{ $$ = new FunctionDeclaringNode(makeTypeSpecifier($1), $2, new NodeList, $6); }
-		| struct_type ID MK_LPAREN  MK_RPAREN MK_LBRACE block MK_RBRACE
-		{ $$ = new FunctionDeclaringNode(makeTypeSpecifier($1), $2, new NodeList, $6); }
-		| VOID ID MK_LPAREN  MK_RPAREN MK_LBRACE block MK_RBRACE
-		{ $$ = new FunctionDeclaringNode(makeTypeSpecifier(new Identifier("void")), $2, new NodeList, $6); }
+		{ $$ = new FunctionDeclaringNode($1, $2, new NodeList, $6); }
 		;
 
 param_list	: param_list MK_COMMA  param	{ $1->append($3); $$ = $1; }
 		| param				{ $$ = new NodeList; $$->append($1); }
 		;
 
-param		: type ID		{ $$ = new VariableDeclaringNode(makeTypeSpecifier($1), $2); }
-		| struct_type ID	{ $$ = new VariableDeclaringNode(makeTypeSpecifier($1), $2); }
-		| type ID dim_fn    { $$ = new ArrayVariableDeclaringNode(makeTypeSpecifier($1), $2, $3); }
-		| struct_type ID dim_fn	{ $$ = new ArrayVariableDeclaringNode(makeTypeSpecifier($1), $2, $3); }
+param		: type ID		{ $$ = new VariableDeclaringNode($1, $2); }
+		| type ID dim_fn    { $$ = new ArrayVariableDeclaringNode($1, $2, $3); }
 		;
-dim_fn		:MK_LB expr_null MK_RB dimfn1 { $$ = new ArrayDefiningNode($2, $4); }
+dim_fn		:MK_LB cexpr_null MK_RB dimfn1 { $$ = new ArrayDefiningNode($2, $4); }
 		;
-dimfn1		:MK_LB expr MK_RB dimfn1 { $$ = new ArrayDefiningNode($2, $4); }
-		| { $$ = 0; } /* In type checking phase, it'll be replaced by a TypeDescriptor. */
+dimfn1		:MK_LB cexpr MK_RB dimfn1 { $$ = new ArrayDefiningNode($2, $4); }
+		| { $$ = new Identifier(localVarRepo.currentTypeName); } /* In type checking phase, it'll be replaced by a TypeDescriptor. */
 		;
-expr_null	:expr	{ $$ = $1; }
-		|	{ $$ = new EmptyNode; }
+cexpr_null	:cexpr	{ $$ = $1; }
+		|	{ $$ = new EmptyExpression; }
 		;
 
 block		: decl_list stmt_list	{ $1->append($2); delete $2; $$ = new BlockNode($1); }
 		| stmt_list		{ $$ = new BlockNode($1); }
 		| decl_list		{ $$ = new BlockNode($1); } /* actually a block contains decl without stmt is useless. */
 		|			{ $$ = new EmptyNode; }
-                ;
+		;
  
 decl_list	: decl_list decl       	{ $1->append($2); $$ = $1; }
 		| decl			{ $$ = new NodeList; $$->append($1); }
@@ -111,38 +114,42 @@ decl		: type_decl	{ $$ = $1; }
 		| var_decl	{ $$ = $1; }
 		;
 
-type_decl 	: TYPEDEF type id_list MK_SEMICOLON		{ $$ = new TypedefNode(makeTypeSpecifier($2), $3); }
-		| TYPEDEF VOID id_list MK_SEMICOLON		{ $$ = new TypedefNode(makeTypeSpecifier(new Identifier("void")), $3); }
-		| TYPEDEF struct_type id_list MK_SEMICOLON      { $$ = new TypedefNode(makeTypeSpecifier($2), $3); }
-		| struct_decl MK_SEMICOLON			{ $$ = $1;} /* It's struct_decl, NOT struct_type */
-		| TYPEDEF anonymous_struct id_list MK_SEMICOLON	{ $$ = new TypedefNode(makeTypeSpecifier($2), $3); }
+type_decl 	: TYPEDEF type id_list MK_SEMICOLON		{ $$ = new TypedefNode($2, $3); }
 		;
 
-var_decl	: type init_id_list MK_SEMICOLON	{ $$ = new VariableListDeclaringNode(makeTypeSpecifier($1), $2); }
-		| struct_type id_list MK_SEMICOLON	{ $$ = new VariableListDeclaringNode(makeTypeSpecifier($1), $2); }
-		| struct_decl id_list MK_SEMICOLON	{ $$ = new VariableListDeclaringNode(makeTypeSpecifier($1), $2); }
-		| anonymous_struct id_list MK_SEMICOLON	{ $$ = new VariableListDeclaringNode(makeTypeSpecifier($1), $2); }
-		| ID id_list MK_SEMICOLON		{ $$ = new VariableListDeclaringNode(makeTypeSpecifier($1), $2); } /* the former ID is typedefed struct*/
+var_decl	: type { localVarRepo.currentTypeName = $1->name(); } init_id_list MK_SEMICOLON	{ $$ = new VariableListDeclaringNode($1, $3); localVarRepo.currentTypeName = ""; }
+		| ID { localVarRepo.currentTypeName = $1->name(); } id_list MK_SEMICOLON		{ $$ = new VariableListDeclaringNode($1, $3); localVarRepo.currentTypeName = ""; } /* the former ID is typedefed struct*/
 		;
 
 type		: INT	{ $$ = new Identifier("int");}
 		| FLOAT	{ $$ = new Identifier("float");}
+		| VOID { $$ = new Identifier("void"); }
+		| struct_type { $$ = new Identifier( $1->nameAsString() ); }
 		;
 
-struct_type	: STRUCT ID	{$$ = new Identifier("[struct:"+$2->name()+"]"); delete $2; }  /* It's type name. Have to separate from typedef struct ...  */
+struct_type	: STRUCT opt_tag MK_LBRACE struct_declaration_list MK_RBRACE	{ $$ = new TypeDeclaringNode($2, new StructDefiningNode($4)); }
+/*		| STRUCT tag {}*/
 		;
-struct_decl	: STRUCT ID MK_LBRACE decl_list MK_RBRACE	{ $$ = new TypeDeclaringNode($2, new StructDefiningNode($4)); }
-                ;
-anonymous_struct: STRUCT MK_LBRACE decl_list MK_RBRACE	{ $$ = new StructDefiningNode($3); }
-                ;
+struct_declaration_list
+		: struct_declaration				{ $$ = new NodeList; $$->append($1); }
+		| struct_declaration_list struct_declaration	{ $1->append($2); $$ = $1; }
+		;
+struct_declaration:
+		var_decl { $$ = $1; }
+		;
+opt_tag		: tag	{ $$ = $1; }
+		|	{ $$ = generateUniqueId(); /*$$ = new Identifier("[struct:"+$2->name()+"]"); delete $2;*/ }
+		;
+tag		: ID	{ $$ = $1; }
+		;
 
-id_list		: ID				{ $$ = new NodeList; $$->append($1); }
+id_list		: ID				{ $$ = new IdentifierList; $$->append($1); }
 		| id_list MK_COMMA ID		{ $1->append($3); $$ = $1; }
 		| id_list MK_COMMA ID dim_decl	{ $3 = new IdentifierWithDim($3, $4); delete $3; $1->append($3); $$ = $1; }
-		| ID dim_decl			{ $1 = new IdentifierWithDim($1, $2); delete $2; $$ = new NodeList; $$->append($1); }
+		| ID dim_decl			{ $1 = new IdentifierWithDim($1, $2); delete $2; $$ = new IdentifierList; $$->append($1); }
 		;
-dim_decl	: MK_LB cexpr MK_RB		{ $$ = new ArrayDefiningNode($2, 0); }
-		| MK_LB cexpr MK_RB dim_decl	{ $$ = new ArrayDefiningNode($2, $4);  } /* can refactor to right-recursion */
+dim_decl	: MK_LB cexpr MK_RB		{ $$ = new ArrayDefiningNode($2, new Identifier(localVarRepo.currentTypeName)); }
+		| MK_LB cexpr MK_RB dim_decl	{ $$ = new ArrayDefiningNode($2, $4);  } /* refactor to right-recursion */
 		;
 cexpr		: cexpr OP_PLUS mcexpr	{ $$ = new PlusNode($1, $3); }
 		| cexpr OP_MINUS mcexpr	{ $$ = new MinusNode($1, $3); }
@@ -156,13 +163,13 @@ cfactor		: CONST				{ $$ = $1; }
 		| MK_LPAREN cexpr MK_RPAREN	{ $$ = $2; } /* at this point, cexpr has been computed */
 		;
 
-init_id_list	: init_id			{ $$ = new NodeList; $$->append($1); }
+init_id_list	: init_id			{ $$ = new IdentifierList; $$->append($1); }
 		| init_id_list MK_COMMA init_id	{ $1->append($3); $$ = $1; }
 		;
 
 init_id		: ID				{ $$ = $1; }
 		| ID dim_decl			{ $1 = new IdentifierWithDim($1, $2); delete $1; $$ = $1;}
-		| ID OP_ASSIGN relop_expr	{ $$ = new AssigningNode($1, $3); }
+		| ID OP_ASSIGN relop_expr	{ $$ = new IdentifierWithInitExpr($1, $3); }
 		;
 
 stmt_list	: stmt_list stmt	{ $1->append($2); $$ = $1; }
@@ -186,16 +193,16 @@ stmt		: MK_LBRACE block MK_RBRACE	{ $$ = $2; }
 		;
 
 assign_expr_list : nonempty_assign_expr_list  { $$ = $1; }
-                | { $$ = new NodeList; } /* empty nodelist*/
-                ;
+		| { $$ = new NodeList; } /* empty nodelist*/
+		;
 
 nonempty_assign_expr_list        : nonempty_assign_expr_list MK_COMMA assign_expr { $1->append($3); $$ = $1; }
 		| assign_expr { $$ = new NodeList; $$->append($1); }
-                ;
+		;
 
 assign_expr     : var_ref OP_ASSIGN relop_expr { $$ = new AssigningNode($1, $3); }
-                | relop_expr { $$ = $1; }
-                ;
+		| relop_expr { $$ = $1; }
+		;
 
 relop_expr	: relop_term { $$ = $1; }
 		| relop_expr OP_OR relop_term { $$ = new ORNode($1, $3); }
@@ -256,7 +263,7 @@ term		: term OP_TIMES factor	{ $$ = new MultiplyNode($1, $3); }
 		| factor		{ $$ = $1; }
 		;
 
-factor		: MK_LPAREN relop_expr MK_RPAREN		{ $$ = $2; } /* | -(<relop_expr>) */
+factor		: MK_LPAREN relop_expr MK_RPAREN		{ $$ = new Factor($2); } /* | -(<relop_expr>) */
 		| OP_MINUS MK_LPAREN relop_expr MK_RPAREN	{ $$ = new NegNode($3); }
 		| OP_NOT MK_LPAREN relop_expr MK_RPAREN		{ $$ = new NotNode($3); }
 		/* | - constant, here - is an Unary operator */ 
@@ -268,7 +275,7 @@ factor		: MK_LPAREN relop_expr MK_RPAREN		{ $$ = $2; } /* | -(<relop_expr>) */
 		| OP_MINUS ID MK_LPAREN relop_expr_list MK_RPAREN	{ $$ = new NegNode(new CallingNode($2, $4)); }
 		| OP_NOT ID MK_LPAREN relop_expr_list MK_RPAREN		{ $$ = new NotNode(new CallingNode($2, $4)); }
 		/* | - var-reference */ 
-		| var_ref		{ $$ = $1; }
+		| var_ref		{ $$ = new Factor($1); }    // Factor is an 'adaptor', convert AbstractNode* to Expression*
 		| OP_MINUS var_ref	{ $$ = new NegNode($2); }
 		| OP_NOT var_ref	{ $$ = new NotNode($2); }
 		;
@@ -294,16 +301,16 @@ int main (int argc, char *argv[])
     yyin = fopen(argv[1],"r");
     AbstractNode* astRoot = 0;
     
-    yyparse(astRoot);  // pass AST root to yyparse
+    yyparse(astRoot, LocalVarRepo());  // pass AST root to yyparse
     
-    TopDeclVisitor tdVisitor;
+    //TopDeclVisitor tdVisitor;
     //astRoot->accept(tdVisitor);
     
     printf("%s\n", "Parsing completed. No errors found.");
 } /* main */
 
 
-int yyerror (AbstractNode* node, char *mesg)
+int yyerror (AbstractNode* node, LocalVarRepo localVarRepo, char *mesg)
 {
     printf("%s\t%d\t%s\t%s\n", "Error found in Line ", linenumber, "next token: ", yytext );
     exit(1);
