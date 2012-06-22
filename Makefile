@@ -6,6 +6,8 @@ LEX = flex
 YACC = bison -v
 YACCFLAG = -d
 LIBS = -lfl 
+TEST_LIBS    :=  -lCppUTest -L$(CPPUTEST_INSTALL_PATH)/lib
+TEST_INCLUDE :=  -I$(CPPUTEST_INSTALL_PATH)/include
 
 #ALL_AST_SRCS := $(wildcard node/Debug/*.o)
 #AST_SRCS     := $(filter-out %Test.o, $(ALL_AST_SRCS))
