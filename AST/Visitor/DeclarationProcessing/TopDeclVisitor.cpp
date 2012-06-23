@@ -15,6 +15,7 @@
 #include "../../SymbolTable/SymbolTable.h"
 #include "../../SymbolTable/Attributes/TypeAttributes.h"
 #include "../../SymbolTable/Attributes/VariableAttributes.h"
+#include "../../SymbolTable/Attributes/FunctionAttributes.h"
 #include <stdexcept>
 
 TopDeclVisitor::TopDeclVisitor(SymbolTable* symtab, ostream& os) : symtab_(symtab), os_(os), originalSymtab_(symtab) {
@@ -89,7 +90,16 @@ void TopDeclVisitor::visit(FunctionDeclaringNode& fd) {
 	TypeVisitor typeVisitor(&currentSymbolTable(), os_);
 	fd.getReturnType()->accept(typeVisitor);
 
+	FunctionAttributes* attr = new FunctionAttributes;
+	attr->setReturnType(fd.getReturnType()->getType());
+	currentSymbolTable().enterSymbol(fd.getFunctionName()->name(), attr);
+	fd.getFunctionName()->setAttributes(attr); // why do this? (textbook)
 
+	setCurrentSymbolTableTo(attr->getLocals());
+	fd.getParamList()->accept(*this);
+	// TODO process signature
+	fd.getBlock()->accept(*this);
+	setCurrentSymbolTableBack();
 }
 
 void TopDeclVisitor::setCurrentSymbolTableTo(SymbolTable *newSymtab) {

@@ -18,6 +18,12 @@ public:
 	FunctionDeclaringNode(Identifier* returnType, Identifier* functionName, NodeList* paramList, AbstractNode* block);
 	virtual ~FunctionDeclaringNode();
 	virtual void accept(NodeVisitor& visitor);
+
+    Identifier *getReturnType() const { return returnType_; }
+    Identifier *getFunctionName() const { return functionName_; }
+    NodeList *getParamList() const { return paramList_; }
+    AbstractNode *getBlock() const { return block_; }
+
 private:
 	Identifier* returnType_;
 	Identifier* functionName_;
