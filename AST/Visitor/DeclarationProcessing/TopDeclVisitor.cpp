@@ -9,7 +9,7 @@
 #include "TypeVisitor.h"
 #include "../../Node/StructDefiningNode.h"
 #include "../../Node/TypeDeclaringNode.h"
-#include "../../Node/TypeDefNode.h"
+#include "../../Node/TypedefNode.h"
 #include "../../SymbolTable/SymbolTable.h"
 #include "../../SymbolTable/Attributes/TypeAttributes.h"
 #include <stdexcept>
