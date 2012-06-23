@@ -136,7 +136,7 @@ void TypeVisitor::visit(StructDefiningNode & structDef) {
 		 * So far I just can use assert(dynamic_cast) + static_cast to make it compile. Have to overcome it at compile time.
 		 * I need to use Identifier.name(), which is not in AbstractNode's public interface.
 		 */
-		assert(dynamic_cast<IdentifierList::Iterator*>(declIter->CurrentItem()->createIterator()));
+		assert(dynamic_cast<IdentifierList::Iterator*>(declIter->CurrentItem()->createIterator())); // FIXME createIterator leaks.
 		IdentifierList::Iterator* idIter = static_cast<IdentifierList::Iterator*>(
 				declIter->CurrentItem()->createIterator());
 		for (idIter->First(); idIter->IsDone(); idIter->Next()) { // iterate through every id
@@ -152,7 +152,9 @@ void TypeVisitor::visit(StructDefiningNode & structDef) {
 				id.setAttributes(attr);
 			}
 		}
+		delete idIter;
 	}
+	delete declIter;
 	structDef.setType(typeRef);
 }
 

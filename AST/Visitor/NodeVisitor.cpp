@@ -38,6 +38,7 @@ void NodeVisitor::visitChildren_via_iter(AbstractNode& node)
 	for (i->First(); !i->IsDone(); i->Next()) {
 		i->CurrentItem()->accept(*this);
 	}
+	delete i;
 }
 
 void NodeVisitor::visit(AbstractNode & node)
