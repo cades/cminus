@@ -61,9 +61,6 @@ public:
 	virtual void visit(TypedefNode& node) {}
 	virtual void visit(VariableListDeclaringNode& node) {}
 	virtual void visit(WhileLoopingNode& node) {}
-
-private:
-	SymbolTable* const originalSymtab_;
 };
 
 #endif /* TYPEVISITOR_H_ */

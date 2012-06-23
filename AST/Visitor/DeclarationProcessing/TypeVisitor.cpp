@@ -25,7 +25,7 @@
 #include "../../Node/IntLiteral.h"
 #include "../../Node/IdentifierList.h"
 
-TypeVisitor::TypeVisitor(SymbolTable* symtab, ostream& os) : TopDeclVisitor(symtab, os) , originalSymtab_(symtab) {
+TypeVisitor::TypeVisitor(SymbolTable* symtab, ostream& os) : TopDeclVisitor(symtab, os) {
 	// TODO Auto-generated constructor stub
 
 }
@@ -40,12 +40,12 @@ void TypeVisitor::visit(Identifier & id) {
 		if (TypeAttributes* typeAttr = dynamic_cast<TypeAttributes*>(attr)) {
 			id.setAttributes(typeAttr);
 		} else {	// symbol found, but not a type name
-			os_ << "This identifier '" + id.name() + "' is not a type name. \n";
+			errorLog() << "This identifier '" + id.name() + "' is not a type name. \n";
 			id.setAttributes(0);	// NOTICE by design, null attribute and error type is 0.
 		}
 	} catch (std::runtime_error& e) { // symbol not found
 		assert (e.what() == "Symbol '" + id.name() + "' not found: There're no such symbol in EVERY scope.");
-		os_ << "Type name '" + id.name() + "' not found. \n";
+		errorLog() << "Type name '" + id.name() + "' not found. \n";
 		id.setAttributes(0);		// NOTICE by design, null attribute and error type is 0.
 	}
 }
@@ -76,11 +76,11 @@ void TypeVisitor::visit(ArrayDefiningNode& arrayDef) {
 						atd->setBounds(lit->getValue());
 						arrayDef.setType(atd);
 					} else {
-						os_ << "'" << id->name() << "' is NOT type name.\n";
+						errorLog() << "'" << id->name() << "' is NOT type name.\n";
 						arrayDef.setType(0);	// NOTICE by design, null attribute and error type is 0.
 					}
 				} catch (std::runtime_error& e) {
-					os_ << e.what() << "\n";
+					errorLog() << e.what() << "\n";
 					arrayDef.setType(0);		// NOTICE by design, null attribute and error type is 0.
 				}
 			} else {	// array of array. success case 2
@@ -94,11 +94,11 @@ void TypeVisitor::visit(ArrayDefiningNode& arrayDef) {
 			delete lit;
 			return;
 		} else { // size is float
-			os_ << "Array index cannot be float type. Plz fix to int.\n";
+			errorLog() << "Array index cannot be float type. Plz fix to int.\n";
 		}
 	} catch (std::runtime_error& e) { // catch exception thrown from evaluate()
 		// size cannot be computed.
-		os_ << "Array index cannot be computed : " << e.what() << "\n";
+		errorLog() << "Array index cannot be computed : " << e.what() << "\n";
 	}
 }
 
@@ -142,7 +142,7 @@ void TypeVisitor::visit(StructDefiningNode & structDef) {
 		for (idIter->First(); idIter->IsDone(); idIter->Next()) { // iterate through every id
 			Identifier& id = *idIter->CurrentItem();
 			if (typeRef->getSymbolTable().declaredLocally(id.name())) {
-				os_ << "Name cannot be redeclared :" << id.name() << "\n";
+				errorLog() << "Name cannot be redeclared :" << id.name() << "\n";
 				idIter->CurrentItem()->setAttributes(0); // NOTICE by design, null attribute and error type is 0.
 			} else {
 				FieldAttributes* attr = new FieldAttributes;

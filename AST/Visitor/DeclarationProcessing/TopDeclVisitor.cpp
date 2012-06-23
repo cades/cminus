@@ -11,12 +11,13 @@
 #include "../../Node/TypeDeclaringNode.h"
 #include "../../Node/TypedefNode.h"
 #include "../../Node/VariableListDeclaringNode.h"
+#include "../../Node/FunctionDeclaringNode.h"
 #include "../../SymbolTable/SymbolTable.h"
 #include "../../SymbolTable/Attributes/TypeAttributes.h"
 #include "../../SymbolTable/Attributes/VariableAttributes.h"
 #include <stdexcept>
 
-TopDeclVisitor::TopDeclVisitor(SymbolTable* symtab, ostream& os) : symtab_(symtab), os_(os) {
+TopDeclVisitor::TopDeclVisitor(SymbolTable* symtab, ostream& os) : symtab_(symtab), os_(os), originalSymtab_(symtab) {
 	// TODO Auto-generated constructor stub
 
 }
@@ -82,6 +83,23 @@ void TopDeclVisitor::visit(VariableListDeclaringNode& vld) {
 		}
 	}
 	delete i;
+}
+
+void TopDeclVisitor::visit(FunctionDeclaringNode& fd) {
+	TypeVisitor typeVisitor(&currentSymbolTable(), os_);
+	fd.getReturnType()->accept(typeVisitor);
+
+
+}
+
+void TopDeclVisitor::setCurrentSymbolTableTo(SymbolTable *newSymtab) {
+	symtab_ = newSymtab;
+}
+
+
+
+void TopDeclVisitor::setCurrentSymbolTableBack() {
+	symtab_ = originalSymtab_;
 }
 
 
