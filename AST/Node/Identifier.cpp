@@ -23,7 +23,7 @@ void Identifier::accept(NodeVisitor& visitor) { visitor.visit(*this); }
 void Identifier::setAttributes(Attributes* attr) {
 	attributesRef_ = attr;
 	if (attr == 0) type_ = 0;
-	type_ = attr->getType();
+	else type_ = attr->getType();
 }
 
 
