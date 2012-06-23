@@ -10,8 +10,10 @@
 #include "../../Node/StructDefiningNode.h"
 #include "../../Node/TypeDeclaringNode.h"
 #include "../../Node/TypedefNode.h"
+#include "../../Node/VariableListDeclaringNode.h"
 #include "../../SymbolTable/SymbolTable.h"
 #include "../../SymbolTable/Attributes/TypeAttributes.h"
+#include "../../SymbolTable/Attributes/VariableAttributes.h"
 #include <stdexcept>
 
 TopDeclVisitor::TopDeclVisitor(SymbolTable* symtab, ostream& os) : symtab_(symtab), os_(os) {
@@ -61,8 +63,25 @@ void TopDeclVisitor::visit(TypedefNode& td) {
 	delete i;
 }
 
-void TopDeclVisitor::visit(VariableListDeclaringNode & node)
-{
+void TopDeclVisitor::visit(VariableListDeclaringNode& vld) {
+	TypeVisitor typeVisitor(&currentSymbolTable(), os_);
+	vld.getTypeName()->accept(typeVisitor);
+
+	// TODO deal with IdentifierWithDim
+	// TODO deal with IdentifierWithInitExpr
+	VariableListDeclaringNode::Iterator* i = vld.createIterator();
+	foreach_element (i) {
+		Identifier& id =  *i->CurrentItem();
+		if (currentSymbolTable().declaredLocally( id.name() )) {
+			id.setAttributes(0);
+		} else {
+			VariableAttributes* attr = new VariableAttributes;
+			attr->setType( vld.getTypeName()->getType() );
+			currentSymbolTable().enterSymbol(id.name(), attr);
+			id.setAttributes(attr);
+		}
+	}
+	delete i;
 }
 
 
