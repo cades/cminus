@@ -12,6 +12,10 @@ TypeAttributes::TypeAttributes() {
 
 }
 
+TypeAttributes::TypeAttributes(TypeDescriptor *td) : typeDesc_(td) {
+
+}
+
 TypeAttributes::~TypeAttributes() {
 	// TODO Auto-generated destructor stub
 }

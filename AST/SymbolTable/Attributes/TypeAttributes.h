@@ -14,6 +14,7 @@
 class TypeAttributes: public Attributes {
 public:
 	TypeAttributes();
+	TypeAttributes(TypeDescriptor*);
 	virtual ~TypeAttributes();
 	virtual TypeDescriptor *getType() const
     {
