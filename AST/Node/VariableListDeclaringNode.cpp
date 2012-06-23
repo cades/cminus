@@ -14,6 +14,12 @@ VariableListDeclaringNode::VariableListDeclaringNode(Identifier* typeName, Ident
 
 }
 
+VariableListDeclaringNode::VariableListDeclaringNode(Identifier *typeName, Identifier *id)
+: typeName_(typeName) {
+	idList_ = new IdentifierList;
+	idList_->append(id);
+}
+
 VariableListDeclaringNode::~VariableListDeclaringNode() {
 	// TODO Auto-generated destructor stub
 }

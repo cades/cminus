@@ -95,7 +95,7 @@ param_list	: param_list MK_COMMA  param	{ $1->append($3); $$ = $1; }
 		| param				{ $$ = new NodeList; $$->append($1); }
 		;
 
-param		: type ID		{ $$ = new VariableDeclaringNode($1, $2); }
+param		: type ID		{ $$ = new VariableListDeclaringNode($1, $2); }
 		| type ID dim_fn    { $$ = new ArrayVariableDeclaringNode($1, $2, $3); }
 		;
 dim_fn		:MK_LB cexpr_null MK_RB dimfn1 { $$ = new ArrayDefiningNode($2, $4); }

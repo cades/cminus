@@ -16,6 +16,7 @@ class NodeVisitor;
 class VariableListDeclaringNode: public AbstractNode {
 public:
 	VariableListDeclaringNode(Identifier* typeName, IdentifierList* idList);
+	VariableListDeclaringNode(Identifier* typeName, Identifier* id);
 	virtual ~VariableListDeclaringNode();
 	virtual void accept(NodeVisitor& visitor);
     Identifier *getTypeName() const;
