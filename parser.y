@@ -60,7 +60,7 @@ Identifier* generateUniqueId() {
  
 
 
-%parse-param {AbstractNode* root}
+%parse-param {AbstractNode*& root}
 %parse-param {LocalVarRepo localVarRepo}
 
 %start program
@@ -311,8 +311,8 @@ int main (int argc, char *argv[])
     yyparse(astRoot, LocalVarRepo());  // pass AST root to yyparse
     
     SymbolTable symbolTable;
-    //TopDeclVisitor tdVisitor(symbolTable, cout);
-    //astRoot->accept(tdVisitor);
+    TopDeclVisitor tdVisitor(&symbolTable, cout);
+    astRoot->accept(tdVisitor);
     
     printf("%s\n", "Parsing completed. No errors found.");
 } /* main */
