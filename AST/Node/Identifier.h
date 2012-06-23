@@ -21,7 +21,7 @@ public:
 	virtual ~Identifier();
 	virtual void accept(NodeVisitor& visitor);
 
-	string name() { return name_; }
+	string name() const { return name_; }
 	Attributes* getAttributes() const { return attributesRef_; }
 	void setAttributes(Attributes* attr);
 	TypeDescriptor *getType() const { return type_; }

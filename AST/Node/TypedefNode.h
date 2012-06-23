@@ -18,7 +18,10 @@ public:
 	TypedefNode(Identifier* typeName, IdentifierList* idList);
 	virtual ~TypedefNode();
 	virtual void accept(NodeVisitor& visitor);
-	virtual IdentifierList::Iterator* createIterator() { return idList_->createIterator(); }
+    Identifier *getTypeName() const { return typeName_; }
+
+    typedef IdentifierList::Iterator Iterator;
+    virtual IdentifierList::Iterator* createIterator() { return idList_->createIterator(); }
 private:
 	Identifier* typeName_;
 	IdentifierList* idList_;
