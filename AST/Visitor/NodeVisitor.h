@@ -50,7 +50,6 @@ class TypeSpecifierByStruct;
 class TypeSpecifierWithTypeDecl;
 class TypeSpecifierWithTypeDecl;
 class TypedefNode;
-class VariableDeclaringNode;
 class VariableListDeclaringNode;
 class WhileLoopingNode;
 class WhileLoopingNode;
@@ -100,7 +99,6 @@ public:
 	virtual void visit(TypeSpecifierByStruct& node) = 0;
 	virtual void visit(TypeSpecifierWithTypeDecl& node) = 0;
 	virtual void visit(TypedefNode& node) = 0;
-	virtual void visit(VariableDeclaringNode& node) = 0;
 	virtual void visit(VariableListDeclaringNode& node) = 0;
 	virtual void visit(WhileLoopingNode& node) = 0;
 private:

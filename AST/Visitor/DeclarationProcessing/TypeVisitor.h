@@ -59,7 +59,6 @@ public:
 	virtual void visit(TypeSpecifierByStruct& node) {}
 	virtual void visit(TypeSpecifierWithTypeDecl& node) {}
 	virtual void visit(TypedefNode& node) {}
-	virtual void visit(VariableDeclaringNode& node) {}
 	virtual void visit(VariableListDeclaringNode& node) {}
 	virtual void visit(WhileLoopingNode& node) {}
 

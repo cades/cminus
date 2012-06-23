@@ -40,7 +40,6 @@
 
 
 #include "AST/Node/FunctionDeclaringNode.h"
-#include "AST/Node/VariableDeclaringNode.h"
 #include "AST/Node/ArrayVariableDeclaringNode.h"
 #include "AST/Node/ArrayDefiningNode.h"
 #include "AST/Node/BlockNode.h"

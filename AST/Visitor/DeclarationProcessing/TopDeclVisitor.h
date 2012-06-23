@@ -24,7 +24,6 @@ public:
 //	virtual void visit(FunctionDeclaringNode& node);
 	virtual void visit(TypeDeclaringNode&);
 	virtual void visit(TypedefNode& node);
-//	virtual void visit(VariableDeclaringNode& node);
 	virtual void visit(VariableListDeclaringNode& node);
 	virtual void visit(NodeList& node) { NodeVisitor::visitChildren(node); }
 
