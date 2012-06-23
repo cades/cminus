@@ -11,10 +11,13 @@
 #include "StructDefiningNode.h"
 
 TypeDeclaringNode::TypeDeclaringNode(Identifier* typeName, StructDefiningNode* typeSpec)
-: typeName_(typeName), typeSpec_(typeSpec) {
-	// TODO Auto-generated constructor stub
-
+: typeSpec_(typeSpec) {
+	typeNameList_ = new IdentifierList;
+	typeNameList_->append(typeName);
 }
+
+TypeDeclaringNode::TypeDeclaringNode(IdentifierList* typeNameList, StructDefiningNode* typeSpec)
+: typeNameList_(typeNameList), typeSpec_(typeSpec) {}
 
 TypeDeclaringNode::~TypeDeclaringNode() {
 	// TODO Auto-generated destructor stub
@@ -26,11 +29,6 @@ StructDefiningNode *TypeDeclaringNode::typeSpec() {
 	if( StructDefiningNode* sd = dynamic_cast<StructDefiningNode*>(typeSpec_) )
 		return sd;
 	throw std::runtime_error("TypeDeclaringNode::typeSpec(): cannot dynamic_cast typeSpec_ to StructDefiningNode*");
-}
-
-Identifier *TypeDeclaringNode::getTypeName() const
-{
-    return typeName_;
 }
 
 

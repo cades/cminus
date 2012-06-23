@@ -1,21 +1,21 @@
 /*
- * DeclaringList.h
+ * VariableDeclaringList.h
  *
  *  Created on: 2012/6/22
  *      Author: mac
  */
 
-#ifndef DECLARINGLIST_H_
-#define DECLARINGLIST_H_
+#ifndef VARIABLEDECLARINGLIST_H_
+#define VARIABLEDECLARINGLIST_H_
 
 #include "AbstractNode.h"
 #include "VariableListDeclaringNode.h"
 
-class DeclaringList: public AbstractNode {
+class VariableDeclaringList: public AbstractNode {
 public:
 	typedef list<VariableListDeclaringNode*> List;
-	DeclaringList();
-	virtual ~DeclaringList();
+	VariableDeclaringList();
+	virtual ~VariableDeclaringList();
 
 	void append(VariableListDeclaringNode* node) { list_.push_back(node); }
 	virtual void accept(NodeVisitor& visitor);
@@ -23,13 +23,13 @@ public:
 	// Composite method API #2
 	class Iterator : public IIterator {
 	public:
-		Iterator(DeclaringList& nl) : declList_(nl) {}
+		Iterator(VariableDeclaringList& nl) : declList_(nl) {}
 		virtual void First() { i = declList_.list_.begin(); } // this is key point: whether list_ can be touched?
 		virtual void Next()  { ++i; }
 		virtual bool IsDone() const { return i == declList_.list_.end(); }
 		virtual VariableListDeclaringNode* CurrentItem() const { return *i; }
 	private:
-		DeclaringList& declList_;
+		VariableDeclaringList& declList_;
 		List::iterator i;
 	};
 	virtual Iterator* createIterator() { return new Iterator(*this); }

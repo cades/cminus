@@ -5,7 +5,7 @@
 #include "AST/Node/EmptyNode.h"
 #include "AST/Node/NodeList.h"
 #include "AST/Node/IdentifierList.h"
-#include "AST/Node/DeclaringList.h"
+#include "AST/Node/VariableDeclaringList.h"
 
 // terminals
 #include "AST/Node/Identifier.h"
@@ -76,8 +76,9 @@ union YYSTYPE {
     Identifier* id;
     Expression* expr;
     TypeDeclaringNode* typeDeclNode;
-    DeclaringList* declList;
+    VariableDeclaringList* declList;
     VariableListDeclaringNode* varListDecl;
+    StructDefiningNode* structDef;
 };
 
 typedef union YYSTYPE YYSTYPE;

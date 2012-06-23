@@ -11,21 +11,21 @@
 #include "AbstractNode.h"
 class NodeList;
 class NodeVisitor;
-#include "DeclaringList.h"
+#include "VariableDeclaringList.h"
 
 class StructDefiningNode: public AbstractNode {
 public:
-	StructDefiningNode(DeclaringList* fieldDeclList);
+	StructDefiningNode(VariableDeclaringList* fieldDeclList);
 	virtual ~StructDefiningNode();
 	virtual void accept(NodeVisitor& visitor);
     TypeDescriptor *getType() const { return type_; }
     void setType(TypeDescriptor *type_) { this->type_ = type_; }
 
-    typedef DeclaringList::Iterator Iterator;
+    typedef VariableDeclaringList::Iterator Iterator;
 	virtual Iterator* createIterator() { return fieldDeclList_->createIterator(); }
 
 private:
-	DeclaringList* fieldDeclList_;
+	VariableDeclaringList* fieldDeclList_;
 	TypeDescriptor* type_;
 };
 

@@ -44,11 +44,12 @@ Identifier* generateUniqueId() {
 %type <nodeList> program global_decl_list global_decl param_list decl_list stmt_list
 %type <nodeList> assign_expr_list nonempty_assign_expr_list relop_expr_list nonempty_relop_expr_list
 %type <expr> cexpr_null cexpr mcexpr cfactor expr term factor
-%type <typeDeclNode> struct_type
+/*%type <typeDeclNode> */
 %type <idList> id_list init_id_list
 %type <declList> struct_declaration_list
 %type <varListDecl> var_decl struct_declaration
 %type <id> init_id
+%type <structDef> struct_type
 
 %token <expr> CONST
 %token <id> ID
@@ -82,8 +83,12 @@ global_decl	: decl_list function_decl	{ $1->append($2); $$ = $1; }
 
 function_decl	: type ID MK_LPAREN param_list MK_RPAREN MK_LBRACE block MK_RBRACE
 		{ $$ = new FunctionDeclaringNode($1, $2, $4, $7); }
+        | ID ID MK_LPAREN param_list MK_RPAREN MK_LBRACE block MK_RBRACE
+        { $$ = new FunctionDeclaringNode($1, $2, $4, $7); }
 		| type ID MK_LPAREN  MK_RPAREN MK_LBRACE block MK_RBRACE
 		{ $$ = new FunctionDeclaringNode($1, $2, new NodeList, $6); }
+        | ID ID MK_LPAREN  MK_RPAREN MK_LBRACE block MK_RBRACE
+        { $$ = new FunctionDeclaringNode($1, $2, new NodeList, $6); }
 		;
 
 param_list	: param_list MK_COMMA  param	{ $1->append($3); $$ = $1; }
@@ -117,6 +122,7 @@ decl		: type_decl	{ $$ = $1; }
 		;
 
 type_decl 	: TYPEDEF type id_list MK_SEMICOLON		{ $$ = new TypedefNode($2, $3); }
+        | TYPEDEF struct_type id_list MK_SEMICOLON		{ $$ = new TypeDeclaringNode($3, $2); }
 		;
 
 var_decl	: type { localVarRepo.currentTypeName = $1->name(); } init_id_list MK_SEMICOLON	{ $$ = new VariableListDeclaringNode($1, $3); localVarRepo.currentTypeName = ""; }
@@ -126,14 +132,13 @@ var_decl	: type { localVarRepo.currentTypeName = $1->name(); } init_id_list MK_S
 type		: INT	{ $$ = new Identifier("int");}
 		| FLOAT	{ $$ = new Identifier("float");}
 		| VOID { $$ = new Identifier("void"); }
-		| struct_type { $$ = new Identifier( $1->nameAsString() ); }
 		;
 
-struct_type	: STRUCT opt_tag MK_LBRACE struct_declaration_list MK_RBRACE	{ $$ = new TypeDeclaringNode($2, new StructDefiningNode($4)); }
+struct_type	: STRUCT opt_tag MK_LBRACE struct_declaration_list MK_RBRACE	{ $$ = new StructDefiningNode($4); delete $2; }
 /*		| STRUCT tag {}*/
 		;
 struct_declaration_list
-		: struct_declaration				{ $$ = new DeclaringList; $$->append($1); }
+		: struct_declaration				{ $$ = new VariableDeclaringList; $$->append($1); }
 		| struct_declaration_list struct_declaration	{ $1->append($2); $$ = $1; }
 		;
 struct_declaration:

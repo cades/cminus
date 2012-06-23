@@ -12,6 +12,7 @@
 #include <string>
 
 #include "Identifier.h"
+#include "IdentifierList.h"
 class NodeList;
 class NodeVisitor;
 class StructDefiningNode;
@@ -20,19 +21,15 @@ class StructDefiningNode;
 class TypeDeclaringNode: public AbstractNode {
 public:
 	TypeDeclaringNode(Identifier* typeName, StructDefiningNode* typeSpec);
+	TypeDeclaringNode(IdentifierList* typeNameList, StructDefiningNode* typeSpec);
 	virtual ~TypeDeclaringNode();
 	virtual void accept(NodeVisitor& visitor);
 	StructDefiningNode* typeSpec();
-	Identifier *getTypeName() const;
-	std::string nameAsString()
-	{
-		return typeName_->name();
-	}
 
-	// I have no id list :)
-	virtual IIterator* createIterator() { return new NullIterator; }
+	typedef IdentifierList::Iterator Iterator;
+	virtual Iterator* createIterator() { return typeNameList_->createIterator(); }
 private:
-	Identifier* typeName_;
+	IdentifierList* typeNameList_;
 	StructDefiningNode* typeSpec_;
 };
 
