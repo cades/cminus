@@ -9,8 +9,14 @@
 #include "Attributes/Attributes.h"
 #include <stdexcept>
 
+#include "Attributes/TypeAttributes.h"
+#include "TypeDescriptor/IntegerTypeDescriptor.h"
+#include "TypeDescriptor/FloatTypeDescriptor.h"
+#include "TypeDescriptor/VoidTypeDescriptor.h"
+
 SymbolTable::SymbolTable() {
 	openScope();
+	initializeForCminus();
 }
 
 SymbolTable::~SymbolTable() {
@@ -75,5 +81,11 @@ SymbolTable::UnitSymtab& SymbolTable::currentSymtab()
 }
 
 
+void SymbolTable::initializeForCminus()
+{
+	enterSymbol("int", new TypeAttributes(new IntegerTypeDescriptor));
+	enterSymbol("float", new TypeAttributes(new FloatTypeDescriptor));
+	enterSymbol("void", new TypeAttributes(new VoidTypeDescriptor));
+}
 
 

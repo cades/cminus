@@ -62,7 +62,10 @@
 
 // symbol table
 #include "AST/SymbolTable/SymbolTable.h"
-
+#include "AST/SymbolTable/Attributes/TypeAttributes.h"
+#include "AST/SymbolTable/TypeDescriptor/IntegerTypeDescriptor.h"
+#include "AST/SymbolTable/TypeDescriptor/FloatTypeDescriptor.h"
+#include "AST/SymbolTable/TypeDescriptor/VoidTypeDescriptor.h"
 
 union YYSTYPE {
     enum StructKind { STRUCT, UNION };

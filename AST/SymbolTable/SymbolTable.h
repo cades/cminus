@@ -25,6 +25,7 @@ public:
     bool enterSymbol(const string& name, Attributes *attr);
     Attributes* retrieveSymbol(const string& name);
     bool declaredLocally(const string& name);
+    void initializeForCminus();
 
 public:
     typedef map<string, Attributes*> UnitSymtab;	// per scope symbol table
