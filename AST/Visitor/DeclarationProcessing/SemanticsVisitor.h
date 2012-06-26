@@ -20,6 +20,7 @@ public:
 	virtual void visit(FloatLiteral&);
 	virtual void visit(BinaryExpression&);
 	virtual void visit(UnaryExpression&);
+	virtual void visit(RelationalExpression& node);
 	virtual void visit(ArrayReferencingNode&);
 	virtual void visit(StructReferencingNode&);
 

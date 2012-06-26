@@ -9,6 +9,7 @@
 #include "../../Node/IntLiteral.h"
 #include "../../Node/FloatLiteral.h"
 #include "../../Node/BinaryExpression.h"
+#include "../../Node/UnaryExpression.h"
 
 #include "../../SymbolTable/TypeDescriptor/IntegerTypeDescriptor.h"
 #include "../../SymbolTable/TypeDescriptor/FloatTypeDescriptor.h"
@@ -37,9 +38,15 @@ void SemanticsVisitor::visit(BinaryExpression& bexpr) {
 	bexpr.setType(bexpr.binaryResultType());
 }
 
-void SemanticsVisitor::visit(UnaryExpression&) {
+void SemanticsVisitor::visit(UnaryExpression& uexpr) {
+	visitChildren(uexpr);
+	//uexpr.setType();
+}
+
+void SemanticsVisitor::visit(RelationalExpression & node) {
 
 }
+
 
 void SemanticsVisitor::visit(ArrayReferencingNode & node) {
 

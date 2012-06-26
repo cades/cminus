@@ -44,6 +44,7 @@ class NodeList;
 class NotNode;
 class ORNode;
 class PlusNode;
+class RelationalExpression;
 class ReturningNode;
 class StringLiteral;
 class StructDefiningNode;
@@ -53,10 +54,9 @@ class TypeSpecifier;
 class TypeSpecifierByName;
 class TypeSpecifierByStruct;
 class TypeSpecifierWithTypeDecl;
-class TypeSpecifierWithTypeDecl;
+class UnaryExpression;
 class TypedefNode;
 class VariableListDeclaringNode;
-class WhileLoopingNode;
 class WhileLoopingNode;
 
 class NodeVisitor {
@@ -77,7 +77,6 @@ public:
 	virtual void visit(EQNode& node) = 0;
 	virtual void visit(EmptyNode& node) = 0;
 	virtual void visit(Expression&) = 0;
-	virtual void visit(Factor&) = 0;
 	virtual void visit(FloatLiteral& node) = 0;
 	virtual void visit(ForLoopingNode& node) = 0;
 	virtual void visit(FunctionDeclaringNode& node) = 0;
@@ -95,11 +94,10 @@ public:
 	virtual void visit(MinusNode& node) = 0;
 	virtual void visit(MultiplyNode& node) = 0;
 	virtual void visit(NENode& node) = 0;
-	virtual void visit(NegNode& node) = 0;
 	virtual void visit(NodeList& node) = 0;
-	virtual void visit(NotNode& node) = 0;
 	virtual void visit(ORNode& node) = 0;
 	virtual void visit(PlusNode& node) = 0;
+	virtual void visit(RelationalExpression& node) = 0;
 	virtual void visit(ReturningNode& node) = 0;
 	virtual void visit(StringLiteral& node) = 0;
 	virtual void visit(StructDefiningNode& node) = 0;
@@ -109,6 +107,7 @@ public:
 	virtual void visit(TypeSpecifierByName& node) = 0;
 	virtual void visit(TypeSpecifierByStruct& node) = 0;
 	virtual void visit(TypeSpecifierWithTypeDecl& node) = 0;
+	virtual void visit(UnaryExpression&) = 0;
 	virtual void visit(TypedefNode& node) = 0;
 	virtual void visit(VariableListDeclaringNode& node) = 0;
 	virtual void visit(WhileLoopingNode& node) = 0;
