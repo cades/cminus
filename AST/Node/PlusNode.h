@@ -13,7 +13,7 @@ class NodeVisitor;
 
 class PlusNode: public BinaryExpression {
 public:
-	PlusNode(AbstractNode* lhs, AbstractNode* rhs);
+	PlusNode(Expression* lhs, Expression* rhs);
 	virtual ~PlusNode();
 
 protected:

@@ -8,7 +8,7 @@
 #include "DivideNode.h"
 #include <functional>
 
-DivideNode::DivideNode(AbstractNode* lhs, AbstractNode* rhs) : BinaryExpression(lhs, rhs) {
+DivideNode::DivideNode(Expression* lhs, Expression* rhs) : BinaryExpression(lhs, rhs) {
 	// TODO Auto-generated constructor stub
 
 }

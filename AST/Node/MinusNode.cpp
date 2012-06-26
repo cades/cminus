@@ -8,7 +8,7 @@
 #include "MinusNode.h"
 #include <functional>
 
-MinusNode::MinusNode(AbstractNode* lhs, AbstractNode* rhs) : BinaryExpression(lhs, rhs) {
+MinusNode::MinusNode(Expression* lhs, Expression* rhs) : BinaryExpression(lhs, rhs) {
 	// TODO Auto-generated constructor stub
 
 }

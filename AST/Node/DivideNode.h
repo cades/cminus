@@ -13,7 +13,7 @@ class NodeVisitor;
 
 class DivideNode: public BinaryExpression {
 public:
-	DivideNode(AbstractNode* lhs, AbstractNode* rhs);
+	DivideNode(Expression* lhs, Expression* rhs);
 	virtual ~DivideNode();
 
 protected:

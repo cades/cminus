@@ -13,7 +13,7 @@ class NodeVisitor;
 
 class MultiplyNode: public BinaryExpression {
 public:
-	MultiplyNode(AbstractNode* lhs, AbstractNode* rhs);
+	MultiplyNode(Expression* lhs, Expression* rhs);
 	virtual ~MultiplyNode();
 
 protected:

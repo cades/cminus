@@ -8,8 +8,8 @@
 #include "BinaryExpression.h"
 #include "../Visitor/NodeVisitor.h"
 
-BinaryExpression::BinaryExpression(AbstractNode* lhs, AbstractNode* rhs) : lhs_(lhs), rhs_(rhs) {
-	// TODO Auto-generated constructor stub
+BinaryExpression::BinaryExpression(Expression* lhs, Expression* rhs) : lhs_(lhs), rhs_(rhs) {
+// TODO Auto-generated constructor stub
 
 }
 
@@ -77,6 +77,10 @@ Literal *BinaryExpression::evaluate() {
 	}
 	throw std::runtime_error(std::string("Cannot evaluate constant. lhs_ is of type ") + typeid(*lhs_).name()
 			+ ", rhs_ is of type " + typeid(*rhs_).name());
+}
+
+void BinaryExpression::binaryResultType() {
+
 }
 
 void BinaryExpression::accept(NodeVisitor& visitor) { visitor.visit(*this); }

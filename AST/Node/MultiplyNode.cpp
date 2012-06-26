@@ -8,7 +8,7 @@
 #include "MultiplyNode.h"
 #include <functional>
 
-MultiplyNode::MultiplyNode(AbstractNode* lhs, AbstractNode* rhs) : BinaryExpression(lhs, rhs) {
+MultiplyNode::MultiplyNode(Expression* lhs, Expression* rhs) : BinaryExpression(lhs, rhs) {
 	// TODO Auto-generated constructor stub
 
 }

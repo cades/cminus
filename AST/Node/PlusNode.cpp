@@ -8,7 +8,7 @@
 #include "PlusNode.h"
 #include <functional>
 
-PlusNode::PlusNode(AbstractNode* lhs, AbstractNode* rhs) : BinaryExpression(lhs, rhs) {
+PlusNode::PlusNode(Expression* lhs, Expression* rhs) : BinaryExpression(lhs, rhs) {
 	// TODO Auto-generated constructor stub
 
 }

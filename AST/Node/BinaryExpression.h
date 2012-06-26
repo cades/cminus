@@ -17,9 +17,10 @@
 
 class BinaryExpression: public Expression {
 public:
-	BinaryExpression(AbstractNode* lhs, AbstractNode* rhs);
+	BinaryExpression(Expression* lhs, Expression* rhs);
 	virtual ~BinaryExpression();
 	Literal* evaluate();
+	void binaryResultType();
 	virtual void accept(NodeVisitor& visitor);
 
 protected:
@@ -45,8 +46,8 @@ protected:
 	virtual Iterator* createIterator() { return new Iterator(*this); }
 
 protected:
-	AbstractNode* lhs_;
-	AbstractNode* rhs_;
+	Expression* lhs_;
+	Expression* rhs_;
 };
 
 #endif /* BINARYEXPRESSION_H_ */
