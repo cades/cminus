@@ -6,6 +6,7 @@
  */
 
 #include "SemanticsVisitor.h"
+#include <ostream>
 #include "../../Node/Identifier.h"
 #include "../../Node/IntLiteral.h"
 #include "../../Node/FloatLiteral.h"
@@ -15,6 +16,8 @@
 
 #include "../../SymbolTable/SymbolTable.h"
 #include "../../SymbolTable/Attributes/Attributes.h"
+#include "../../SymbolTable/Attributes/VariableAttributes.h"
+#include "../../SymbolTable/Attributes/FieldAttributes.h"
 #include "../../SymbolTable/TypeDescriptor/IntegerTypeDescriptor.h"
 #include "../../SymbolTable/TypeDescriptor/FloatTypeDescriptor.h"
 
@@ -25,13 +28,20 @@ SemanticsVisitor::SemanticsVisitor(SymbolTable* symtab, ostream& os) : NodeVisit
 SemanticsVisitor::~SemanticsVisitor() {
 }
 
+void SemanticsVisitor::visit(AssigningNode& assign) {
+}
+
 void SemanticsVisitor::visit(Identifier& id) {
 	id.setType(0); // init to error type
 	try {
 		Attributes* attributeRef = currentSymbolTable().retrieveSymbol(id.name());
-
+		if (isDataObject(attributeRef)) {
+			id.setAttributes(attributeRef);
+		} else {
+			errorLog() << id.name() << " does not name a data object.\n";
+		}
 	} catch (std::runtime_error& e) {
-
+		errorLog() << id.name() << " has not been declared.\n";
 	}
 }
 
@@ -66,5 +76,14 @@ void SemanticsVisitor::visit(ArrayReferencingNode & node) {
 void SemanticsVisitor::visit(StructReferencingNode & node) {
 
 }
+
+bool SemanticsVisitor::isDataObject(Attributes *attr) {
+	if (dynamic_cast<VariableAttributes*>(attr) ||
+		dynamic_cast<FieldAttributes*>(attr) )
+		return true;
+	return false;
+}
+
+
 
 

@@ -9,12 +9,14 @@
 #define SEMANTICSVISITOR_H_
 
 #include "../NodeVisitor.h"
+class Attributes;
 
 class SemanticsVisitor: public NodeVisitor {
 public:
 	SemanticsVisitor(SymbolTable*, ostream&);
 	virtual ~SemanticsVisitor();
 
+	virtual void visit(AssigningNode& node);
 	virtual void visit(Identifier&);
 	virtual void visit(IntLiteral&);
 	virtual void visit(FloatLiteral&);
@@ -27,7 +29,6 @@ public:
 	virtual void visit(ANDNode& node) {}
 	virtual void visit(ArrayDefiningNode& node) {}
 	virtual void visit(ArrayVariableDeclaringNode& node) {}
-	virtual void visit(AssigningNode& node) {}
 	virtual void visit(BlockNode& node) {}
 	virtual void visit(CallingNode& node) {} // TODO should handle this? It's part of Factor :<
 	virtual void visit(DivideNode& node) {}
@@ -62,6 +63,9 @@ public:
 	virtual void visit(TypedefNode& node) {}
 	virtual void visit(VariableListDeclaringNode& node) {}
 	virtual void visit(WhileLoopingNode& node) {}
+
+private:
+	bool isDataObject(Attributes*);
 };
 
 #endif /* SEMANTICSVISITOR_H_ */
