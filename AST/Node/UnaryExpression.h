@@ -16,8 +16,9 @@ public:
 	UnaryExpression(Expression*);
 	virtual ~UnaryExpression();
 	Expression* subExpr() { return subExpr_; }
-	virtual void accept(NodeVisitor& visitor);
 	virtual Literal* evaluate() = 0;
+	TypeDescriptor* unaryResultType();
+	virtual void accept(NodeVisitor& visitor);
 
 	// Composite method API #2
 	class Iterator : public IIterator {

@@ -16,6 +16,7 @@ public:
 	RelationalExpression(Expression* lhs, Expression* rhs);
 	virtual ~RelationalExpression();
 	virtual Literal* evaluate() { throw std::runtime_error("RelationalExpression not yet support evaluate()"); } // TODO implement it
+	TypeDescriptor* relationalResultType();
 	virtual void accept(NodeVisitor& visitor);
 
 	// Composite method API #2

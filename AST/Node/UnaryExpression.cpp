@@ -17,5 +17,9 @@ UnaryExpression::~UnaryExpression() {
 	// TODO Auto-generated destructor stub
 }
 
+TypeDescriptor *UnaryExpression::unaryResultType() {
+	return subExpr_->getType();
+}
+
 void UnaryExpression::accept(NodeVisitor& visitor) { visitor.visit(*this); }
 
