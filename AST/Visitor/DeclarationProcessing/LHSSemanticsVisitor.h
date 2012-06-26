@@ -12,7 +12,7 @@
 
 class LHSSemanticsVisitor: public SemanticsVisitor {
 public:
-	LHSSemanticsVisitor();
+	LHSSemanticsVisitor(SymbolTable*, ostream&);
 	virtual ~LHSSemanticsVisitor();
 };
 

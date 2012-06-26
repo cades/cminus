@@ -7,6 +7,11 @@
 
 #ifndef NODEVISITOR_H_
 #define NODEVISITOR_H_
+
+class SymbolTable;
+#include <iosfwd>
+using std::ostream;
+
 class AbstractNode;
 class ANDNode;
 class AbstractNode;
@@ -61,7 +66,7 @@ class WhileLoopingNode;
 
 class NodeVisitor {
 public:
-	NodeVisitor();
+	NodeVisitor(SymbolTable*, ostream&);
 	virtual ~NodeVisitor();
 	void visitChildren(AbstractNode& node);
 	virtual void visit(ANDNode& node) = 0;
@@ -114,6 +119,15 @@ public:
 private:
 	void visitChildren_via_getChild(AbstractNode&);
 	void visitChildren_via_iter(AbstractNode&);
+
+protected:
+	SymbolTable& currentSymbolTable() { return *symtab_; }
+	ostream& errorLog() { return os_; }
+	void setSymbolTableTo(SymbolTable *newSymtab) { symtab_ = newSymtab; } // this door is open for TopDeclVisitor::setCurrentSymbolTableTo
+
+private:
+	SymbolTable* symtab_;
+	ostream& os_;
 };
 
 #endif /* NODEVISITOR_H_ */

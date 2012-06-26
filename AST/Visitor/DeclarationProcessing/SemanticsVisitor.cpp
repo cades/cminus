@@ -6,24 +6,33 @@
  */
 
 #include "SemanticsVisitor.h"
+#include "../../Node/Identifier.h"
 #include "../../Node/IntLiteral.h"
 #include "../../Node/FloatLiteral.h"
 #include "../../Node/BinaryExpression.h"
 #include "../../Node/UnaryExpression.h"
 #include "../../Node/RelationalExpression.h"
 
+#include "../../SymbolTable/SymbolTable.h"
+#include "../../SymbolTable/Attributes/Attributes.h"
 #include "../../SymbolTable/TypeDescriptor/IntegerTypeDescriptor.h"
 #include "../../SymbolTable/TypeDescriptor/FloatTypeDescriptor.h"
 
 
-SemanticsVisitor::SemanticsVisitor() {
+SemanticsVisitor::SemanticsVisitor(SymbolTable* symtab, ostream& os) : NodeVisitor(symtab, os) {
 }
 
 SemanticsVisitor::~SemanticsVisitor() {
 }
 
 void SemanticsVisitor::visit(Identifier& id) {
+	id.setType(0); // init to error type
+	try {
+		Attributes* attributeRef = currentSymbolTable().retrieveSymbol(id.name());
 
+	} catch (std::runtime_error& e) {
+
+	}
 }
 
 void SemanticsVisitor::visit(IntLiteral& intlit) {

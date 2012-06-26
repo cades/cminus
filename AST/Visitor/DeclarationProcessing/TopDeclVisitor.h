@@ -19,7 +19,7 @@ public:
 	TopDeclVisitor(SymbolTable*, ostream&);
 	virtual ~TopDeclVisitor();
 
-//	virtual void visit(ArrayVariableDeclaringNode& node);
+	virtual void visit(ArrayVariableDeclaringNode& node);
 	virtual void visit(FunctionDeclaringNode& node);
 	virtual void visit(TypeDeclaringNode&);
 	virtual void visit(TypedefNode& node);
@@ -27,14 +27,10 @@ public:
 	virtual void visit(NodeList& node) { NodeVisitor::visitChildren(node); }
 
 protected:
-	SymbolTable& currentSymbolTable() { return *symtab_; }
-	ostream& errorLog() { return os_; }
 	void setCurrentSymbolTableTo(SymbolTable*);
 	void setCurrentSymbolTableBack();
 
 private:
-	SymbolTable* symtab_;
-	ostream& os_;
 	SymbolTable* const originalSymtab_;
 };
 

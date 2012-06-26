@@ -7,7 +7,7 @@
 
 #include "LHSSemanticsVisitor.h"
 
-LHSSemanticsVisitor::LHSSemanticsVisitor() {
+LHSSemanticsVisitor::LHSSemanticsVisitor(SymbolTable* symtab, ostream& os) : SemanticsVisitor(symtab, os) {
 	// TODO Auto-generated constructor stub
 
 }

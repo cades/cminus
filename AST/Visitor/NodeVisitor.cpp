@@ -12,7 +12,7 @@
 #include <string>
 #include "../Node/Iterator/IIterator.h"
 
-NodeVisitor::NodeVisitor() {
+NodeVisitor::NodeVisitor(SymbolTable* symtab, ostream& os) : symtab_(symtab), os_(os) {
 	// TODO Auto-generated constructor stub
 
 }

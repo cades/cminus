@@ -18,7 +18,7 @@
 #include "../../SymbolTable/Attributes/FunctionAttributes.h"
 #include <stdexcept>
 
-TopDeclVisitor::TopDeclVisitor(SymbolTable* symtab, ostream& os) : symtab_(symtab), os_(os), originalSymtab_(symtab) {
+TopDeclVisitor::TopDeclVisitor(SymbolTable* symtab, ostream& os) : SemanticsVisitor(symtab, os), originalSymtab_(symtab) {
 	// TODO Auto-generated constructor stub
 
 }
@@ -28,7 +28,7 @@ TopDeclVisitor::~TopDeclVisitor() {
 }
 
 void TopDeclVisitor::visit(TypeDeclaringNode& td) {
-	TypeVisitor typeVisitor(&currentSymbolTable(), os_);
+	TypeVisitor typeVisitor(&currentSymbolTable(), errorLog());
 	td.typeSpec()->accept(typeVisitor);
 
 	TypeDeclaringNode::Iterator* i = td.createIterator();
@@ -47,7 +47,7 @@ void TopDeclVisitor::visit(TypeDeclaringNode& td) {
 }
 
 void TopDeclVisitor::visit(TypedefNode& td) {
-	TypeVisitor typeVisitor(&currentSymbolTable(), os_);
+	TypeVisitor typeVisitor(&currentSymbolTable(), errorLog());
 	td.getTypeName()->accept(typeVisitor);
 
 	TypedefNode::Iterator* i = td.createIterator();
@@ -66,7 +66,7 @@ void TopDeclVisitor::visit(TypedefNode& td) {
 }
 
 void TopDeclVisitor::visit(VariableListDeclaringNode& vld) {
-	TypeVisitor typeVisitor(&currentSymbolTable(), os_);
+	TypeVisitor typeVisitor(&currentSymbolTable(), errorLog());
 	vld.getTypeName()->accept(typeVisitor);
 
 	// TODO deal with IdentifierWithDim
@@ -86,8 +86,12 @@ void TopDeclVisitor::visit(VariableListDeclaringNode& vld) {
 	delete i;
 }
 
+void TopDeclVisitor::visit(ArrayVariableDeclaringNode & avd) {
+	// TODO implement it!
+}
+
 void TopDeclVisitor::visit(FunctionDeclaringNode& fd) {
-	TypeVisitor typeVisitor(&currentSymbolTable(), os_);
+	TypeVisitor typeVisitor(&currentSymbolTable(), errorLog());
 	fd.getReturnType()->accept(typeVisitor);
 
 	FunctionAttributes* attr = new FunctionAttributes;
@@ -103,13 +107,13 @@ void TopDeclVisitor::visit(FunctionDeclaringNode& fd) {
 }
 
 void TopDeclVisitor::setCurrentSymbolTableTo(SymbolTable *newSymtab) {
-	symtab_ = newSymtab;
+	setSymbolTableTo(newSymtab);
 }
 
 
 
 void TopDeclVisitor::setCurrentSymbolTableBack() {
-	symtab_ = originalSymtab_;
+	setSymbolTableTo(originalSymtab_);
 }
 
 

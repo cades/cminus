@@ -12,7 +12,7 @@
 
 class SemanticsVisitor: public NodeVisitor {
 public:
-	SemanticsVisitor();
+	SemanticsVisitor(SymbolTable*, ostream&);
 	virtual ~SemanticsVisitor();
 
 	virtual void visit(Identifier&);
