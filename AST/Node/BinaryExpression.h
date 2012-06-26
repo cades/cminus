@@ -30,7 +30,7 @@ public:
 		virtual void First() { cnt_ = 0; }
 		virtual void Next()  { ++cnt_; }
 		virtual bool IsDone() const { return cnt_ == 2; }
-		virtual AbstractNode* CurrentItem() const {
+		virtual Expression* CurrentItem() const {
 			if (cnt_ == 0) return bexpr_.lhs_;
 			else if (cnt_ == 1) return bexpr_.rhs_;
 			else throw std::runtime_error("BinaryExpression::Iterator error");
