@@ -8,10 +8,7 @@
 #include "GTNode.h"
 #include "../Visitor/NodeVisitor.h"
 
-GTNode::GTNode(AbstractNode* lhs, AbstractNode* rhs) : lhs_(lhs), rhs_(rhs) {
-	// TODO Auto-generated constructor stub
-
-}
+GTNode::GTNode(Expression* lhs, Expression* rhs) : RelationalExpression(lhs, rhs) {}
 
 GTNode::~GTNode() {
 	// TODO Auto-generated destructor stub

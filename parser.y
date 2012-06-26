@@ -37,13 +37,12 @@ Identifier* generateUniqueId() {
 
 %type <node> decl type_decl function_decl param  
 %type <id>   type tag opt_tag struct_tail /* reference */
-%type <node> relop_expr relop_term relop_factor stmt assign_expr block
+%type <node> stmt assign_expr block
 %type <node> dim dim_decl dim_fn dimfn1 
-%type <node> var_ref
 %type <opKind> rel_op
 %type <nodeList> program global_decl_list global_decl param_list decl_list stmt_list
 %type <nodeList> assign_expr_list nonempty_assign_expr_list relop_expr_list nonempty_relop_expr_list
-%type <expr> cexpr_null cexpr mcexpr cfactor expr term factor
+%type <expr> cexpr_null cexpr mcexpr cfactor expr term factor relop_expr relop_term relop_factor var_ref
 /*%type <typeDeclNode> */
 %type <idList> id_list init_id_list
 %type <declList> struct_declaration_list

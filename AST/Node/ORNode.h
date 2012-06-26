@@ -8,17 +8,14 @@
 #ifndef ORNODE_H_
 #define ORNODE_H_
 
-#include "AbstractNode.h"
+#include "RelationalExpression.h"
 class NodeVisitor;
 
-class ORNode: public AbstractNode {
+class ORNode: public RelationalExpression {
 public:
-	ORNode(AbstractNode* lhs, AbstractNode* rhs);
+	ORNode(Expression* lhs, Expression* rhs);
 	virtual ~ORNode();
 	virtual void accept(NodeVisitor& visitor);
-private:
-	AbstractNode* lhs_;
-	AbstractNode* rhs_;
 };
 
 #endif /* ORNODE_H_ */

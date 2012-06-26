@@ -8,17 +8,14 @@
 #ifndef ANDNODE_H_
 #define ANDNODE_H_
 
-#include "AbstractNode.h"
+#include "RelationalExpression.h"
 class NodeVisitor;
 
-class ANDNode: public AbstractNode {
+class ANDNode: public RelationalExpression {
 public:
-	ANDNode(AbstractNode* lhs, AbstractNode* rhs);
+	ANDNode(Expression* lhs, Expression* rhs);
 	virtual ~ANDNode();
 	virtual void accept(NodeVisitor& visitor);
-private:
-	AbstractNode* lhs_;
-	AbstractNode* rhs_;
 };
 
 #endif /* ANDNODE_H_ */

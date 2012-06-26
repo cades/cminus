@@ -8,10 +8,7 @@
 #include "LTNode.h"
 #include "../Visitor/NodeVisitor.h"
 
-LTNode::LTNode(AbstractNode* lhs, AbstractNode* rhs) : lhs_(lhs), rhs_(rhs) {
-	// TODO Auto-generated constructor stub
-
-}
+LTNode::LTNode(Expression* lhs, Expression* rhs) : RelationalExpression(lhs, rhs) {}
 
 LTNode::~LTNode() {
 	// TODO Auto-generated destructor stub

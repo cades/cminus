@@ -8,17 +8,14 @@
 #ifndef GTNODE_H_
 #define GTNODE_H_
 
-#include "AbstractNode.h"
+#include "RelationalExpression.h"
 class NodeVisitor;
 
-class GTNode: public AbstractNode {
+class GTNode: public RelationalExpression {
 public:
-	GTNode(AbstractNode* lhs, AbstractNode* rhs);
+	GTNode(Expression* lhs, Expression* rhs);
 	virtual ~GTNode();
 	virtual void accept(NodeVisitor& visitor);
-private:
-	AbstractNode* lhs_;
-	AbstractNode* rhs_;
 };
 
 #endif /* GTNODE_H_ */

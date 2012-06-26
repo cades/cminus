@@ -8,17 +8,14 @@
 #ifndef LTNODE_H_
 #define LTNODE_H_
 
-#include "AbstractNode.h"
+#include "RelationalExpression.h"
 class NodeVisitor;
 
-class LTNode: public AbstractNode {
+class LTNode: public RelationalExpression {
 public:
-	LTNode(AbstractNode* lhs, AbstractNode* rhs);
+	LTNode(Expression* lhs, Expression* rhs);
 	virtual ~LTNode();
 	virtual void accept(NodeVisitor& visitor);
-private:
-	AbstractNode* lhs_;
-	AbstractNode* rhs_;
 };
 
 #endif /* LTNODE_H_ */

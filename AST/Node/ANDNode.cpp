@@ -8,7 +8,7 @@
 #include "ANDNode.h"
 #include "../Visitor/NodeVisitor.h"
 
-ANDNode::ANDNode(AbstractNode* lhs, AbstractNode* rhs) : lhs_(lhs), rhs_(rhs) {}
+ANDNode::ANDNode(Expression* lhs, Expression* rhs) : RelationalExpression(lhs, rhs) {}
 
 ANDNode::~ANDNode() {}
 

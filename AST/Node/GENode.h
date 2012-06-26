@@ -8,17 +8,14 @@
 #ifndef GENODE_H_
 #define GENODE_H_
 
-#include "AbstractNode.h"
+#include "RelationalExpression.h"
 class NodeVisitor;
 
-class GENode: public AbstractNode {
+class GENode: public RelationalExpression {
 public:
-	GENode(AbstractNode* lhs, AbstractNode* rhs);
+	GENode(Expression* lhs, Expression* rhs);
 	virtual ~GENode();
 	virtual void accept(NodeVisitor& visitor);
-private:
-	AbstractNode* lhs_;
-	AbstractNode* rhs_;
 };
 
 #endif /* GENODE_H_ */

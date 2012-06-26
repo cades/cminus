@@ -8,10 +8,7 @@
 #include "EQNode.h"
 #include "../Visitor/NodeVisitor.h"
 
-EQNode::EQNode(AbstractNode* lhs, AbstractNode* rhs) : lhs_(lhs), rhs_(rhs) {
-	// TODO Auto-generated constructor stub
-
-}
+EQNode::EQNode(Expression* lhs, Expression* rhs) : RelationalExpression(lhs, rhs) {}
 
 EQNode::~EQNode() {
 	// TODO Auto-generated destructor stub

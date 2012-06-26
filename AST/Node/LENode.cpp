@@ -8,10 +8,7 @@
 #include "LENode.h"
 #include "../Visitor/NodeVisitor.h"
 
-LENode::LENode(AbstractNode* lhs, AbstractNode* rhs) : lhs_(lhs), rhs_(rhs) {
-	// TODO Auto-generated constructor stub
-
-}
+LENode::LENode(Expression* lhs, Expression* rhs) : RelationalExpression(lhs, rhs) {}
 
 LENode::~LENode() {
 	// TODO Auto-generated destructor stub

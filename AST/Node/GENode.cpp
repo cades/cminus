@@ -8,10 +8,7 @@
 #include "GENode.h"
 #include "../Visitor/NodeVisitor.h"
 
-GENode::GENode(AbstractNode* lhs, AbstractNode* rhs) : lhs_(lhs), rhs_(rhs) {
-	// TODO Auto-generated constructor stub
-
-}
+GENode::GENode(Expression* lhs, Expression* rhs) : RelationalExpression(lhs, rhs) {}
 
 GENode::~GENode() {
 	// TODO Auto-generated destructor stub

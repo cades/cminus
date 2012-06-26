@@ -8,10 +8,7 @@
 #include "NENode.h"
 #include "../Visitor/NodeVisitor.h"
 
-NENode::NENode(AbstractNode* lhs, AbstractNode* rhs) : lhs_(lhs), rhs_(rhs) {
-	// TODO Auto-generated constructor stub
-
-}
+NENode::NENode(Expression* lhs, Expression* rhs) : RelationalExpression(lhs, rhs) {}
 
 NENode::~NENode() {
 	// TODO Auto-generated destructor stub

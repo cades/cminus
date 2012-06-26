@@ -8,14 +8,16 @@
 #ifndef ARRAYREFERENCINGNODE_H_
 #define ARRAYREFERENCINGNODE_H_
 
-#include "AbstractNode.h"
+#include "Expression.h"
+#include <stdexcept>
 class NodeVisitor;
 
-class ArrayReferencingNode: public AbstractNode {
+class ArrayReferencingNode: public Expression {
 public:
 	ArrayReferencingNode(AbstractNode* varRef, AbstractNode* dimExpr);
 	virtual ~ArrayReferencingNode();
-	virtual void accept(NodeVisitor& visitor);
+	virtual Literal* evaluate() { throw std::runtime_error("ArrayReferencingNode not yet support evaluate()"); } // TODO implement it
+		virtual void accept(NodeVisitor& visitor);
 private:
 	AbstractNode* varRef_;
 	AbstractNode* dimExpr_;

@@ -8,17 +8,14 @@
 #ifndef EQNODE_H_
 #define EQNODE_H_
 
-#include "AbstractNode.h"
+#include "RelationalExpression.h"
 class NodeVisitor;
 
-class EQNode: public AbstractNode {
+class EQNode: public RelationalExpression {
 public:
-	EQNode(AbstractNode* lhs, AbstractNode* rhs);
+	EQNode(Expression* lhs, Expression* rhs);
 	virtual ~EQNode();
 	virtual void accept(NodeVisitor& visitor);
-private:
-	AbstractNode* lhs_;
-	AbstractNode* rhs_;
 };
 
 #endif /* EQNODE_H_ */

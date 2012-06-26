@@ -8,10 +8,7 @@
 #include "ORNode.h"
 #include "../Visitor/NodeVisitor.h"
 
-ORNode::ORNode(AbstractNode* lhs, AbstractNode* rhs) : lhs_(lhs), rhs_(rhs) {
-	// TODO Auto-generated constructor stub
-
-}
+ORNode::ORNode(Expression* lhs, Expression* rhs) : RelationalExpression(lhs, rhs) {}
 
 ORNode::~ORNode() {
 	// TODO Auto-generated destructor stub

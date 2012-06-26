@@ -8,17 +8,14 @@
 #ifndef NENODE_H_
 #define NENODE_H_
 
-#include "AbstractNode.h"
+#include "RelationalExpression.h"
 class NodeVisitor;
 
-class NENode: public AbstractNode {
+class NENode: public RelationalExpression {
 public:
-	NENode(AbstractNode* lhs, AbstractNode* rhs);
+	NENode(Expression* lhs, Expression* rhs);
 	virtual ~NENode();
 	virtual void accept(NodeVisitor& visitor);
-private:
-	AbstractNode* lhs_;
-	AbstractNode* rhs_;
 };
 
 #endif /* NENODE_H_ */
