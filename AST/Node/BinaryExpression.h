@@ -20,7 +20,7 @@ public:
 	BinaryExpression(Expression* lhs, Expression* rhs);
 	virtual ~BinaryExpression();
 	Literal* evaluate();
-	void binaryResultType();
+	TypeDescriptor* binaryResultType();
 	virtual void accept(NodeVisitor& visitor);
 
 protected:
