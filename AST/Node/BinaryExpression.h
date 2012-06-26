@@ -17,66 +17,36 @@
 
 class BinaryExpression: public Expression {
 public:
-	BinaryExpression();
+	BinaryExpression(AbstractNode* lhs, AbstractNode* rhs);
 	virtual ~BinaryExpression();
-	virtual Literal* evaluate() = 0;
+	Literal* evaluate();
+	virtual void accept(NodeVisitor& visitor);
+
 protected:
-	template<class FloatOp, class IntOp>
-	Literal* binary_evaluate(AbstractNode* lhs_, AbstractNode* rhs_, FloatOp floatOp, IntOp intOp) {
-		// if subExpr_ is a var_ref or funcall_call, test would fail.
-		if (dynamic_cast<Expression*>(lhs_) && dynamic_cast<Expression*>(rhs_)) {
-			Expression* lExpr = dynamic_cast<Expression*>(lhs_);
-			Expression* rExpr = dynamic_cast<Expression*>(rhs_);
-			Literal* lLit = 0;
-			Literal* rLit = 0;
-			try {
-				lLit = lExpr->evaluate(); // recursive call
-				rLit = rExpr->evaluate(); // recursive call
-			} catch (std::runtime_error& e) {
-				delete lLit;	// if lLit success and rLit failed, leak occurs. Intercept here for avoid leak.
-				throw;			// cleanup done, continue issue error.
-			}
-			if (dynamic_cast<FloatLiteral*>(lLit)) {
-				FloatLiteral* l = dynamic_cast<FloatLiteral*>(lLit);
-				if (FloatLiteral* r = dynamic_cast<FloatLiteral*>(rLit)) {
-					FloatLiteral* res = new FloatLiteral(
-							floatOp(l->getValue() , r->getValue())
-					);
-					delete l;
-					delete r;
-					return res;
-				}
-				if (IntLiteral* r = dynamic_cast<IntLiteral*>(rLit)) {
-					FloatLiteral* res = new FloatLiteral(
-							floatOp(l->getValue() , r->getValue())
-					);
-					delete l;
-					delete r;
-					return res;
-				}
-			} else {
-				IntLiteral* l = dynamic_cast<IntLiteral*>(lLit);
-				if (FloatLiteral* r = dynamic_cast<FloatLiteral*>(rLit)) {
-					FloatLiteral* res = new FloatLiteral(
-							floatOp(l->getValue() , r->getValue())
-					);
-					delete l;
-					delete r;
-					return res;
-				}
-				if (IntLiteral* r = dynamic_cast<IntLiteral*>(rLit)) {
-					IntLiteral* res = new IntLiteral(
-							intOp(l->getValue() , r->getValue())
-					);
-					delete l;
-					delete r;
-					return res;
-				}
-			}
+	virtual float floatOp(float, float) = 0; // hook point
+	virtual int intOp(int, int) = 0;		 // hook point
+
+	// Composite method API #2
+	class Iterator : public IIterator {
+	public:
+		Iterator(BinaryExpression& bexpr) : bexpr_(bexpr), cnt_(0) {}
+		virtual void First() { cnt_ = 0; }
+		virtual void Next()  { ++cnt_; }
+		virtual bool IsDone() const { return cnt_ == 2; }
+		virtual AbstractNode* CurrentItem() const {
+			if (cnt_ == 0) return bexpr_.lhs_;
+			else if (cnt_ == 1) return bexpr_.rhs_;
+			else throw std::runtime_error("BinaryExpression::Iterator error");
 		}
-		throw std::runtime_error(std::string("Cannot evaluate constant. lhs_ is of type ") + typeid(*lhs_).name()
-				+ ", rhs_ is of type " + typeid(*rhs_).name());
-	}
+	private:
+		BinaryExpression& bexpr_;
+		int cnt_;
+	};
+	virtual Iterator* createIterator() { return new Iterator(*this); }
+
+protected:
+	AbstractNode* lhs_;
+	AbstractNode* rhs_;
 };
 
 #endif /* BINARYEXPRESSION_H_ */

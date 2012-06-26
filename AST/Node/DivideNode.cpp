@@ -6,10 +6,9 @@
  */
 
 #include "DivideNode.h"
-#include "../Visitor/NodeVisitor.h"
 #include <functional>
 
-DivideNode::DivideNode(AbstractNode* lhs, AbstractNode* rhs) : lhs_(lhs), rhs_(rhs) {
+DivideNode::DivideNode(AbstractNode* lhs, AbstractNode* rhs) : BinaryExpression(lhs, rhs) {
 	// TODO Auto-generated constructor stub
 
 }
@@ -18,10 +17,14 @@ DivideNode::~DivideNode() {
 	// TODO Auto-generated destructor stub
 }
 
-void DivideNode::accept(NodeVisitor& visitor) { visitor.visit(*this); }
-
-Literal *DivideNode::evaluate() {
-	return binary_evaluate(lhs_, rhs_, std::divides<float>(), std::divides<int>());
+float DivideNode::floatOp(float float1, float float2) {
+	return std::divides<float>()(float1, float2);
 }
+
+int DivideNode::intOp(int int1, int int2) {
+	return std::divides<int>()(int1, int2);
+}
+
+
 
 

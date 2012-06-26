@@ -15,11 +15,10 @@ class MultiplyNode: public BinaryExpression {
 public:
 	MultiplyNode(AbstractNode* lhs, AbstractNode* rhs);
 	virtual ~MultiplyNode();
-	virtual void accept(NodeVisitor& visitor);
-	virtual Literal* evaluate();
-private:
-	AbstractNode* lhs_;
-	AbstractNode* rhs_;
+
+protected:
+	virtual float floatOp(float, float);
+	virtual int intOp(int, int);
 };
 
 #endif /* MULTIPLYNODE_H_ */

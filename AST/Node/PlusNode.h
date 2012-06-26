@@ -15,11 +15,10 @@ class PlusNode: public BinaryExpression {
 public:
 	PlusNode(AbstractNode* lhs, AbstractNode* rhs);
 	virtual ~PlusNode();
-	virtual void accept(NodeVisitor& visitor);
-	virtual Literal* evaluate();
-private:
-	AbstractNode* lhs_;
-	AbstractNode* rhs_;
+
+protected:
+	virtual float floatOp(float, float);
+	virtual int intOp(int, int);
 };
 
 #endif /* PLUSNODE_H_ */

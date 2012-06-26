@@ -6,10 +6,9 @@
  */
 
 #include "PlusNode.h"
-#include "../Visitor/NodeVisitor.h"
 #include <functional>
 
-PlusNode::PlusNode(AbstractNode* lhs, AbstractNode* rhs) : lhs_(lhs), rhs_(rhs) {
+PlusNode::PlusNode(AbstractNode* lhs, AbstractNode* rhs) : BinaryExpression(lhs, rhs) {
 	// TODO Auto-generated constructor stub
 
 }
@@ -18,10 +17,15 @@ PlusNode::~PlusNode() {
 	// TODO Auto-generated destructor stub
 }
 
-void PlusNode::accept(NodeVisitor& visitor) { visitor.visit(*this); }
-
-Literal *PlusNode::evaluate() {
-	return binary_evaluate(lhs_, rhs_, std::plus<float>(), std::plus<int>());
+// implement hook method
+int PlusNode::intOp(int int1, int int2) {
+	return std::plus<int>()(int1, int2);
 }
+
+float PlusNode::floatOp(float float1, float float2) {
+	return std::plus<float>()(float1, float2);
+}
+
+
 
 

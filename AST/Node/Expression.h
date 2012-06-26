@@ -10,12 +10,18 @@
 
 #include "AbstractNode.h"
 class Literal;
+class TypeDescriptor;
 
 class Expression: public AbstractNode {
 public:
 	Expression();
 	virtual ~Expression();
 	virtual Literal* evaluate() = 0;
+	void setType(TypeDescriptor* td) { type_ = td; }
+	TypeDescriptor* getType() { return type_; }
+
+protected:
+	TypeDescriptor* type_;
 };
 
 #endif /* EXPRESSION_H_ */

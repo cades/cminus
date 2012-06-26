@@ -6,10 +6,9 @@
  */
 
 #include "MinusNode.h"
-#include "../Visitor/NodeVisitor.h"
 #include <functional>
 
-MinusNode::MinusNode(AbstractNode* lhs, AbstractNode* rhs) : lhs_(lhs), rhs_(rhs) {
+MinusNode::MinusNode(AbstractNode* lhs, AbstractNode* rhs) : BinaryExpression(lhs, rhs) {
 	// TODO Auto-generated constructor stub
 
 }
@@ -18,8 +17,12 @@ MinusNode::~MinusNode() {
 	// TODO Auto-generated destructor stub
 }
 
-void MinusNode::accept(NodeVisitor& visitor) { visitor.visit(*this); }
-
-Literal *MinusNode::evaluate() {
-	return binary_evaluate(lhs_, rhs_, std::minus<float>(), std::minus<int>());
+float MinusNode::floatOp(float float1, float float2) {
+	return std::minus<float>()(float1, float2);
 }
+
+int MinusNode::intOp(int int1, int int2) {
+	return std::minus<int>()(int1, int2);
+}
+
+

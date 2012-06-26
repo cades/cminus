@@ -6,10 +6,9 @@
  */
 
 #include "MultiplyNode.h"
-#include "../Visitor/NodeVisitor.h"
 #include <functional>
 
-MultiplyNode::MultiplyNode(AbstractNode* lhs, AbstractNode* rhs) : lhs_(lhs), rhs_(rhs) {
+MultiplyNode::MultiplyNode(AbstractNode* lhs, AbstractNode* rhs) : BinaryExpression(lhs, rhs) {
 	// TODO Auto-generated constructor stub
 
 }
@@ -18,10 +17,16 @@ MultiplyNode::~MultiplyNode() {
 	// TODO Auto-generated destructor stub
 }
 
-void MultiplyNode::accept(NodeVisitor& visitor) { visitor.visit(*this); }
-
-Literal *MultiplyNode::evaluate() {
-	return binary_evaluate(lhs_, rhs_, std::multiplies<float>(), std::multiplies<int>());
+float MultiplyNode::floatOp(float float1, float float2) {
+	return std::multiplies<float>()(float1, float2);
 }
+
+
+
+int MultiplyNode::intOp(int int1, int int2) {
+	return std::multiplies<int>()(int1, int2);
+}
+
+
 
 
