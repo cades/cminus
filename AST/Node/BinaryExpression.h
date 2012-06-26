@@ -23,10 +23,6 @@ public:
 	TypeDescriptor* binaryResultType();
 	virtual void accept(NodeVisitor& visitor);
 
-protected:
-	virtual float floatOp(float, float) = 0; // hook point
-	virtual int intOp(int, int) = 0;		 // hook point
-
 	// Composite method API #2
 	class Iterator : public IIterator {
 	public:
@@ -44,6 +40,10 @@ protected:
 		int cnt_;
 	};
 	virtual Iterator* createIterator() { return new Iterator(*this); }
+
+protected:
+	virtual float floatOp(float, float) = 0; // hook point
+	virtual int intOp(int, int) = 0;		 // hook point
 
 protected:
 	Expression* lhs_;
