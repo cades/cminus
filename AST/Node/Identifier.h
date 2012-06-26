@@ -8,18 +8,19 @@
 #ifndef IDENTIFIER_H_
 #define IDENTIFIER_H_
 
-#include "AbstractNode.h"
+#include "Expression.h"
 #include <string>
 using std::string;
 class NodeVisitor;
 class Attributes;
 class TypeDescriptor;
 
-class Identifier: public AbstractNode {
+class Identifier: public Expression {
 public:
 	Identifier(const string&);
 	virtual ~Identifier();
 	virtual void accept(NodeVisitor& visitor);
+	virtual Literal* evaluate();
 
 	string name() const { return name_; }
 	Attributes* getAttributes() const { return attributesRef_; }

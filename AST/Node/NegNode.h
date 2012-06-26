@@ -8,18 +8,14 @@
 #ifndef NEGNODE_H_
 #define NEGNODE_H_
 
-#include "Expression.h"
+#include "UnaryExpression.h"
 class NodeVisitor;
 
-class NegNode: public Expression {
+class NegNode: public UnaryExpression {
 public:
-	NegNode(AbstractNode*);
+	NegNode(Expression*);
 	virtual ~NegNode();
-	AbstractNode* subExpr() { return subExpr_; }
-	virtual void accept(NodeVisitor& visitor);
 	virtual Literal* evaluate();
-private:
-	AbstractNode* subExpr_;
 };
 
 #endif /* NEGNODE_H_ */

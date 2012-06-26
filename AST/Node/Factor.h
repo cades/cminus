@@ -8,17 +8,14 @@
 #ifndef FACTOR_H_
 #define FACTOR_H_
 
-#include "Expression.h"
+#include "UnaryExpression.h"
 #include <stdexcept>
 
-class Factor: public Expression {
+class Factor: public UnaryExpression {
 public:
-	Factor(AbstractNode*);
+	Factor(Expression*);
 	virtual ~Factor();
-	virtual void accept(NodeVisitor& visitor);
 	virtual Literal* evaluate() { throw std::runtime_error("Factor DONOT support evaluate()."); }
-private:
-	AbstractNode* subExpr_;
 };
 
 #endif /* FACTOR_H_ */

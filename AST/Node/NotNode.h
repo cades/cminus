@@ -8,18 +8,14 @@
 #ifndef NOTNODE_H_
 #define NOTNODE_H_
 
-#include "Expression.h"
+#include "UnaryExpression.h"
 class NodeVisitor;
 
-class NotNode: public Expression {
+class NotNode: public UnaryExpression {
 public:
-	NotNode(AbstractNode*);
+	NotNode(Expression*);
 	virtual ~NotNode();
-	AbstractNode* subExpr() { return subExpr_; }
-	virtual void accept(NodeVisitor& visitor);
 	virtual Literal* evaluate();
-private:
-	AbstractNode* subExpr_;
 };
 
 #endif /* NOTNODE_H_ */

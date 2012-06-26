@@ -6,12 +6,47 @@
  */
 
 #include "SemanticsVisitor.h"
+#include "../../Node/IntLiteral.h"
+#include "../../Node/FloatLiteral.h"
+#include "../../Node/BinaryExpression.h"
+
+#include "../../SymbolTable/TypeDescriptor/IntegerTypeDescriptor.h"
+#include "../../SymbolTable/TypeDescriptor/FloatTypeDescriptor.h"
+
 
 SemanticsVisitor::SemanticsVisitor() {
-	// TODO Auto-generated constructor stub
-
 }
 
 SemanticsVisitor::~SemanticsVisitor() {
-	// TODO Auto-generated destructor stub
 }
+
+void SemanticsVisitor::visit(Identifier& id) {
+
+}
+
+void SemanticsVisitor::visit(IntLiteral& intlit) {
+	intlit.setType(new IntegerTypeDescriptor); // FIXME should I use TypeDescriptor in symtab? Singleton?
+}
+
+void SemanticsVisitor::visit(FloatLiteral& floatlit) {
+	floatlit.setType(new FloatTypeDescriptor); // FIXME should I use TypeDescriptor in symtab?
+}
+
+void SemanticsVisitor::visit(BinaryExpression& bexpr) {
+	visitChildren(bexpr);
+	bexpr.setType(bexpr.binaryResultType());
+}
+
+void SemanticsVisitor::visit(UnaryExpression&) {
+
+}
+
+void SemanticsVisitor::visit(ArrayReferencingNode & node) {
+
+}
+
+void SemanticsVisitor::visit(StructReferencingNode & node) {
+
+}
+
+
