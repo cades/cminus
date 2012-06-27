@@ -11,6 +11,9 @@
 #include "../NodeVisitor.h"
 class Attributes;
 class TypeDescriptor;
+#include <list>
+using std::list;
+class ExpressionList;
 
 class SemanticsVisitor: public NodeVisitor {
 public:
@@ -26,12 +29,12 @@ public:
 	virtual void visit(RelationalExpression& node);
 	virtual void visit(ArrayReferencingNode&);
 	virtual void visit(StructReferencingNode&);
+	virtual void visit(CallingNode& node);
 
 	virtual void visit(ANDNode& node) {}
 	virtual void visit(ArrayDefiningNode& node) {}
 	virtual void visit(ArrayVariableDeclaringNode& node) {}
 	virtual void visit(BlockNode& node) {}
-	virtual void visit(CallingNode& node) {} // TODO should handle this? It's part of Factor :<
 	virtual void visit(DivideNode& node) {}
 	virtual void visit(EQNode& node) {}
 	virtual void visit(EmptyNode& node) {}
@@ -65,9 +68,13 @@ public:
 	virtual void visit(VariableListDeclaringNode& node) {}
 	virtual void visit(WhileLoopingNode& node) {}
 
+	typedef list<TypeDescriptor*> TypeDescriptorList;
 private:
 	bool isDataObject(Attributes*);
 	bool assignable(TypeDescriptor*, TypeDescriptor*);
+	TypeDescriptorList getArgTypes(ExpressionList*);
+	bool applicable(TypeDescriptorList, TypeDescriptorList);
+	bool bindable(TypeDescriptor*, TypeDescriptor*);
 };
 
 #endif /* SEMANTICSVISITOR_H_ */
