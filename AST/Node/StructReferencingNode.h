@@ -17,8 +17,12 @@ class StructReferencingNode: public Expression {
 public:
 	StructReferencingNode(Expression* varRef, Identifier* field);
 	virtual ~StructReferencingNode();
-	virtual Literal* evaluate() { throw std::runtime_error("StructReferencingNode not yet support evaluate()"); } // TODO implement it
-	virtual void accept(NodeVisitor& visitor);
+	virtual Literal* evaluate() { throw std::runtime_error("StructReferencingNode not yet support evaluate()"); }
+
+    virtual void accept(NodeVisitor & visitor);
+    Identifier *getField() const { return field_; }
+    Expression *getVarRef() const { return varRef_; }
+
 private:
 	Expression* varRef_;
 	Identifier* field_;
