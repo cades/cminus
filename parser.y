@@ -38,7 +38,7 @@ Identifier* generateUniqueId() {
 %type <node> decl type_decl function_decl param  
 %type <id>   type tag opt_tag struct_tail /* reference */
 %type <node> stmt block
-%type <node> dim_decl dim_fn dimfn1 
+%type <node> dim_decl dimfn1 
 %type <opKind> rel_op
 %type <nodeList> program global_decl_list global_decl param_list decl_list stmt_list
 %type <expr> cexpr_null cexpr mcexpr cfactor expr term factor relop_expr relop_term relop_factor var_ref assign_expr dim
@@ -49,6 +49,7 @@ Identifier* generateUniqueId() {
 %type <varListDecl> var_decl struct_declaration
 %type <id> init_id
 %type <structDef> struct_type
+%type <arrayDef> dim_fn
 
 %token <expr> CONST
 %token <id> ID

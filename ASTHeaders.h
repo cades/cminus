@@ -83,6 +83,7 @@ union YYSTYPE {
     VariableListDeclaringNode* varListDecl;
     StructDefiningNode* structDef;
     ExpressionList* exprList;
+    ArrayDefiningNode* arrayDef;
 };
 
 typedef union YYSTYPE YYSTYPE;
