@@ -6,6 +6,7 @@
  */
 
 #include "SemanticsVisitor.h"
+#include "LHSSemanticsVisitor.h"
 #include <ostream>
 #include "../../Node/Identifier.h"
 #include "../../Node/IntLiteral.h"
@@ -13,6 +14,7 @@
 #include "../../Node/BinaryExpression.h"
 #include "../../Node/UnaryExpression.h"
 #include "../../Node/RelationalExpression.h"
+#include "../../Node/AssigningNode.h"
 
 #include "../../SymbolTable/SymbolTable.h"
 #include "../../SymbolTable/Attributes/Attributes.h"
@@ -29,10 +31,19 @@ SemanticsVisitor::~SemanticsVisitor() {
 }
 
 void SemanticsVisitor::visit(AssigningNode& assign) {
+	LHSSemanticsVisitor lhsVisitor(&currentSymbolTable(), errorLog());
+	assign.getTargetName()->accept(lhsVisitor);
+	assign.getValueExpr()->accept(*this);
+	if ( assignable( assign.getTargetName()->getType(), assign.getValueExpr()->getType() ) ) {
+		assign.setType( assign.getTargetName()->getType() );
+	} else {
+		errorLog() << "Right hand side expression not assignable to left hand side name at " << &assign << "\n";
+		assign.setType(0); // NOTICE by design, null attribute and error type is 0.
+	}
 }
 
 void SemanticsVisitor::visit(Identifier& id) {
-	id.setType(0); // init to error type
+	id.setType(0); // init to error type. NOTICE by design, null attribute and error type is 0.
 	try {
 		Attributes* attributeRef = currentSymbolTable().retrieveSymbol(id.name());
 		if (isDataObject(attributeRef)) {
@@ -83,6 +94,21 @@ bool SemanticsVisitor::isDataObject(Attributes *attr) {
 		return true;
 	return false;
 }
+
+bool SemanticsVisitor::assignable(TypeDescriptor *dest, TypeDescriptor *src) {
+	/*
+	 * dest is errorType : source is not assignable. (decided by LHSSemamticVisitor)
+	 * src  is errorType : target is not a data object.
+	 */
+	if ( dest == 0 || src == 0 ) return false;
+	/*
+	 * Because C-- allow int and float convert to each other, and this can be done at code gen phase,
+	 * so we do nothing for 'check compatibility' at this time.
+	 */
+	return true;
+}
+
+
 
 
 

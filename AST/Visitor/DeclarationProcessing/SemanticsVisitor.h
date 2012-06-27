@@ -10,6 +10,7 @@
 
 #include "../NodeVisitor.h"
 class Attributes;
+class TypeDescriptor;
 
 class SemanticsVisitor: public NodeVisitor {
 public:
@@ -66,6 +67,7 @@ public:
 
 private:
 	bool isDataObject(Attributes*);
+	bool assignable(TypeDescriptor*, TypeDescriptor*);
 };
 
 #endif /* SEMANTICSVISITOR_H_ */

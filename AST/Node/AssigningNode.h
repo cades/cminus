@@ -8,17 +8,22 @@
 #ifndef ASSIGNINGNODE_H_
 #define ASSIGNINGNODE_H_
 
-#include "AbstractNode.h"
+#include "Expression.h"
+#include <stdexcept>
 class NodeVisitor;
 
-class AssigningNode: public AbstractNode {
+class AssigningNode: public Expression {
 public:
-	AssigningNode(AbstractNode*, AbstractNode*);
+	AssigningNode(Expression*, Expression*);
 	virtual ~AssigningNode();
-	virtual void accept(NodeVisitor& visitor);
+	virtual Literal* evaluate() { throw std::runtime_error("AssigningNode not yet support evaluate()"); }
+
+    virtual void accept(NodeVisitor & visitor);
+    Expression *getTargetName() const;
+    Expression *getValueExpr() const;
 private:
-	AbstractNode* targetName_;  // TODO: determine pointer type. Can it be more precise?
-	AbstractNode* valueExpr_;   // TODO: determine pointer type. Can it be more precise?
+    Expression *targetName_;
+    Expression *valueExpr_;
 };
 
 #endif /* ASSIGNINGNODE_H_ */
