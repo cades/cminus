@@ -97,7 +97,7 @@ void TopDeclVisitor::visit(ArrayVariableDeclaringNode& avd) {
 		id.setAttributes(0); // NOTICE by design, null attribute and error type is 0.
 	} else {
 		VariableAttributes* attr = new VariableAttributes;
-		attr->setType( avd.getTypeName()->getType() );
+		attr->setType( avd.getDim()->getType() );
 		currentSymbolTable().enterSymbol(id.name(), attr);
 		id.setAttributes(attr);
 	}
