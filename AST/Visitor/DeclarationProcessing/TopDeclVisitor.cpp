@@ -35,7 +35,7 @@ void TopDeclVisitor::visit(TypeDeclaringNode& td) {
 	for (i->First(); i->IsDone(); i->Next()) {
 		Identifier& id = *i->CurrentItem();
 		if (currentSymbolTable().declaredLocally( id.name() )) {
-			id.setAttributes(0);
+			id.setAttributes(0); // NOTICE by design, null attribute and error type is 0.
 		} else {
 			TypeAttributes* attr = new TypeAttributes; // FIXME alias TypeAttributes. should not release TypeDescriptor
 			attr->setType(td.typeSpec()->getType());
@@ -54,7 +54,7 @@ void TopDeclVisitor::visit(TypedefNode& td) {
 	foreach_element (i) {
 		Identifier& id =  *i->CurrentItem();
 		if (currentSymbolTable().declaredLocally( id.name() )) {
-			id.setAttributes(0);
+			id.setAttributes(0); // NOTICE by design, null attribute and error type is 0.
 		} else {
 			TypeAttributes* attr = new TypeAttributes; // FIXME alias TypeAttributes. should not release TypeDescriptor
 			attr->setType( td.getTypeName()->getType() );
@@ -75,7 +75,7 @@ void TopDeclVisitor::visit(VariableListDeclaringNode& vld) {
 	foreach_element (i) {
 		Identifier& id =  *i->CurrentItem();
 		if (currentSymbolTable().declaredLocally( id.name() )) {
-			id.setAttributes(0);
+			id.setAttributes(0); // NOTICE by design, null attribute and error type is 0.
 		} else {
 			VariableAttributes* attr = new VariableAttributes;
 			attr->setType( vld.getTypeName()->getType() );
