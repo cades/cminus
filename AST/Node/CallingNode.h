@@ -36,7 +36,7 @@ public:
 			if (cnt_ > 0) i_->Next();
 		}
 		virtual bool IsDone() const { return cnt_ == 1 + cn_.argList_->length(); }
-		virtual AbstractNode* CurrentItem() const {
+		virtual Expression* CurrentItem() const {
 			if (cnt_ == 0) return cn_.functionName_;
 			else return i_->CurrentItem();
 		}
