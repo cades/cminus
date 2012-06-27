@@ -14,6 +14,7 @@
 #include "../../Node/ArrayVariableDeclaringNode.h"
 #include "../../Node/ArrayDefiningNode.h"
 #include "../../Node/FunctionDeclaringNode.h"
+#include "../../Node/IdentifierWithDim.h"
 #include "../../SymbolTable/SymbolTable.h"
 #include "../../SymbolTable/Attributes/TypeAttributes.h"
 #include "../../SymbolTable/Attributes/VariableAttributes.h"
@@ -72,18 +73,32 @@ void TopDeclVisitor::visit(VariableListDeclaringNode& vld) {
 	TypeVisitor typeVisitor(&currentSymbolTable(), errorLog());
 	vld.getTypeName()->accept(typeVisitor);
 
-	// TODO deal with IdentifierWithDim
 	// TODO deal with IdentifierWithInitExpr
 	VariableListDeclaringNode::Iterator* i = vld.createIterator();
 	foreach_element (i) {
-		Identifier& id =  *i->CurrentItem();
-		if (currentSymbolTable().declaredLocally( id.name() )) {
-			id.setAttributes(0); // NOTICE by design, null attribute and error type is 0.
+		if (dynamic_cast<IdentifierWithDim*>(i->CurrentItem())) {
+			IdentifierWithDim& id =  *dynamic_cast<IdentifierWithDim*>(i->CurrentItem());
+			if (currentSymbolTable().declaredLocally( id.name() )) {
+				errorLog() << "Variable name '" << id.name() << "' cannot be redeclared. \n";
+				id.setAttributes(0); // NOTICE by design, null attribute and error type is 0.
+			} else {
+				VariableAttributes* attr = new VariableAttributes;
+				id.getDim()->accept(typeVisitor);		 // this is the difference
+				attr->setType( id.getDim()->getType() ); // this is the difference
+				currentSymbolTable().enterSymbol(id.name(), attr);
+				id.setAttributes(attr);
+			}
 		} else {
-			VariableAttributes* attr = new VariableAttributes;
-			attr->setType( vld.getTypeName()->getType() );
-			currentSymbolTable().enterSymbol(id.name(), attr);
-			id.setAttributes(attr);
+			Identifier& id =  *i->CurrentItem();
+			if (currentSymbolTable().declaredLocally( id.name() )) {
+				errorLog() << "Variable name '" << id.name() << "' cannot be redeclared. \n";
+				id.setAttributes(0); // NOTICE by design, null attribute and error type is 0.
+			} else {
+				VariableAttributes* attr = new VariableAttributes;
+				attr->setType( vld.getTypeName()->getType() );
+				currentSymbolTable().enterSymbol(id.name(), attr);
+				id.setAttributes(attr);
+			}
 		}
 	}
 	delete i;
@@ -94,6 +109,7 @@ void TopDeclVisitor::visit(ArrayVariableDeclaringNode& avd) {
 	avd.getDim()->accept(typeVisitor);
 	Identifier& id = *avd.getId();
 	if (currentSymbolTable().declaredLocally( id.name() )) {
+		errorLog() << "Variable name '" << id.name() << "' cannot be redeclared. \n";
 		id.setAttributes(0); // NOTICE by design, null attribute and error type is 0.
 	} else {
 		VariableAttributes* attr = new VariableAttributes;

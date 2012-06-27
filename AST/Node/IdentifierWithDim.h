@@ -10,14 +10,16 @@
 
 #include "Identifier.h"
 class NodeVisitor;
+class ArrayDefiningNode;
 
 class IdentifierWithDim: public Identifier {
 public:
-	IdentifierWithDim(Identifier* name, AbstractNode* dim);
+	IdentifierWithDim(Identifier* name, ArrayDefiningNode* dim);
 	virtual ~IdentifierWithDim();
 	virtual void accept(NodeVisitor& visitor);
+    ArrayDefiningNode *getDim() const;
 private:
-	AbstractNode* dim_;
+	ArrayDefiningNode* dim_;
 };
 
 #endif /* IDENTIFIERWITHDIM_H_ */
