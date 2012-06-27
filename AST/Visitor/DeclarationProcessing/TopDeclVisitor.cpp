@@ -12,6 +12,7 @@
 #include "../../Node/TypedefNode.h"
 #include "../../Node/VariableListDeclaringNode.h"
 #include "../../Node/ArrayVariableDeclaringNode.h"
+#include "../../Node/ArrayDefiningNode.h"
 #include "../../Node/FunctionDeclaringNode.h"
 #include "../../SymbolTable/SymbolTable.h"
 #include "../../SymbolTable/Attributes/TypeAttributes.h"
