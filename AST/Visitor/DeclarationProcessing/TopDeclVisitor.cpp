@@ -19,6 +19,7 @@
 #include "../../SymbolTable/Attributes/TypeAttributes.h"
 #include "../../SymbolTable/Attributes/VariableAttributes.h"
 #include "../../SymbolTable/Attributes/FunctionAttributes.h"
+#include "SemanticsVisitor.h"
 #include <stdexcept>
 #include <ostream>
 
@@ -133,7 +134,7 @@ void TopDeclVisitor::visit(FunctionDeclaringNode& fd) {
 
 	setCurrentSymbolTableTo(attr->getLocals());
 	fd.getParamList()->accept(*this);
-	// TODO process signature
+	attr->setSignature(generateSignature(fd.getParamList()));
 	fd.getBlock()->accept(*this);
 	setCurrentSymbolTableBack();
 }
@@ -148,6 +149,20 @@ void TopDeclVisitor::setCurrentSymbolTableBack() {
 	setSymbolTableTo(originalSymtab_);
 }
 
-
+SemanticsVisitor::TypeDescriptorList TopDeclVisitor::generateSignature(NodeList* nl) {
+	SemanticsVisitor::TypeDescriptorList sig;
+	NodeList::Iterator* i = nl->createIterator();
+	foreach_element(i) {
+		if (VariableListDeclaringNode* vld = dynamic_cast<VariableListDeclaringNode*>(i->CurrentItem())) {
+			sig.push_back(vld->getTypeName()->getType());
+		} else if (ArrayVariableDeclaringNode* avd = dynamic_cast<ArrayVariableDeclaringNode*>(i->CurrentItem())) {
+			sig.push_back(avd->getTypeName()->getType());
+		} else {
+			throw std::runtime_error(string("TopDeclVisitor::generateSignature  encounter strange node: ") + typeid(i->CurrentItem()).name() );
+		}
+	}
+	delete i;
+	return sig;
+}
 
 

@@ -29,7 +29,7 @@ public:
 protected:
 	void setCurrentSymbolTableTo(SymbolTable*);
 	void setCurrentSymbolTableBack();
-
+	SemanticsVisitor::TypeDescriptorList generateSignature(NodeList*);
 private:
 	SymbolTable* const originalSymtab_;
 };
