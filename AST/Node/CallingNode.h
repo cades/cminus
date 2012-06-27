@@ -49,7 +49,7 @@ public:
 
 private:
 	Identifier* functionName_;
-	ExpressionList* argList_;
+	ExpressionList* argList_;   // list of VariableListDeclaringNode & ArrayVariableDeclaringNode
 };
 
 #endif /* CALLINGNODE_H_ */
