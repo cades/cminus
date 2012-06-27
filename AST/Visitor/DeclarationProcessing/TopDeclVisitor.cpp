@@ -11,12 +11,14 @@
 #include "../../Node/TypeDeclaringNode.h"
 #include "../../Node/TypedefNode.h"
 #include "../../Node/VariableListDeclaringNode.h"
+#include "../../Node/ArrayVariableDeclaringNode.h"
 #include "../../Node/FunctionDeclaringNode.h"
 #include "../../SymbolTable/SymbolTable.h"
 #include "../../SymbolTable/Attributes/TypeAttributes.h"
 #include "../../SymbolTable/Attributes/VariableAttributes.h"
 #include "../../SymbolTable/Attributes/FunctionAttributes.h"
 #include <stdexcept>
+#include <ostream>
 
 TopDeclVisitor::TopDeclVisitor(SymbolTable* symtab, ostream& os) : SemanticsVisitor(symtab, os), originalSymtab_(symtab) {
 	// TODO Auto-generated constructor stub
@@ -86,8 +88,18 @@ void TopDeclVisitor::visit(VariableListDeclaringNode& vld) {
 	delete i;
 }
 
-void TopDeclVisitor::visit(ArrayVariableDeclaringNode & avd) {
-	// TODO implement it!
+void TopDeclVisitor::visit(ArrayVariableDeclaringNode& avd) {
+	TypeVisitor typeVisitor(&currentSymbolTable(), errorLog());
+	avd.getDim()->accept(typeVisitor);
+	Identifier& id = *avd.getId();
+	if (currentSymbolTable().declaredLocally( id.name() )) {
+		id.setAttributes(0); // NOTICE by design, null attribute and error type is 0.
+	} else {
+		VariableAttributes* attr = new VariableAttributes;
+		attr->setType( avd.getTypeName()->getType() );
+		currentSymbolTable().enterSymbol(id.name(), attr);
+		id.setAttributes(attr);
+	}
 }
 
 void TopDeclVisitor::visit(FunctionDeclaringNode& fd) {
@@ -96,7 +108,10 @@ void TopDeclVisitor::visit(FunctionDeclaringNode& fd) {
 
 	FunctionAttributes* attr = new FunctionAttributes;
 	attr->setReturnType(fd.getReturnType()->getType());
-	currentSymbolTable().enterSymbol(fd.getFunctionName()->name(), attr);
+	if ( !currentSymbolTable().enterSymbol(fd.getFunctionName()->name(), attr) ) {
+		errorLog() << "Function name '" << fd.getFunctionName()->name() << "' redeclared. \n";
+		return; // this name has been used.
+	}
 	fd.getFunctionName()->setAttributes(attr); // why do this? (textbook)
 
 	setCurrentSymbolTableTo(attr->getLocals());
