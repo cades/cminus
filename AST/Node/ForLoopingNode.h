@@ -9,18 +9,18 @@
 #define FORLOOPINGNODE_H_
 
 #include "AbstractNode.h"
-class NodeList;
+class ExpressionList;
 class NodeVisitor;
 
 class ForLoopingNode: public AbstractNode {
 public:
-	ForLoopingNode(NodeList* initializer, NodeList* condition, NodeList* increment,  AbstractNode* loopBody);
+	ForLoopingNode(ExpressionList* initializer, ExpressionList* condition, ExpressionList* increment,  AbstractNode* loopBody);
 	virtual ~ForLoopingNode();
 	virtual void accept(NodeVisitor& visitor);
 private:
-	NodeList* initializer_;
-	NodeList* condition_;
-	NodeList* increment_;
+	ExpressionList* initializer_;
+	ExpressionList* condition_;
+	ExpressionList* increment_;
 	AbstractNode* loopBody_;
 };
 

@@ -37,15 +37,15 @@ Identifier* generateUniqueId() {
 
 %type <node> decl type_decl function_decl param  
 %type <id>   type tag opt_tag struct_tail /* reference */
-%type <node> stmt assign_expr block
-%type <node> dim dim_decl dim_fn dimfn1 
+%type <node> stmt block
+%type <node> dim_decl dim_fn dimfn1 
 %type <opKind> rel_op
 %type <nodeList> program global_decl_list global_decl param_list decl_list stmt_list
-%type <nodeList> assign_expr_list nonempty_assign_expr_list relop_expr_list nonempty_relop_expr_list
-%type <expr> cexpr_null cexpr mcexpr cfactor expr term factor relop_expr relop_term relop_factor var_ref
+%type <expr> cexpr_null cexpr mcexpr cfactor expr term factor relop_expr relop_term relop_factor var_ref assign_expr dim
 /*%type <typeDeclNode> */
 %type <idList> id_list init_id_list
 %type <declList> struct_declaration_list
+%type <exprList> relop_expr_list assign_expr_list nonempty_assign_expr_list nonempty_relop_expr_list
 %type <varListDecl> var_decl struct_declaration
 %type <id> init_id
 %type <structDef> struct_type
@@ -199,11 +199,11 @@ stmt		: MK_LBRACE block MK_RBRACE	{ $$ = $2; }
 		;
 
 assign_expr_list : nonempty_assign_expr_list  { $$ = $1; }
-		| { $$ = new NodeList; } /* empty nodelist*/
+		| { $$ = new ExpressionList; } /* empty nodelist*/
 		;
 
 nonempty_assign_expr_list        : nonempty_assign_expr_list MK_COMMA assign_expr { $1->append($3); $$ = $1; }
-		| assign_expr { $$ = new NodeList; $$->append($1); }
+		| assign_expr { $$ = new ExpressionList; $$->append($1); }
 		;
 
 assign_expr     : var_ref OP_ASSIGN relop_expr { $$ = new AssigningNode($1, $3); }
@@ -253,11 +253,11 @@ rel_op		: OP_EQ	{ $$ = $1; }
 		;
 
 relop_expr_list	: nonempty_relop_expr_list { $$ = $1; }
-		| { $$ = new NodeList; } /* empty nodelist */
+		| { $$ = new ExpressionList; } /* empty nodelist */
 		;
 
 nonempty_relop_expr_list	: nonempty_relop_expr_list MK_COMMA relop_expr { $1->append($3); $$ = $1; }
-		| relop_expr		{ $$ = new NodeList; $$->append($1); }
+		| relop_expr		{ $$ = new ExpressionList; $$->append($1); }
 		;
 
 expr		: expr OP_PLUS term	{ $$ = new PlusNode($1, $3); }

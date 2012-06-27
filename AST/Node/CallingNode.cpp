@@ -8,7 +8,7 @@
 #include "CallingNode.h"
 #include "../Visitor/NodeVisitor.h"
 
-CallingNode::CallingNode(Identifier* functionName, NodeList* argList)
+CallingNode::CallingNode(Identifier* functionName, ExpressionList* argList)
 : functionName_(functionName), argList_(argList) {
 	// TODO Auto-generated constructor stub
 

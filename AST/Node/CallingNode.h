@@ -10,18 +10,21 @@
 
 #include "Expression.h"
 class Identifier;
-class NodeList;
 class NodeVisitor;
 #include <stdexcept>
 #include "NodeList.h"
+#include "ExpressionList.h"
 #include "Identifier.h"
 
 class CallingNode: public Expression {
 public:
-	CallingNode(Identifier* functionName, NodeList* argList);
+	CallingNode(Identifier* functionName, ExpressionList* argList);
 	virtual ~CallingNode();
 	virtual void accept(NodeVisitor& visitor);
 	virtual Literal* evaluate() { throw std::runtime_error("CallingNode DONOT support evaluate()."); }
+
+	ExpressionList *getArgList() const { return argList_; }
+	Identifier *getFunctionName() const { return functionName_; }
 
 	// Composite method API #2
 	class Iterator : public IIterator {
@@ -40,13 +43,13 @@ public:
 	private:
 		CallingNode& cn_;
 		int cnt_;
-		NodeList::Iterator* i_;
+		ExpressionList::Iterator* i_;
 	};
 	virtual Iterator* createIterator() { return new Iterator(*this); }
 
 private:
 	Identifier* functionName_;
-	NodeList* argList_;
+	ExpressionList* argList_;
 };
 
 #endif /* CALLINGNODE_H_ */

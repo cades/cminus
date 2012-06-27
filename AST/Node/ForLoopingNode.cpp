@@ -8,7 +8,7 @@
 #include "ForLoopingNode.h"
 #include "../Visitor/NodeVisitor.h"
 
-ForLoopingNode::ForLoopingNode(NodeList* initializer, NodeList* condition, NodeList* increment,  AbstractNode* loopBody)
+ForLoopingNode::ForLoopingNode(ExpressionList* initializer, ExpressionList* condition, ExpressionList* increment,  AbstractNode* loopBody)
 : initializer_(initializer), condition_(condition), increment_(increment), loopBody_(loopBody) {
 	// TODO Auto-generated constructor stub
 

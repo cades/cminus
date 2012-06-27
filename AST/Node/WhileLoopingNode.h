@@ -9,16 +9,16 @@
 #define WHILELOOPINGNODE_H_
 
 #include "AbstractNode.h"
-class NodeList;
+class ExpressionList;
 class NodeVisitor;
 
 class WhileLoopingNode: public AbstractNode {
 public:
-	WhileLoopingNode(NodeList* condition,  AbstractNode* loopBody);
+	WhileLoopingNode(ExpressionList* condition,  AbstractNode* loopBody);
 	virtual ~WhileLoopingNode();
 	virtual void accept(NodeVisitor& visitor);
 private:
-	NodeList* condition_;
+	ExpressionList* condition_;
 	AbstractNode* loopBody_;
 };
 

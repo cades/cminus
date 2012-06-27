@@ -8,7 +8,7 @@
 #include "IfTestingNode.h"
 #include "../Visitor/NodeVisitor.h"
 
-IfTestingNode::IfTestingNode(NodeList* condition, AbstractNode* thenPart, AbstractNode* elsePart)
+IfTestingNode::IfTestingNode(ExpressionList* condition, AbstractNode* thenPart, AbstractNode* elsePart)
 : condition_(condition), thenPart_(thenPart), elsePart_(elsePart) {
 	// TODO Auto-generated constructor stub
 

@@ -8,7 +8,7 @@
 #include "WhileLoopingNode.h"
 #include "../Visitor/NodeVisitor.h"
 
-WhileLoopingNode::WhileLoopingNode(NodeList* condition,  AbstractNode* loopBody)
+WhileLoopingNode::WhileLoopingNode(ExpressionList* condition,  AbstractNode* loopBody)
 : condition_(condition), loopBody_(loopBody) {
 	// TODO Auto-generated constructor stub
 
