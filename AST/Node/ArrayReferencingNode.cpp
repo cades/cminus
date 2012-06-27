@@ -8,7 +8,7 @@
 #include "ArrayReferencingNode.h"
 #include "../Visitor/NodeVisitor.h"
 
-ArrayReferencingNode::ArrayReferencingNode(AbstractNode* varRef, AbstractNode* dimExpr)
+ArrayReferencingNode::ArrayReferencingNode(Expression* varRef, Expression* dimExpr)
 : varRef_(varRef), dimExpr_(dimExpr) {}
 
 ArrayReferencingNode::~ArrayReferencingNode() {}

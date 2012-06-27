@@ -14,13 +14,13 @@ class NodeVisitor;
 
 class ArrayReferencingNode: public Expression {
 public:
-	ArrayReferencingNode(AbstractNode* varRef, AbstractNode* dimExpr);
+	ArrayReferencingNode(Expression* varRef, Expression* dimExpr);
 	virtual ~ArrayReferencingNode();
 	virtual Literal* evaluate() { throw std::runtime_error("ArrayReferencingNode not yet support evaluate()"); } // TODO implement it
-		virtual void accept(NodeVisitor& visitor);
+	virtual void accept(NodeVisitor& visitor);
 private:
-	AbstractNode* varRef_;
-	AbstractNode* dimExpr_;
+	Expression* varRef_;
+	Expression* dimExpr_;
 };
 
 #endif /* ARRAYREFERENCINGNODE_H_ */

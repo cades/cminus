@@ -8,7 +8,7 @@
 #include "StructReferencingNode.h"
 #include "../Visitor/NodeVisitor.h"
 
-StructReferencingNode::StructReferencingNode(AbstractNode* varRef, Identifier* field)
+StructReferencingNode::StructReferencingNode(Expression* varRef, Identifier* field)
 : varRef_(varRef), field_(field) {
 	// TODO Auto-generated constructor stub
 
