@@ -19,6 +19,7 @@ public:
 	NodeList();
 	virtual ~NodeList();
 	void append(AbstractNode*);
+	int length() { return list_.size(); }
 	virtual void accept(NodeVisitor& visitor);
 
 	// Composite method API #1
