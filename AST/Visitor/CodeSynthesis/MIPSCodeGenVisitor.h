@@ -8,11 +8,13 @@
 #ifndef MIPSCODEGENVISITOR_H_
 #define MIPSCODEGENVISITOR_H_
 
-#include "NodeVisitor.h"
+#include "../NodeVisitor.h"
+#include <ostream>
+using std::ostream;
 
 class MIPSCodeGenVisitor: public NodeVisitor {
 public:
-	MIPSCodeGenVisitor();
+	MIPSCodeGenVisitor(SymbolTable*, ostream&, ostream&);
 	virtual ~MIPSCodeGenVisitor();
 
 	virtual void visit(ANDNode& node) = 0;
@@ -61,6 +63,10 @@ public:
 	virtual void visit(TypedefNode& node) = 0;
 	virtual void visit(VariableListDeclaringNode& node) = 0;
 	virtual void visit(WhileLoopingNode& node) = 0;
+
+private:
+	ostream& codeStream() { return codeOutputStream_; }
+	ostream& codeOutputStream_;
 };
 
 #endif /* MIPSCODEGENVISITOR_H_ */

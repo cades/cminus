@@ -7,7 +7,8 @@
 
 #include "MIPSCodeGenVisitor.h"
 
-MIPSCodeGenVisitor::MIPSCodeGenVisitor() {
+MIPSCodeGenVisitor::MIPSCodeGenVisitor(SymbolTable* symtab, ostream& os, ostream& codestream)
+: NodeVisitor(symtab, os), codeOutputStream_(codestream) {
 	// TODO Auto-generated constructor stub
 
 }
