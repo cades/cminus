@@ -9,4 +9,5 @@ parser.tab.*
 lex.yy.c
 plateform_dependent.mk
 clipboard
+main.o
 
