@@ -313,6 +313,8 @@ int main (int argc, char *argv[])
     SymbolTable symbolTable;
     TopDeclVisitor tdVisitor(&symbolTable, cout);
     astRoot->accept(tdVisitor);
+    //MIPSCodeGenVisitor codegenVisitor(&symbolTable, cerr, cout);
+    //astRoot->accept(codegenVisitor);
     
     printf("%s\n", "Parsing completed. No errors found.");
 } /* main */

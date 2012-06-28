@@ -6,5 +6,5 @@
 #include "AST/Visitor/DeclarationProcessing/TypeVisitor.h"
 #include "AST/Visitor/DeclarationProcessing/SemanticsVisitor.h"
 #include "AST/Visitor/DeclarationProcessing/LHSSemanticsVisitor.h"
-
+#include "AST/Visitor/CodeSynthesis/MIPSCodeGenVisitor.h"
 #endif
