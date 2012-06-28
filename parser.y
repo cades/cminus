@@ -12,11 +12,7 @@
 #include "visitorsHeaders.h"
 using namespace std;
 static int linenumber = 1;
-
-struct LocalVarRepo {
-    string currentTypeName;
-};
-    
+  
 int yylex(void);    
 int yyerror (AbstractNode* node, LocalVarRepo localVarRepo, char *mesg);
 
@@ -301,24 +297,8 @@ struct_tail	: MK_DOT ID { $$ = $2; }
 %%
 
 #include "lex.yy.c"
-//extern int main(); // when using CppTest, main should leave to CppUTest.
 
-int main (int argc, char *argv[])
-{
-    yyin = fopen(argv[1],"r");
-    AbstractNode* astRoot = 0;
-    
-    yyparse(astRoot, LocalVarRepo());  // pass AST root to yyparse
-    
-    SymbolTable symbolTable;
-    TopDeclVisitor tdVisitor(&symbolTable, cout);
-    astRoot->accept(tdVisitor);
-    //MIPSCodeGenVisitor codegenVisitor(&symbolTable, cerr, cout);
-    //astRoot->accept(codegenVisitor);
-    
-    printf("%s\n", "Parsing completed. No errors found.");
-} /* main */
-
+extern int main (int argc, char *argv[]);
 
 int yyerror (AbstractNode* node, LocalVarRepo localVarRepo, char *mesg)
 {

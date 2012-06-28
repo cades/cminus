@@ -88,5 +88,9 @@ union YYSTYPE {
 
 typedef union YYSTYPE YYSTYPE;
 
+struct LocalVarRepo {
+    string currentTypeName;
+};
+
 
 #endif

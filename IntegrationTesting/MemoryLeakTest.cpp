@@ -1,5 +1,6 @@
 #include <iostream>
-#include "ASTHeaders.h"
+#include "../ASTHeaders.h"
+#include "../visitorsHeaders.h"
 #include <CppUTest/TestHarness.h>
 
 extern int yyerror (AbstractNode* node, char *mesg);
