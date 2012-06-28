@@ -11,6 +11,8 @@
 #include "../NodeVisitor.h"
 #include <ostream>
 using std::ostream;
+#include <string>
+using std::string;
 
 class MIPSCodeGenVisitor: public NodeVisitor {
 public:
@@ -24,11 +26,11 @@ public:
 	virtual void visit(AssigningNode& node) = 0;
 	virtual void visit(BinaryExpression&) = 0;
 	virtual void visit(BlockNode& node) = 0;
-	virtual void visit(CallingNode& node) = 0;
+	virtual void visit(CallingNode& node);
 	virtual void visit(DivideNode& node) = 0;
 	virtual void visit(EQNode& node) = 0;
 	virtual void visit(EmptyNode& node) = 0;
-	virtual void visit(Expression&) = 0;
+	virtual void visit(Expression& node) = 0;
 	virtual void visit(FloatLiteral& node) = 0;
 	virtual void visit(ForLoopingNode& node) = 0;
 	virtual void visit(FunctionDeclaringNode& node) = 0;
@@ -67,6 +69,9 @@ public:
 private:
 	ostream& codeStream() { return codeOutputStream_; }
 	ostream& codeOutputStream_;
+
+	void gen_prologue(string name);
+	void gen_epilogue(string name);
 };
 
 #endif /* MIPSCODEGENVISITOR_H_ */

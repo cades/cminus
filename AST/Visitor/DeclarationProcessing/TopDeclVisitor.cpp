@@ -22,6 +22,7 @@
 #include "SemanticsVisitor.h"
 #include <stdexcept>
 #include <ostream>
+#include <typeinfo>
 
 TopDeclVisitor::TopDeclVisitor(SymbolTable* symtab, ostream& os) : SemanticsVisitor(symtab, os), originalSymtab_(symtab) {
 	// TODO Auto-generated constructor stub
