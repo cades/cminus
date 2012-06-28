@@ -8,7 +8,7 @@
 #include "ReturningNode.h"
 #include "../Visitor/NodeVisitor.h"
 
-ReturningNode::ReturningNode(Expression* subExpr) : subExpr_(subExpr) {
+ReturningNode::ReturningNode(Expression* returnVal) : returnVal_(returnVal) {
 	// TODO Auto-generated constructor stub
 
 }

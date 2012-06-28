@@ -17,8 +17,10 @@ public:
 	ReturningNode(Expression* subExpr);
 	virtual ~ReturningNode();
 	virtual void accept(NodeVisitor& visitor);
+    Expression *getReturnVal() const { return returnVal_; }
+
 private:
-	Expression* subExpr_;
+	Expression* returnVal_;
 };
 
 #endif /* RETURNINGNODE_H_ */
