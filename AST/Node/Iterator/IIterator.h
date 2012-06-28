@@ -20,7 +20,7 @@ public:
 	virtual AbstractNode* CurrentItem() const = 0;
 };
 
-#define foreach_element( i )  for (i->First(); i->IsDone(); i->Next())
+#define foreach_element( i )  for (i->First(); !i->IsDone(); i->Next())
 
 
 #endif /* IITERATOR_H_ */
