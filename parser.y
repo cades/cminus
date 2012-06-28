@@ -195,7 +195,7 @@ stmt		: MK_LBRACE block MK_RBRACE	{ $$ = $2; }
 		/* | If then else */ 
 		| IF MK_LPAREN relop_expr_list MK_RPAREN stmt ELSE stmt	{ $$ = new IfTestingNode($3, $5, $7); }
 		| MK_SEMICOLON				{ $$ = new EmptyNode; }
-		| RETURN MK_SEMICOLON			{ $$ = new ReturningNode(new EmptyNode); }
+		| RETURN MK_SEMICOLON			{ $$ = new ReturningNode(0); }
 		| RETURN relop_expr MK_SEMICOLON	{ $$ = new ReturningNode($2); }
 		;
 
