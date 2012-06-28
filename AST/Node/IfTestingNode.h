@@ -38,6 +38,7 @@ public:
 	};
 	virtual Iterator* createIterator() { return new Iterator(*this); }
 
+	ExpressionList *getCondition() const { return condition_; }
 private:
 	ExpressionList* condition_;
 	AbstractNode* thenPart_;

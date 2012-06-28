@@ -39,6 +39,7 @@ public:
 	};
 	virtual Iterator* createIterator() { return new Iterator(*this); }
 
+	ExpressionList *getCondition() const { return condition_; }
 private:
 	ExpressionList* initializer_;
 	ExpressionList* condition_;
