@@ -121,6 +121,8 @@ void TopDeclVisitor::visit(ArrayVariableDeclaringNode& avd) {
 }
 
 void TopDeclVisitor::visit(FunctionDeclaringNode& fd) {
+	setCurrentFunction(&fd);
+
 	TypeVisitor typeVisitor(&currentSymbolTable(), errorLog());
 	fd.getReturnType()->accept(typeVisitor);
 
@@ -137,6 +139,8 @@ void TopDeclVisitor::visit(FunctionDeclaringNode& fd) {
 	attr->setSignature(generateSignature(fd.getParamList()));
 	fd.getBlock()->accept(*this);
 	setCurrentSymbolTableBack();
+
+	setCurrentFunction(0);
 }
 
 void TopDeclVisitor::setCurrentSymbolTableTo(SymbolTable *newSymtab) {
