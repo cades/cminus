@@ -9,15 +9,18 @@
 #define RETURNINGNODE_H_
 
 #include "AbstractNode.h"
+#include "Expression.h"
 class NodeVisitor;
 
 class ReturningNode: public AbstractNode {
 public:
-	ReturningNode(AbstractNode* subExpr);
+	ReturningNode(Expression* subExpr);
 	virtual ~ReturningNode();
 	virtual void accept(NodeVisitor& visitor);
+    Expression *getReturnVal() const { return returnVal_; }
+
 private:
-	AbstractNode* subExpr_;
+	Expression* returnVal_;
 };
 
 #endif /* RETURNINGNODE_H_ */

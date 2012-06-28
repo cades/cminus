@@ -31,6 +31,12 @@ public:
 	virtual void visit(StructReferencingNode&);
 	virtual void visit(CallingNode& node);
 
+	virtual void visit(IfTestingNode& node);
+	virtual void visit(ForLoopingNode& node);
+	virtual void visit(WhileLoopingNode& node);
+	virtual void visit(ReturningNode& node);
+
+
 	virtual void visit(ANDNode& node) {}
 	virtual void visit(ArrayDefiningNode& node) {}
 	virtual void visit(ArrayVariableDeclaringNode& node) {}
@@ -39,14 +45,12 @@ public:
 	virtual void visit(EQNode& node) {}
 	virtual void visit(EmptyNode& node) {}
 	virtual void visit(Expression&) {}
-	virtual void visit(ForLoopingNode& node) {}
 	virtual void visit(FunctionDeclaringNode& node) {}
 	virtual void visit(GENode& node) {}
 	virtual void visit(GTNode& node) {}
 	virtual void visit(IdentifierList&) {}
 	virtual void visit(IdentifierWithDim& node) {}
 	virtual void visit(IdentifierWithInitExpr&) {}
-	virtual void visit(IfTestingNode& node) {}
 	virtual void visit(LENode& node) {}
 	virtual void visit(LTNode& node) {}
 	virtual void visit(Literal&) {}
@@ -56,7 +60,6 @@ public:
 	virtual void visit(NodeList& node) {}
 	virtual void visit(ORNode& node) {}
 	virtual void visit(PlusNode& node) {}
-	virtual void visit(ReturningNode& node) {}
 	virtual void visit(StringLiteral&) {} // TODO should handle this?
 	virtual void visit(StructDefiningNode& node) {}
 	virtual void visit(TypeDeclaringNode& node) {}
@@ -66,15 +69,22 @@ public:
 	virtual void visit(TypeSpecifierWithTypeDecl& node) {}
 	virtual void visit(TypedefNode& node) {}
 	virtual void visit(VariableListDeclaringNode& node) {}
-	virtual void visit(WhileLoopingNode& node) {}
 
 	typedef list<TypeDescriptor*> TypeDescriptorList;
 private:
+	// type checking
 	bool isDataObject(Attributes*);
 	bool assignable(TypeDescriptor*, TypeDescriptor*);
 	TypeDescriptorList getArgTypes(ExpressionList*);
 	bool applicable(TypeDescriptorList, TypeDescriptorList);
 	bool bindable(TypeDescriptor*, TypeDescriptor*);
+
+	// semantic analysis
+	void checkBoolean(ExpressionList*);
+	FunctionDeclaringNode* currentFunction_;
+protected:
+	FunctionDeclaringNode* getCurrentFunction() { return currentFunction_; }
+	void setCurrentFunction(FunctionDeclaringNode* fdn) { currentFunction_ = fdn; }
 };
 
 #endif /* SEMANTICSVISITOR_H_ */

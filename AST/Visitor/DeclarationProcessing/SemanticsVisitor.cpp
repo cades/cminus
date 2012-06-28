@@ -18,6 +18,12 @@
 #include "../../Node/AssigningNode.h"
 #include "../../Node/ArrayReferencingNode.h"
 #include "../../Node/StructReferencingNode.h"
+#include "../../Node/ReturningNode.h"
+#include "../../Node/FunctionDeclaringNode.h"
+
+#include "../../Node/IfTestingNode.h"
+#include "../../Node/ForLoopingNode.h"
+#include "../../Node/WhileLoopingNode.h"
 #include "../../Node/CallingNode.h"
 
 #include "../../SymbolTable/SymbolTable.h"
@@ -29,6 +35,7 @@
 #include "../../SymbolTable/TypeDescriptor/FloatTypeDescriptor.h"
 #include "../../SymbolTable/TypeDescriptor/ArrayTypeDescriptor.h"
 #include "../../SymbolTable/TypeDescriptor/StructTypeDescriptor.h"
+#include "../../SymbolTable/TypeDescriptor/VoidTypeDescriptor.h"
 
 
 SemanticsVisitor::SemanticsVisitor(SymbolTable* symtab, ostream& os) : NodeVisitor(symtab, os) {
@@ -152,6 +159,47 @@ void SemanticsVisitor::visit(CallingNode& cn) {
 }
 
 
+/* semantic analysis phase
+ * here we care 4 kind of nodes: if, for, while, return
+ */
+
+void SemanticsVisitor::visit(IfTestingNode& ifn) {
+	visitChildren(ifn);
+	checkBoolean(ifn.getCondition());
+}
+
+void SemanticsVisitor::visit(ForLoopingNode& fn) {
+	currentSymbolTable().openScope();
+	visitChildren(fn);  // FIXME should I use TopDeclVisitor here ???
+	checkBoolean(fn.getCondition());
+	currentSymbolTable().closeScope();
+}
+
+void SemanticsVisitor::visit(WhileLoopingNode& wn) {
+	visitChildren(wn);
+	checkBoolean(wn.getCondition());
+}
+
+void SemanticsVisitor::visit(ReturningNode& rn) {
+	if (rn.getReturnVal() != 0) { // NOTICE use errorType
+		rn.getReturnVal()->accept(*this); // the same as visitChildren
+		if (getCurrentFunction() == 0)
+			errorLog() << "Return statement can only appear in a function.\n";
+		else {
+			if(!assignable(getCurrentFunction()->getReturnType()->getType(),
+					rn.getReturnVal()->getType())) {
+				errorLog() << "Illigal return type.\n";
+			}
+		}
+	} else if (getCurrentFunction() != 0 &&
+			!dynamic_cast<VoidTypeDescriptor*>(getCurrentFunction()->getReturnType()->getType()) // return type =/= void
+			) {
+		errorLog() << "A value must be returned.\n";
+	}
+}
+
+
+
 // utility methods
 
 bool SemanticsVisitor::isDataObject(Attributes *attr) {
@@ -202,6 +250,26 @@ bool SemanticsVisitor::applicable(TypeDescriptorList formalParams, TypeDescripto
 bool SemanticsVisitor::bindable(TypeDescriptor *dest, TypeDescriptor *src) {
 	return assignable(dest, src); // TODO check array type
 }
+
+void SemanticsVisitor::checkBoolean(ExpressionList *exprList) {
+	if (exprList->length() == 0) // infinite loop.
+		return;
+
+	// get head of list.
+	ExpressionList::Iterator* i = exprList->createIterator();
+	i->First();
+	Expression& c = *i->CurrentItem();
+	delete i;
+
+	if (c.getType() != 0 &&
+			(dynamic_cast<IntegerTypeDescriptor*>(c.getType()) ||
+			dynamic_cast<FloatTypeDescriptor*>(c.getType()) )
+			) {
+		errorLog() << "Require boolean type at " << &c << "\n";
+	}
+}
+
+
 
 
 
